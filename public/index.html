@@ -36,6 +36,16 @@
       left: 50%;
       transform: translate(-50%, -50%);
       z-index: 1000;
+      width: 300px;
+      height: 300px;
+    }
+    .IntroLoader svg {
+      width: 100%;
+      height: 100%;
+    }
+    .IntroLoader img {
+      width: 100%;
+      height: 100%;
     }
   </style>
 
@@ -55,12 +65,44 @@
   <!-- Defer jQuery and other scripts -->
   <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
   <script defer src="./js/IntenseImages/intense.js"></script>
+  
+  <!-- Lottie player -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
 </head>
 
 <body>
   
   <!-- Intro Graphic -->
-  <img src="assets/WebIntro.gif" class="IntroLoader">
+  <div id="introLoader" class="IntroLoader">
+    <!-- GIF fallback (hidden when Lottie loads) -->
+    <img src="assets/WebIntro.gif" id="introLoaderFallback" alt="Loading animation">
+  </div>
+  <script>
+    // Load Lottie animation with GIF fallback
+    (function() {
+      var fallbackImg = document.getElementById('introLoaderFallback');
+      try {
+        var anim = lottie.loadAnimation({
+          container: document.getElementById('introLoader'),
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: 'assets/WebIntro.json'
+        });
+        // Hide GIF fallback once Lottie is ready
+        anim.addEventListener('DOMLoaded', function() {
+          if (fallbackImg) fallbackImg.style.display = 'none';
+        });
+        // Show GIF if Lottie fails to load
+        anim.addEventListener('error', function() {
+          if (fallbackImg) fallbackImg.style.display = 'block';
+        });
+      } catch (e) {
+        // Lottie not available, GIF fallback remains visible
+        console.log('Lottie not available, using GIF fallback');
+      }
+    })();
+  </script>
 
   <!-- <video 
     class="IntroLoader"
