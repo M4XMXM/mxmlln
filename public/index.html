@@ -142,7 +142,26 @@
             <img src="./assets/CloseSML.png" onclick="closeNavInfoView()" class="closeButton" alt="Close panel">
         </div>
         <div style="padding-bottom:32px;">
-            <img src="./assets/Sig2026.gif" height="200px" width="200px" decoding="async" alt="MXMLLN logo">
+            <div id="sigLogo" style="width:200px;height:200px;">
+                <img src="./assets/Sig2026.gif" id="sigLogoFallback" height="200px" width="200px" decoding="async" alt="MXMLLN logo">
+            </div>
+            <script>
+                (function() {
+                    var fallbackImg = document.getElementById('sigLogoFallback');
+                    try {
+                        var anim = lottie.loadAnimation({
+                            container: document.getElementById('sigLogo'),
+                            renderer: 'svg',
+                            loop: true,
+                            autoplay: true,
+                            path: './assets/Sig2026.json'
+                        });
+                        anim.addEventListener('DOMLoaded', function() {
+                            if (fallbackImg) fallbackImg.style.display = 'none';
+                        });
+                    } catch (e) { }
+                })();
+            </script>
         </div>
         <div>
             <a href="https://github.com/M4XMXM/mxmlln" target="_blank">
