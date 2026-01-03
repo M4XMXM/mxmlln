@@ -41,12 +41,43 @@
   <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&family=Playfair+Display+SC:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&display=swap" rel="stylesheet">
 
+  <!-- Lottie player -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+  
+  <style>
+    /* Note: .IntroLoader base styles come from StyleMatters.2024.css */
+    /* jQuery animates it to 300x300, so we don't set size here */
+    .IntroLoader svg, .IntroLoader img {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+
 </head>
 
 <body>
   
   <!-- Intro Graphic -->
-  <img src="assets/WebIntro.gif" class="IntroLoader">
+  <div id="introLoader" class="IntroLoader">
+    <img src="assets/WebIntro.gif" id="introLoaderFallback" alt="Loading animation">
+  </div>
+  <script>
+    (function() {
+      var fallbackImg = document.getElementById('introLoaderFallback');
+      try {
+        var anim = lottie.loadAnimation({
+          container: document.getElementById('introLoader'),
+          renderer: 'svg',
+          loop: true,
+          autoplay: true,
+          path: 'assets/WebIntro.json'
+        });
+        anim.addEventListener('DOMLoaded', function() {
+          if (fallbackImg) fallbackImg.style.display = 'none';
+        });
+      } catch (e) { }
+    })();
+  </script>
 
   <!-- Nav Bar -->
   <div id="navDynamicContainer" class="navDynamicContainer" style="display:none;">
@@ -69,7 +100,26 @@
             <img src="./assets/Close.png" onclick="closeNavInfoView()" class="closeButton">
         </div>
         <div style="padding-bottom:32px;">
-            <img src="./assets/Sig2026.gif" height="200px" width="200px" decoding="async" alt="MXMLLN logo">
+            <div id="sigLogo" style="width:200px;height:200px;">
+                <img src="./assets/Sig2026.gif" id="sigLogoFallback" height="200px" width="200px" decoding="async" alt="MXMLLN logo">
+            </div>
+            <script>
+                (function() {
+                    var fallbackImg = document.getElementById('sigLogoFallback');
+                    try {
+                        var anim = lottie.loadAnimation({
+                            container: document.getElementById('sigLogo'),
+                            renderer: 'svg',
+                            loop: true,
+                            autoplay: true,
+                            path: './assets/Sig2026.json'
+                        });
+                        anim.addEventListener('DOMLoaded', function() {
+                            if (fallbackImg) fallbackImg.style.display = 'none';
+                        });
+                    } catch (e) { }
+                })();
+            </script>
         </div>
         <div>
             <a href="https://github.com/M4XMXM/mxmlln" target="_blank">
