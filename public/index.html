@@ -41,6 +41,12 @@
       width: 100%;
       height: 100%;
     }
+    /* Chat logo Lottie containers */
+    #chatEmptyLogo svg, #chatEmptyLogo img,
+    #chatResponseLogo svg, #chatResponseLogo img {
+      width: 100%;
+      height: 100%;
+    }
   </style>
 
   <!-- Defer non-critical CSS -->
@@ -197,7 +203,26 @@
         <!--empty state-->
         <div class="chatEmptyState" id="chatEmptyState">
             <div class="chatEmptyStateLogo">
-                <img src="./assets/LogoSpin2024.MED.MEZZO.gif" height="150px" width="150px" alt="MXMLLN logo">
+                <div id="chatEmptyLogo" style="width:150px;height:150px;">
+                    <img src="./assets/LogoSpin2024.MED.MEZZO.gif" id="chatEmptyLogoFallback" height="150px" width="150px" alt="MXMLLN logo">
+                </div>
+                <script>
+                    (function() {
+                        var fallbackImg = document.getElementById('chatEmptyLogoFallback');
+                        try {
+                            var anim = lottie.loadAnimation({
+                                container: document.getElementById('chatEmptyLogo'),
+                                renderer: 'svg',
+                                loop: true,
+                                autoplay: true,
+                                path: './assets/LogoSpin2026.json'
+                            });
+                            anim.addEventListener('DOMLoaded', function() {
+                                if (fallbackImg) fallbackImg.style.display = 'none';
+                            });
+                        } catch (e) { }
+                    })();
+                </script>
             </div>
             <div class="chatEmptyStateText">
                 <h1 style="line-height:0%;font-weight:900;">Maximillian AI</h1>
@@ -227,7 +252,26 @@
             <div class="chatResponseContainer">
                 <div class="chatBlurb">
                     <div class="chatResponseLogoContainer">
-                        <img src="./assets/LogoSpin2024.SML.gif" class="chatResponseLogo" alt="MXMLLN logo">
+                        <div id="chatResponseLogo" class="chatResponseLogo">
+                            <img src="./assets/LogoSpin2024.SML.gif" id="chatResponseLogoFallback" alt="MXMLLN logo">
+                        </div>
+                        <script>
+                            (function() {
+                                var fallbackImg = document.getElementById('chatResponseLogoFallback');
+                                try {
+                                    var anim = lottie.loadAnimation({
+                                        container: document.getElementById('chatResponseLogo'),
+                                        renderer: 'svg',
+                                        loop: true,
+                                        autoplay: true,
+                                        path: './assets/LogoSpin2026.json'
+                                    });
+                                    anim.addEventListener('DOMLoaded', function() {
+                                        if (fallbackImg) fallbackImg.style.display = 'none';
+                                    });
+                                } catch (e) { }
+                            })();
+                        </script>
                     </div>
                     <p style="margin:0px;padding:0px;text-align:left;"></p>
                 </div>
