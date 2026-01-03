@@ -36,6 +36,11 @@
       width: 100%;
       height: 100%;
     }
+    /* Nav logo Lottie container */
+    #navLogoSpin svg, #navLogoSpin img {
+      width: 100%;
+      height: 100%;
+    }
   </style>
 
   <!-- Defer non-critical CSS -->
@@ -116,7 +121,26 @@
   <div id="navDynamicContainer" class="navDynamicContainer" style="display:none;">
     <div class="navBar" id="navBar">
         <div class="navBarSegController" id="navBarSegController">
-            <img src="./assets/LogoSpin2024.SML.gif" height="40px" width="40px" onclick="openNavInfoView()" id="openNavInfoView" class="openNavInfoView" style="cursor: pointer;" alt="Open info menu">
+            <div id="navLogoSpin" onclick="openNavInfoView()" class="openNavInfoView" style="width:40px;height:40px;cursor:pointer;">
+                <img src="./assets/LogoSpin2024.SML.gif" id="navLogoSpinFallback" height="40px" width="40px" alt="Open info menu">
+            </div>
+            <script>
+                (function() {
+                    var fallbackImg = document.getElementById('navLogoSpinFallback');
+                    try {
+                        var anim = lottie.loadAnimation({
+                            container: document.getElementById('navLogoSpin'),
+                            renderer: 'svg',
+                            loop: true,
+                            autoplay: true,
+                            path: './assets/LogoSpin2026.json'
+                        });
+                        anim.addEventListener('DOMLoaded', function() {
+                            if (fallbackImg) fallbackImg.style.display = 'none';
+                        });
+                    } catch (e) { }
+                })();
+            </script>
             <a href="about.html" onclick="gtag('event', 'About', {'event_category' : 'Nav Item', 'event_label' : 'View About Page'});">
                 <font class="navBarItem">👋 ABOUT</font>
             </a>
