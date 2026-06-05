@@ -639,6 +639,30 @@
       "createdAt": "2026-05-31T12:00:00.001Z",
       "metadata": {},
       "read": false
+    },
+    {
+      "id": "1780574400000",
+      "url": "https://cognition.ai/blog/ai-guarantee",
+      "title": "AI should earn its keep: Introducing the AI Productivity Guarantee",
+      "createdAt": "2026-06-04T12:00:00.000Z",
+      "metadata": {},
+      "read": false
+    },
+    {
+      "id": "1780574400001",
+      "url": "https://cognition.ai/blog/ai-productivity",
+      "title": "Estimating the Productivity of an Autonomous AI Software Engineer",
+      "createdAt": "2026-06-04T12:00:00.001Z",
+      "metadata": {},
+      "read": false
+    },
+    {
+      "id": "1780574400002",
+      "url": "https://x.com/drfeifei/status/2062247238143996275",
+      "title": "A Functional Taxonomy of World Models",
+      "createdAt": "2026-06-04T12:00:00.002Z",
+      "metadata": {},
+      "read": false
     }
   ]
 }
