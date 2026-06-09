@@ -111,6 +111,35 @@
                 inset 0 0 0 1px rgba(255,255,255,0.4);
         }
 
+        /* Empty state */
+        #emptyState {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        #emptyState.show { display: flex; }
+        #emptyState .empty-inner {
+            text-align: center;
+            color: rgba(255,255,255,0.55);
+            font-family: 'Sora', sans-serif;
+            padding: 0 24px;
+        }
+        #emptyState .empty-title {
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: rgba(255,255,255,0.8);
+        }
+        #emptyState .empty-sub {
+            font-weight: 400;
+            font-size: 14px;
+        }
+
         /* Header chip */
         .header-row {
             position: fixed;
@@ -289,6 +318,13 @@
         <div id="canvas"></div>
     </div>
 
+    <div id="emptyState">
+        <div class="empty-inner">
+            <div class="empty-title">Nothing here</div>
+            <div class="empty-sub">No entries match your search and filter.</div>
+        </div>
+    </div>
+
     <!-- Lens refraction overlays -->
     <div class="lens-edge top"></div>
     <div class="lens-edge bottom"></div>
@@ -452,6 +488,9 @@
                 canvas.appendChild(buildCard(article, i));
             });
 
+            document.getElementById('emptyState')
+                .classList.toggle('show', visibleArticles.length === 0);
+
             virtualY = 0;
         }
 
@@ -468,12 +507,22 @@
             const dt = lastT ? (now - lastT) / 1000 : 0;
             lastT = now;
 
+            const count = liveItems.length;
+
+            // A single result looks odd looping/rotating — pin it centered and still.
+            if (count === 1) {
+                const item = liveItems[0];
+                item.wrap.style.transform = 'translate3d(0, 0, 0)';
+                item.card.style.transform = `translateZ(200px) scale(${SCALE_MAX}) rotateX(0deg)`;
+                requestAnimationFrame(tick);
+                return;
+            }
+
             // Auto-drift upward when idle (and modal closed)
             if (!modalOpen && now - lastInteraction > IDLE_MS) {
                 virtualY += AUTO_SPEED * dt;
             }
 
-            const count = liveItems.length;
             if (count > 0) {
                 const period = count * HELIX.yStep;
                 const falloff = window.innerHeight * 0.5;
