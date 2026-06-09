@@ -663,6 +663,22 @@
       "createdAt": "2026-06-04T12:00:00.002Z",
       "metadata": {},
       "read": false
+    },
+    {
+      "id": "1781352000000",
+      "url": "https://x.com/RidgerZhu/status/2046736781035618602",
+      "title": "Claude Mythos, Looped LLM, and the Depth Scaling Axis",
+      "createdAt": "2026-06-09T12:00:00.000Z",
+      "metadata": {},
+      "read": false
+    },
+    {
+      "id": "1781352000001",
+      "url": "https://www.anthropic.com/institute/recursive-self-improvement",
+      "title": "When AI builds itself",
+      "createdAt": "2026-06-09T12:00:00.001Z",
+      "metadata": {},
+      "read": false
     }
   ]
 }
