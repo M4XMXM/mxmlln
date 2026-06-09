@@ -160,6 +160,47 @@
         .segmented-control button:hover { opacity: 0.8; }
         .segmented-control button.active { opacity: 1; }
 
+        /* Search */
+        .search-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-left: 6px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .search-input {
+            font-family: 'Sora', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 40px;
+            padding: 12px 16px 12px 40px;
+            width: 170px;
+            outline: none;
+            transition: background 0.3s ease, width 0.3s ease, border-color 0.3s ease;
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.45); }
+        .search-input:focus {
+            background: rgba(255,255,255,0.14);
+            border-color: rgba(255,255,255,0.25);
+            width: 220px;
+        }
+        .header-divider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255,255,255,0.12);
+            margin: 0 10px;
+        }
+
         /* Lens refraction strips at top/bottom of viewport */
         .lens-edge {
             position: fixed;
@@ -228,10 +269,19 @@
 </head>
 <body>
     <div class="header-row">
-        <div class="segmented-control">
+        <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="header-divider"></div>
+        <div class="segmented-control" id="readFilter">
             <div class="slider" id="tabSlider"></div>
-            <button type="button" class="active" data-filter="unread">Antilibrary</button>
-            <button type="button" data-filter="read">Library</button>
+            <button type="button" class="active" data-filter="all">All</button>
+            <button type="button" data-filter="unread">Unread</button>
+            <button type="button" data-filter="read">Read</button>
         </div>
     </div>
 
@@ -302,7 +352,8 @@
 
         let allArticles = [];
         let visibleArticles = [];
-        let currentFilter = 'unread';
+        let currentFilter = 'all';
+        let searchQuery = '';
         let currentArticleIndex = -1;
 
         // -------- Layout --------
@@ -386,9 +437,16 @@
         function render() {
             canvas.innerHTML = '';
             liveItems.length = 0;
-            visibleArticles = allArticles.filter(a =>
-                currentFilter === 'read' ? a.read : !a.read
-            );
+            const q = searchQuery.trim().toLowerCase();
+            visibleArticles = allArticles.filter(a => {
+                const matchesFilter =
+                    currentFilter === 'read' ? a.read :
+                    currentFilter === 'unread' ? !a.read :
+                    true;
+                if (!matchesFilter) return false;
+                if (!q) return true;
+                return `${a.title || ''} ${a.url || ''}`.toLowerCase().includes(q);
+            });
 
             visibleArticles.forEach((article, i) => {
                 canvas.appendChild(buildCard(article, i));
@@ -553,6 +611,12 @@
                     moveSlider(btn);
                     render();
                 });
+            });
+
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', () => {
+                searchQuery = searchInput.value;
+                render();
             });
         });
     </script>
