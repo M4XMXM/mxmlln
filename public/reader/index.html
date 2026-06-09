@@ -111,6 +111,35 @@
                 inset 0 0 0 1px rgba(255,255,255,0.4);
         }
 
+        /* Empty state */
+        #emptyState {
+            position: fixed;
+            inset: 0;
+            z-index: 2;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+        #emptyState.show { display: flex; }
+        #emptyState .empty-inner {
+            text-align: center;
+            color: rgba(255,255,255,0.55);
+            font-family: 'Sora', sans-serif;
+            padding: 0 24px;
+        }
+        #emptyState .empty-title {
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            color: rgba(255,255,255,0.8);
+        }
+        #emptyState .empty-sub {
+            font-weight: 400;
+            font-size: 14px;
+        }
+
         /* Header chip */
         .header-row {
             position: fixed;
@@ -159,6 +188,121 @@
         }
         .segmented-control button:hover { opacity: 0.8; }
         .segmented-control button.active { opacity: 1; }
+
+        /* Search */
+        .search-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+            margin-left: 6px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            width: 16px;
+            height: 16px;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        .search-input {
+            font-family: 'Sora', sans-serif;
+            font-weight: 500;
+            font-size: 14px;
+            color: #fff;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 40px;
+            padding: 12px 16px 12px 40px;
+            width: 170px;
+            outline: none;
+            transition: background 0.3s ease, width 0.3s ease, border-color 0.3s ease;
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.45); }
+        .search-input:focus {
+            background: rgba(255,255,255,0.14);
+            border-color: rgba(255,255,255,0.25);
+            width: 220px;
+        }
+        .header-divider {
+            width: 1px;
+            height: 28px;
+            background: rgba(255,255,255,0.12);
+            margin: 0 10px;
+        }
+
+        /* Mobile filter dropdown (replaces segmented control on small screens) */
+        .filter-menu-btn {
+            display: none;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .filter-menu-btn svg { width: 18px; height: 18px; opacity: 0.8; }
+        .filter-menu-btn.filtered::after {
+            content: '';
+            position: absolute;
+            top: 2px; right: 2px;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #fff;
+        }
+        .filter-menu {
+            position: fixed;
+            top: 96px;
+            right: 16px;
+            z-index: 110;
+            display: none;
+            flex-direction: column;
+            min-width: 140px;
+            padding: 6px;
+            border-radius: 18px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            background-color: rgba(20, 20, 20, 0.85);
+            box-shadow: 0 3px 30px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .filter-menu.open { display: flex; }
+        .filter-menu button {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-size: 13px;
+            color: #fff;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+        .filter-menu button.active {
+            opacity: 1;
+            background: rgba(255,255,255,0.12);
+        }
+
+        @media (max-width: 600px) {
+            .header-row {
+                left: 16px;
+                right: 16px;
+                transform: none;
+                gap: 8px;
+            }
+            .segmented-control, .header-divider { display: none; }
+            .filter-menu-btn { display: flex; }
+            .search-wrap { flex: 1; margin-left: 0; }
+            .search-input, .search-input:focus { width: 100%; box-sizing: border-box; }
+        }
 
         /* Lens refraction strips at top/bottom of viewport */
         .lens-edge {
@@ -228,15 +372,42 @@
 </head>
 <body>
     <div class="header-row">
-        <div class="segmented-control">
-            <div class="slider" id="tabSlider"></div>
-            <button type="button" class="active" data-filter="unread">Antilibrary</button>
-            <button type="button" data-filter="read">Library</button>
+        <div class="search-wrap">
+            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search" autocomplete="off" spellcheck="false">
         </div>
+        <div class="header-divider"></div>
+        <div class="segmented-control" id="readFilter">
+            <div class="slider" id="tabSlider"></div>
+            <button type="button" class="active" data-filter="all">All</button>
+            <button type="button" data-filter="unread">Unread</button>
+            <button type="button" data-filter="read">Read</button>
+        </div>
+        <button type="button" id="filterMenuBtn" class="filter-menu-btn" aria-label="Filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+        </button>
+    </div>
+
+    <div id="filterMenu" class="filter-menu">
+        <button type="button" class="active" data-filter="all">All</button>
+        <button type="button" data-filter="unread">Unread</button>
+        <button type="button" data-filter="read">Read</button>
     </div>
 
     <div id="stage">
         <div id="canvas"></div>
+    </div>
+
+    <div id="emptyState">
+        <div class="empty-inner">
+            <div class="empty-title">Nothing here</div>
+            <div class="empty-sub">No entries match your search and filter.</div>
+        </div>
     </div>
 
     <!-- Lens refraction overlays -->
@@ -302,7 +473,8 @@
 
         let allArticles = [];
         let visibleArticles = [];
-        let currentFilter = 'unread';
+        let currentFilter = 'all';
+        let searchQuery = '';
         let currentArticleIndex = -1;
 
         // -------- Layout --------
@@ -386,13 +558,23 @@
         function render() {
             canvas.innerHTML = '';
             liveItems.length = 0;
-            visibleArticles = allArticles.filter(a =>
-                currentFilter === 'read' ? a.read : !a.read
-            );
+            const q = searchQuery.trim().toLowerCase();
+            visibleArticles = allArticles.filter(a => {
+                const matchesFilter =
+                    currentFilter === 'read' ? a.read :
+                    currentFilter === 'unread' ? !a.read :
+                    true;
+                if (!matchesFilter) return false;
+                if (!q) return true;
+                return `${a.title || ''} ${a.url || ''}`.toLowerCase().includes(q);
+            });
 
             visibleArticles.forEach((article, i) => {
                 canvas.appendChild(buildCard(article, i));
             });
+
+            document.getElementById('emptyState')
+                .classList.toggle('show', visibleArticles.length === 0);
 
             virtualY = 0;
         }
@@ -410,12 +592,27 @@
             const dt = lastT ? (now - lastT) / 1000 : 0;
             lastT = now;
 
+            const count = liveItems.length;
+
+            // A handful of results looks odd looping/rotating — pin them
+            // centered and still in a static vertical column.
+            if (count > 0 && count < 4) {
+                const step = Math.min(320, (window.innerHeight - 140) / count);
+                const scale = Math.max(0.6, Math.min(1.15, (step - 24) / 227));
+                liveItems.forEach((item, i) => {
+                    const y = (i - (count - 1) / 2) * step;
+                    item.wrap.style.transform = `translate3d(0, ${y}px, 0)`;
+                    item.card.style.transform = `translateZ(120px) scale(${scale}) rotateX(0deg)`;
+                });
+                requestAnimationFrame(tick);
+                return;
+            }
+
             // Auto-drift upward when idle (and modal closed)
             if (!modalOpen && now - lastInteraction > IDLE_MS) {
                 virtualY += AUTO_SPEED * dt;
             }
 
-            const count = liveItems.length;
             if (count > 0) {
                 const period = count * HELIX.yStep;
                 const falloff = window.innerHeight * 0.5;
@@ -540,19 +737,55 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadReadingList();
 
-            const buttons = document.querySelectorAll('.segmented-control button');
+            const segButtons = document.querySelectorAll('.segmented-control button');
+            const menuButtons = document.querySelectorAll('.filter-menu button');
+            const menuBtn = document.getElementById('filterMenuBtn');
+            const menu = document.getElementById('filterMenu');
+
+            function setFilter(filter) {
+                currentFilter = filter;
+                [...segButtons, ...menuButtons].forEach(b =>
+                    b.classList.toggle('active', b.dataset.filter === filter));
+                menuBtn.classList.toggle('filtered', filter !== 'all');
+                const active = document.querySelector('.segmented-control button.active');
+                // Slider rects are 0 when the segmented control is hidden (mobile)
+                if (active && active.offsetParent !== null) moveSlider(active);
+                render();
+            }
+
             requestAnimationFrame(() => {
                 const active = document.querySelector('.segmented-control button.active');
-                if (active) moveSlider(active);
+                if (active && active.offsetParent !== null) moveSlider(active);
             });
-            buttons.forEach(btn => {
+            segButtons.forEach(btn => {
+                btn.addEventListener('click', () => setFilter(btn.dataset.filter));
+            });
+
+            // Mobile dropdown
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+            menuButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    currentFilter = btn.dataset.filter;
-                    buttons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    moveSlider(btn);
-                    render();
+                    setFilter(btn.dataset.filter);
+                    menu.classList.remove('open');
                 });
+            });
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target)) menu.classList.remove('open');
+            });
+
+            // Re-anchor the slider when switching between mobile/desktop layouts
+            window.addEventListener('resize', () => {
+                const active = document.querySelector('.segmented-control button.active');
+                if (active && active.offsetParent !== null) moveSlider(active);
+            });
+
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', () => {
+                searchQuery = searchInput.value;
+                render();
             });
         });
     </script>
