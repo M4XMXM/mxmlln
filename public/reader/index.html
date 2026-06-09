@@ -230,6 +230,80 @@
             margin: 0 10px;
         }
 
+        /* Mobile filter dropdown (replaces segmented control on small screens) */
+        .filter-menu-btn {
+            display: none;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            flex-shrink: 0;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        .filter-menu-btn svg { width: 18px; height: 18px; opacity: 0.8; }
+        .filter-menu-btn.filtered::after {
+            content: '';
+            position: absolute;
+            top: 2px; right: 2px;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #fff;
+        }
+        .filter-menu {
+            position: fixed;
+            top: 96px;
+            right: 16px;
+            z-index: 110;
+            display: none;
+            flex-direction: column;
+            min-width: 140px;
+            padding: 6px;
+            border-radius: 18px;
+            backdrop-filter: blur(40px);
+            -webkit-backdrop-filter: blur(40px);
+            background-color: rgba(20, 20, 20, 0.85);
+            box-shadow: 0 3px 30px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .filter-menu.open { display: flex; }
+        .filter-menu button {
+            font-family: 'Sora', sans-serif;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-size: 13px;
+            color: #fff;
+            text-transform: uppercase;
+            text-align: left;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+        .filter-menu button.active {
+            opacity: 1;
+            background: rgba(255,255,255,0.12);
+        }
+
+        @media (max-width: 600px) {
+            .header-row {
+                left: 16px;
+                right: 16px;
+                transform: none;
+                gap: 8px;
+            }
+            .segmented-control, .header-divider { display: none; }
+            .filter-menu-btn { display: flex; }
+            .search-wrap { flex: 1; margin-left: 0; }
+            .search-input, .search-input:focus { width: 100%; box-sizing: border-box; }
+        }
+
         /* Lens refraction strips at top/bottom of viewport */
         .lens-edge {
             position: fixed;
@@ -312,6 +386,17 @@
             <button type="button" data-filter="unread">Unread</button>
             <button type="button" data-filter="read">Read</button>
         </div>
+        <button type="button" id="filterMenuBtn" class="filter-menu-btn" aria-label="Filter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+            </svg>
+        </button>
+    </div>
+
+    <div id="filterMenu" class="filter-menu">
+        <button type="button" class="active" data-filter="all">All</button>
+        <button type="button" data-filter="unread">Unread</button>
+        <button type="button" data-filter="read">Read</button>
     </div>
 
     <div id="stage">
@@ -509,11 +594,16 @@
 
             const count = liveItems.length;
 
-            // A single result looks odd looping/rotating — pin it centered and still.
-            if (count === 1) {
-                const item = liveItems[0];
-                item.wrap.style.transform = 'translate3d(0, 0, 0)';
-                item.card.style.transform = `translateZ(200px) scale(${SCALE_MAX}) rotateX(0deg)`;
+            // A handful of results looks odd looping/rotating — pin them
+            // centered and still in a static vertical column.
+            if (count > 0 && count < 4) {
+                const step = Math.min(320, (window.innerHeight - 140) / count);
+                const scale = Math.max(0.6, Math.min(1.15, (step - 24) / 227));
+                liveItems.forEach((item, i) => {
+                    const y = (i - (count - 1) / 2) * step;
+                    item.wrap.style.transform = `translate3d(0, ${y}px, 0)`;
+                    item.card.style.transform = `translateZ(120px) scale(${scale}) rotateX(0deg)`;
+                });
                 requestAnimationFrame(tick);
                 return;
             }
@@ -647,19 +737,49 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadReadingList();
 
-            const buttons = document.querySelectorAll('.segmented-control button');
+            const segButtons = document.querySelectorAll('.segmented-control button');
+            const menuButtons = document.querySelectorAll('.filter-menu button');
+            const menuBtn = document.getElementById('filterMenuBtn');
+            const menu = document.getElementById('filterMenu');
+
+            function setFilter(filter) {
+                currentFilter = filter;
+                [...segButtons, ...menuButtons].forEach(b =>
+                    b.classList.toggle('active', b.dataset.filter === filter));
+                menuBtn.classList.toggle('filtered', filter !== 'all');
+                const active = document.querySelector('.segmented-control button.active');
+                // Slider rects are 0 when the segmented control is hidden (mobile)
+                if (active && active.offsetParent !== null) moveSlider(active);
+                render();
+            }
+
             requestAnimationFrame(() => {
                 const active = document.querySelector('.segmented-control button.active');
-                if (active) moveSlider(active);
+                if (active && active.offsetParent !== null) moveSlider(active);
             });
-            buttons.forEach(btn => {
+            segButtons.forEach(btn => {
+                btn.addEventListener('click', () => setFilter(btn.dataset.filter));
+            });
+
+            // Mobile dropdown
+            menuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                menu.classList.toggle('open');
+            });
+            menuButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    currentFilter = btn.dataset.filter;
-                    buttons.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    moveSlider(btn);
-                    render();
+                    setFilter(btn.dataset.filter);
+                    menu.classList.remove('open');
                 });
+            });
+            document.addEventListener('click', (e) => {
+                if (!menu.contains(e.target)) menu.classList.remove('open');
+            });
+
+            // Re-anchor the slider when switching between mobile/desktop layouts
+            window.addEventListener('resize', () => {
+                const active = document.querySelector('.segmented-control button.active');
+                if (active && active.offsetParent !== null) moveSlider(active);
             });
 
             const searchInput = document.getElementById('searchInput');
