@@ -679,6 +679,14 @@
       "createdAt": "2026-06-09T12:00:00.001Z",
       "metadata": {},
       "read": false
+    },
+    {
+      "id": "1781352000002",
+      "url": "https://www.alphaxiv.org/abs/2606.01249",
+      "title": "Trust Region On-Policy Distillation",
+      "createdAt": "2026-06-10T12:00:00.000Z",
+      "metadata": {},
+      "read": false
     }
   ]
 }
