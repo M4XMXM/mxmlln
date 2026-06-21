@@ -15,13 +15,16 @@ export function ComponentPreview({
   source,
   code,
   background = 'light',
+  tall = false,
   children,
 }: {
   /** Where the component lives in the repo, e.g. app/blog/Minimap.tsx */
   source?: string;
   /** Source snippet shown in the Code tab */
   code: string;
-  background?: 'light' | 'dark' | 'checker';
+  background?: 'light' | 'dark' | 'checker' | 'glass';
+  /** Taller, top-aligned canvas — for content that needs vertical room (popovers). */
+  tall?: boolean;
   children: React.ReactNode;
 }) {
   const [tab, setTab] = useState<'preview' | 'code'>('preview');
@@ -47,7 +50,9 @@ export function ComponentPreview({
         {source ? <code className="component-preview-source">{source}</code> : null}
       </div>
       {tab === 'preview' ? (
-        <div className={`component-preview-canvas component-preview-canvas--${background}`}>
+        <div
+          className={`component-preview-canvas component-preview-canvas--${background}${tall ? ' component-preview-canvas--tall' : ''}`}
+        >
           {children}
         </div>
       ) : (

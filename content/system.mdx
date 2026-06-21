@@ -84,6 +84,7 @@ Floating glass pill, centered top. Uppercase Archivo links at low opacity; the a
 
 <ComponentPreview
   source="app/blog/blog.css → .blog-nav"
+  background="glass"
   code={`<nav className="blog-nav">
   <a className="active">Work</a>
   <a>Words</a>
@@ -99,6 +100,7 @@ Fixed right-rail table-of-contents. Renders a notch per heading (`h2` full-width
 
 <ComponentPreview
   source="app/blog/Minimap.tsx"
+  tall
   code={`<Minimap selector=".system-prose h2[id], .system-prose h3[id]" />
 // notch per heading · active = in view · hover reveals labels`}
 >
