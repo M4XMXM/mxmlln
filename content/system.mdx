@@ -69,14 +69,13 @@ The persistent UI that frames every long-form page (blog, this page).
 The fixed signature mark, top-left. On index pages it's the `Sig2026.gif`; on article pages it becomes a Lottie (`LogoSpin2026.json`) that spins with scroll direction. It uses `mix-blend-mode: difference` + `invert(1)` so it stays legible over any background it scrolls past. Reference: `app/blog/BlogLogo.tsx`, `app/system/layout.tsx`.
 
 <ComponentPreview
-  title="Logo"
   source="app/blog/BlogLogo.tsx"
   code={`<div className="blog-logo">
   <a href="/"><img src="/assets/Sig2026.gif" width={100} height={100} /></a>
 </div>
 // article pages swap the gif for a scroll-driven Lottie`}
 >
-  <img src="/assets/Sig2026.gif" alt="MXMLLN" width={88} height={88} />
+  <img className="logo-demo" src="/assets/Sig2026.gif" alt="MXMLLN" width={88} height={88} />
 </ComponentPreview>
 
 ### Nav bar
@@ -84,7 +83,6 @@ The fixed signature mark, top-left. On index pages it's the `Sig2026.gif`; on ar
 Floating glass pill, centered top. Uppercase Archivo links at low opacity; the active link gets a solid white fill. Reference: `.blog-nav` in `app/blog/blog.css`.
 
 <ComponentPreview
-  title="Nav bar"
   source="app/blog/blog.css → .blog-nav"
   code={`<nav className="blog-nav">
   <a className="active">Work</a>
@@ -92,11 +90,7 @@ Floating glass pill, centered top. Uppercase Archivo links at low opacity; the a
   <a>About</a>
 </nav>`}
 >
-  <nav className="nav-demo">
-    <a className="active">Work</a>
-    <a>Words</a>
-    <a>About</a>
-  </nav>
+  <NavDemo />
 </ComponentPreview>
 
 ### Minimap
@@ -104,17 +98,11 @@ Floating glass pill, centered top. Uppercase Archivo links at low opacity; the a
 Fixed right-rail table-of-contents. Renders a notch per heading (`h2` full-width, `h3` shorter), highlights the section in view via `IntersectionObserver`, and reveals a labeled popover on hover. Reference: `app/blog/Minimap.tsx` — it scans a CSS selector for headings, so it works on any prose page (this page included).
 
 <ComponentPreview
-  title="Minimap"
   source="app/blog/Minimap.tsx"
-  background="checker"
   code={`<Minimap selector=".system-prose h2[id], .system-prose h3[id]" />
 // notch per heading · active = in view · hover reveals labels`}
 >
-  <div className="minimap-demo">
-    <div className="minimap-notch" />
-    <div className="minimap-notch minimap-notch--active" />
-    <div className="minimap-notch minimap-notch--sub" />
-    <div className="minimap-notch" />
-    <div className="minimap-notch minimap-notch--sub" />
-  </div>
+  <MinimapDemo />
 </ComponentPreview>
+
+> The real `Minimap` is also live on this page — the notched rail at the right edge tracks your scroll position.

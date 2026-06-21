@@ -1,45 +1,60 @@
-import React from 'react';
+'use client';
+
+import { useState } from 'react';
 
 /**
- * Renders a live example (children) inside a framed canvas, with the
- * corresponding source shown below it. Authored in content/system.mdx as:
+ * shadcn-style preview card: a Preview / Code tab toggle over a single panel.
+ * The Preview tab renders the real, interactive component (children); the Code
+ * tab shows the corresponding source. Authored in content/system.mdx as:
  *
- *   <ComponentPreview code={`<BlurFade inView>Hello</BlurFade>`}>
- *     <BlurFade inView>Hello</BlurFade>
+ *   <ComponentPreview source="app/blog/Minimap.tsx" code={`<Minimap />`}>
+ *     <MinimapDemo />
  *   </ComponentPreview>
- *
- * The live element and the code string are kept separate on purpose so the
- * preview always reflects real, runnable code from the registry.
  */
 export function ComponentPreview({
-  title,
   source,
   code,
   background = 'light',
   children,
 }: {
-  title?: string;
-  /** Where the component lives in the repo, e.g. registry/ui/blur-fade.tsx */
+  /** Where the component lives in the repo, e.g. app/blog/Minimap.tsx */
   source?: string;
-  /** Source snippet shown beneath the canvas */
+  /** Source snippet shown in the Code tab */
   code: string;
   background?: 'light' | 'dark' | 'checker';
   children: React.ReactNode;
 }) {
+  const [tab, setTab] = useState<'preview' | 'code'>('preview');
   return (
     <div className="component-preview">
-      {(title || source) && (
-        <div className="component-preview-head">
-          {title ? <span className="component-preview-title">{title}</span> : null}
-          {source ? <code className="component-preview-source">{source}</code> : null}
-        </div>
-      )}
-      <div className={`component-preview-canvas component-preview-canvas--${background}`}>
-        {children}
+      <div className="component-preview-tabs" role="tablist">
+        <button
+          role="tab"
+          aria-selected={tab === 'preview'}
+          className={tab === 'preview' ? 'is-active' : ''}
+          onClick={() => setTab('preview')}
+        >
+          Preview
+        </button>
+        <button
+          role="tab"
+          aria-selected={tab === 'code'}
+          className={tab === 'code' ? 'is-active' : ''}
+          onClick={() => setTab('code')}
+        >
+          Code
+        </button>
+        {source ? <code className="component-preview-source">{source}</code> : null}
       </div>
-      <pre className="component-preview-code">
-        <code>{code}</code>
-      </pre>
+      {tab === 'preview' ? (
+        <div className={`component-preview-canvas component-preview-canvas--${background}`}>
+          {children}
+        </div>
+      ) : (
+        <pre className="component-preview-code">
+          <code>{code}</code>
+        </pre>
+      )}
     </div>
   );
 }
