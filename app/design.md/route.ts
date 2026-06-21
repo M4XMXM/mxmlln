@@ -3,7 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 
 /**
- * Raw-markdown view of the design system, served at /system.md for agents and
+ * Raw-markdown view of the design system, served at /design.md for agents and
  * LLMs (the /system route only renders HTML). Mirrors how app/system/page.tsx
  * reads the source: same file, frontmatter lifted into a title heading.
  */
