@@ -314,7 +314,7 @@
   border-radius: 40px;
   opacity: 0.5;
   cursor: pointer;
-  transition: opacity 0.3s ease, background-color 0.3s ease;
+  transition: opacity 0.3s ease;
 }
 .nav-demo a:hover {
   opacity: 0.75;
@@ -328,6 +328,14 @@
 .minimap-demo-wrap {
   position: relative;
   display: inline-flex;
+}
+/* Real component darkens idle notches on rail hover via .minimap:hover —
+   replicate it for the scoped wrapper. */
+.minimap-demo-wrap:hover .minimap-notch {
+  background: #999;
+}
+.minimap-demo-wrap:hover .minimap-notch--active {
+  background: #1a1a1a;
 }
 
 /* Logo demo: hint at the article-page scroll-spin on hover. */

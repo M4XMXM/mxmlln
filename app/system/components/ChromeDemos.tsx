@@ -32,10 +32,20 @@ export function NavDemo() {
   );
 }
 
-const MINIMAP_SECTIONS = ['Color', 'Typography', 'Radius', 'Elevation', 'Motion'];
+// Mix of h2 (level 2) and h3 (level 3) so the demo shows the sub-notch design.
+const MINIMAP_SECTIONS = [
+  { label: 'Color', level: 2 },
+  { label: 'Typography', level: 2 },
+  { label: 'Components', level: 2 },
+  { label: 'Logo', level: 3 },
+  { label: 'Nav bar', level: 3 },
+  { label: 'Minimap', level: 3 },
+];
 
 export function MinimapDemo() {
-  const [active, setActive] = useState(1);
+  // Active is "section in view" — driven by scroll in the real component, so it
+  // doesn't follow the cursor here. Clicking a label jumps to it (sets active).
+  const [active, setActive] = useState(2);
   const [open, setOpen] = useState(false);
   return (
     <div
@@ -46,9 +56,8 @@ export function MinimapDemo() {
       <div className="minimap-notches">
         {MINIMAP_SECTIONS.map((s, i) => (
           <div
-            key={s}
-            className={`minimap-notch ${i === active ? 'minimap-notch--active' : ''}`}
-            onMouseEnter={() => setActive(i)}
+            key={s.label}
+            className={`minimap-notch ${s.level === 3 ? 'minimap-notch--sub' : ''} ${i === active ? 'minimap-notch--active' : ''}`}
           />
         ))}
       </div>
@@ -56,13 +65,15 @@ export function MinimapDemo() {
         <div className="minimap-popover">
           {MINIMAP_SECTIONS.map((s, i) => (
             <a
-              key={s}
+              key={s.label}
               href="#"
-              className={`minimap-link ${i === active ? 'minimap-link--active' : ''}`}
-              onMouseEnter={() => setActive(i)}
-              onClick={(e) => e.preventDefault()}
+              className={`minimap-link ${s.level === 3 ? 'minimap-link--sub' : ''} ${i === active ? 'minimap-link--active' : ''}`}
+              onClick={(e) => {
+                e.preventDefault();
+                setActive(i);
+              }}
             >
-              {s}
+              {s.label}
             </a>
           ))}
         </div>
