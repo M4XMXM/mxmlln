@@ -60,7 +60,7 @@ Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s eas
 - **Quick (hover/opacity):** `0.2s ease`
 - **Easing curve:** `cubic-bezier(0.4, 0, 0.2, 1)`
 
-## Components — Chrome
+## Components
 
 The persistent UI that frames every long-form page (blog, this page).
 
@@ -117,77 +117,4 @@ Fixed right-rail table-of-contents. Renders a notch per heading (`h2` full-width
     <div className="minimap-notch" />
     <div className="minimap-notch minimap-notch--sub" />
   </div>
-</ComponentPreview>
-
-## Motion primitives
-
-> **Status:** these live in `registry/` (added from [magicui](https://magicui.design), a shadcn-style component set) but are **not currently used anywhere on the site**. They're available primitives, not established components — wire them in or delete them. Documented here so the inventory is honest.
-
-They're client components (`"use client"`) built on framer-motion. Previews below run the real code.
-
-### BlurFade
-
-Fades + slides content in, optionally when scrolled into view. `registry/ui/blur-fade.tsx`.
-
-<ComponentPreview
-  title="BlurFade"
-  source="registry/ui/blur-fade.tsx"
-  code={`<BlurFade inView direction="up">
-  Designed to amplify human capability.
-</BlurFade>`}
->
-  <BlurFade inView direction="up">
-    <span style={{ fontSize: 24, fontWeight: 700 }}>
-      Designed to amplify human capability.
-    </span>
-  </BlurFade>
-</ComponentPreview>
-
-Props: `direction` (`up`/`down`/`left`/`right`), `delay`, `duration`, `offset`, `blur`, `inView`.
-
-### TextAnimate
-
-Word-by-word blur-in for headings. `registry/magicui/TextAnimate.tsx`.
-
-<ComponentPreview
-  title="TextAnimate"
-  source="registry/magicui/TextAnimate.tsx"
-  code={`<TextAnimate animation="blurInUp" as="h2">
-  Form follows functionality
-</TextAnimate>`}
->
-  <TextAnimate animation="blurInUp" as="span">
-    <span style={{ fontSize: 28, fontWeight: 700 }}>Form follows functionality</span>
-  </TextAnimate>
-</ComponentPreview>
-
-Props: `animation` (`blurIn`/`blurInUp`), `as` (element tag). Strings animate per-word; other children animate as one block.
-
-### MorphingText
-
-Cross-fades + blurs between values when the keyed child changes. `registry/magicui/morphing-text.tsx`.
-
-<ComponentPreview
-  title="MorphingText"
-  source="registry/magicui/morphing-text.tsx"
-  code={`<MorphingText>{label}</MorphingText>
-// re-renders with a new child morph between states`}
->
-  <MorphingText>
-    <span style={{ fontSize: 28, fontWeight: 700 }}>Morphing</span>
-  </MorphingText>
-</ComponentPreview>
-
-The morph triggers on `key` change (`key={String(children)}`), so feed it changing text.
-
-### AnimatedShinyText
-
-> **Note:** currently a passthrough stub — it renders a `<span>` with the given `className` and no shimmer yet. Documented here so its intended role (shimmering accent text) is tracked. Flesh out the animation in `registry/magicui/AnimatedShinyText.tsx` before relying on it.
-
-<ComponentPreview
-  title="AnimatedShinyText"
-  source="registry/magicui/AnimatedShinyText.tsx"
-  code={`<AnimatedShinyText>Coming soon</AnimatedShinyText>`}
->
-  <AnimatedShinyText><span style={{ fontSize: 20, color: '#999' }}>Coming soon</span></AnimatedShinyText>
 </ComponentPreview>

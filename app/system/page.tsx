@@ -5,10 +5,6 @@ import type { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import type { MDXComponents } from 'mdx/types';
 import Minimap from '../blog/Minimap';
-import { BlurFade } from '@/registry/ui/blur-fade';
-import { AnimatedShinyText } from '@/registry/magicui/AnimatedShinyText';
-import { MorphingText } from '@/registry/magicui/morphing-text';
-import { TextAnimate } from '@/registry/magicui/TextAnimate';
 import {
   Swatches,
   Swatch,
@@ -67,11 +63,6 @@ const mdxComponents: MDXComponents = {
   ShadowBox,
   Type,
   ComponentPreview,
-  // Live registry components (so the doc previews real, runnable code)
-  BlurFade,
-  AnimatedShinyText,
-  MorphingText,
-  TextAnimate,
 };
 
 export default function SystemPage() {
