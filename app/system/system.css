@@ -271,6 +271,46 @@
   padding: 0;
 }
 
+/* ─── Chrome demos (static replicas for previews) ────────── */
+/* Mirrors .blog-nav values, minus position:fixed so it sits in a canvas. */
+.nav-demo {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  border-radius: 40px;
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(80px);
+  background-color: rgba(240, 240, 240, 0.65);
+  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.15);
+  border: solid 2px rgba(0, 0, 0, 0.1);
+  padding: 0 8px;
+  gap: 2px;
+}
+.nav-demo a {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #1a1a1a;
+  padding: 12px 16px;
+  border-radius: 40px;
+  opacity: 0.5;
+}
+.nav-demo a.active {
+  background-color: #fff;
+  opacity: 1;
+}
+
+/* Static minimap replica (real one is position:fixed). */
+.minimap-demo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 8px 6px;
+}
+
 /* ─── Minimap (shared visual language with /blog) ────────── */
 .minimap {
   position: fixed;

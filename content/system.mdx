@@ -1,12 +1,9 @@
 ---
 title: Design System
-eyebrow: Reference for humans & agents
-description: The tokens, type, components, and patterns behind maximin.design. This file is the single source of truth — edit it here and the /system page updates. globals.css is the canonical definition for tokens; this doc documents and previews them.
+eyebrow: MVXMXM
 ---
 
-This is an internal, unlisted reference — it isn't linked from the site nav, and it's set to `noindex`. It exists so that **coding agents** (and future-me) have one place to learn how the site is built before designing or generating new UI.
-
-**For agents:** the canonical token definitions live in `app/globals.css` (`:root` + `@theme`). Components live in `registry/`. This document mirrors and explains them; when they disagree, the code wins — update this file to match.
+**For agents:** the canonical token definitions live in `app/globals.css` (`:root` + `@theme`). This document mirrors and explains them; when they disagree, the code wins — update this file to match.
 
 ## Foundations — Color
 
@@ -65,9 +62,70 @@ Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s eas
 - **Quick (hover/opacity):** `0.2s ease`
 - **Easing curve:** `cubic-bezier(0.4, 0, 0.2, 1)`
 
-## Components
+## Components — Chrome
 
-Reusable primitives live in `registry/`. They're client components (`"use client"`) built on framer-motion. Previews below run the real code.
+The persistent UI that frames every long-form page (blog, this page).
+
+### Logo
+
+The fixed signature mark, top-left. On index pages it's the `Sig2026.gif`; on article pages it becomes a Lottie (`LogoSpin2026.json`) that spins with scroll direction. It uses `mix-blend-mode: difference` + `invert(1)` so it stays legible over any background it scrolls past. Reference: `app/blog/BlogLogo.tsx`, `app/system/layout.tsx`.
+
+<ComponentPreview
+  title="Logo"
+  source="app/blog/BlogLogo.tsx"
+  code={`<div className="blog-logo">
+  <a href="/"><img src="/assets/Sig2026.gif" width={100} height={100} /></a>
+</div>
+// article pages swap the gif for a scroll-driven Lottie`}
+>
+  <img src="/assets/Sig2026.gif" alt="MXMLLN" width={88} height={88} />
+</ComponentPreview>
+
+### Nav bar
+
+Floating glass pill, centered top. Uppercase Archivo links at low opacity; the active link gets a solid white fill. Reference: `.blog-nav` in `app/blog/blog.css`.
+
+<ComponentPreview
+  title="Nav bar"
+  source="app/blog/blog.css → .blog-nav"
+  code={`<nav className="blog-nav">
+  <a className="active">Work</a>
+  <a>Words</a>
+  <a>About</a>
+</nav>`}
+>
+  <nav className="nav-demo">
+    <a className="active">Work</a>
+    <a>Words</a>
+    <a>About</a>
+  </nav>
+</ComponentPreview>
+
+### Minimap
+
+Fixed right-rail table-of-contents. Renders a notch per heading (`h2` full-width, `h3` shorter), highlights the section in view via `IntersectionObserver`, and reveals a labeled popover on hover. Reference: `app/blog/Minimap.tsx` — it scans a CSS selector for headings, so it works on any prose page (this page included).
+
+<ComponentPreview
+  title="Minimap"
+  source="app/blog/Minimap.tsx"
+  background="checker"
+  code={`<Minimap selector=".system-prose h2[id], .system-prose h3[id]" />
+// notch per heading · active = in view · hover reveals labels`}
+>
+  <div className="minimap-demo">
+    <div className="minimap-notch" />
+    <div className="minimap-notch minimap-notch--active" />
+    <div className="minimap-notch minimap-notch--sub" />
+    <div className="minimap-notch" />
+    <div className="minimap-notch minimap-notch--sub" />
+  </div>
+</ComponentPreview>
+
+## Motion primitives
+
+> **Status:** these live in `registry/` (added from [magicui](https://magicui.design), a shadcn-style component set) but are **not currently used anywhere on the site**. They're available primitives, not established components — wire them in or delete them. Documented here so the inventory is honest.
+
+They're client components (`"use client"`) built on framer-motion. Previews below run the real code.
 
 ### BlurFade
 
@@ -135,32 +193,3 @@ The morph triggers on `key` change (`key={String(children)}`), so feed it changi
 >
   <AnimatedShinyText><span style={{ fontSize: 20, color: '#999' }}>Coming soon</span></AnimatedShinyText>
 </ComponentPreview>
-
-## Patterns
-
-Recurring recipes that aren't single components.
-
-### Glassmorphism chrome
-
-Floating nav/panels use a heavy backdrop blur over a translucent light fill with a hairline border. Reference: `.blog-nav`.
-
-```css
-backdrop-filter: blur(80px);
--webkit-backdrop-filter: blur(80px);
-background-color: rgba(240, 240, 240, 0.65);
-box-shadow: 0 3px 30px rgba(0, 0, 0, 0.15);
-border: solid 2px rgba(0, 0, 0, 0.1);
-border-radius: 40px;
-```
-
-### Mix-blend logo
-
-The fixed logo uses `mix-blend-mode: difference` (and `invert(1)` on the mark) so it stays legible over any background it scrolls past. Reference: `.blog-logo`, `.system-logo`.
-
-### Card stacks (FolioEngine)
-
-The portfolio's signature interaction. Cards are absolutely positioned with calculated z-index, randomized rotations (stored per-stack in a `Map`), and negative margins (`-160px`) to create the stacked look. All states are inline styles transitioned at `0.35s ease`, not CSS classes. See `public/components/FolioEngine.js` and `CLAUDE.md` for the expand/collapse flow.
-
-### Content column
-
-Long-form pages (blog, this page) use a centered column — `max-width: 700–760px`, `padding: 48px 24px 80px` — with a fixed `Minimap` for in-page navigation and the fixed logo top-left.
