@@ -212,42 +212,6 @@
   border-radius: 16px;
   overflow: hidden;
 }
-.component-preview-tabs {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 12px;
-  border-bottom: 1px solid #e5e7eb;
-  background: #fafafa;
-}
-.component-preview-tabs button {
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: #999;
-  background: none;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-}
-.component-preview-tabs button:hover {
-  color: #1a1a1a;
-}
-.component-preview-tabs button.is-active {
-  color: #1a1a1a;
-  background: #fff;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
-}
-.component-preview-source {
-  margin-left: auto;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 11px;
-  color: #bbb;
-  background: none;
-  padding: 0;
-}
 .component-preview-canvas {
   display: flex;
   align-items: center;
@@ -287,20 +251,6 @@
   min-height: 280px;
   align-items: flex-start;
   padding-top: 28px;
-}
-.component-preview-code {
-  margin: 0;
-  padding: 16px 20px;
-  background: #1a1a1a;
-  overflow-x: auto;
-}
-.component-preview-code code {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 13px;
-  line-height: 1.6;
-  color: #e0e0e0;
-  background: none;
-  padding: 0;
 }
 
 /* ─── Chrome demos (static replicas for previews) ────────── */
