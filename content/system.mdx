@@ -66,10 +66,10 @@ The persistent UI that frames every long-form page (blog, this page).
 
 ### Logo
 
-The fixed signature mark, top-left. On index pages it's the `Sig2026.gif`; on article pages it becomes a Lottie (`LogoSpin2026.json`) that spins with scroll direction. It uses `mix-blend-mode: difference` + `invert(1)` so it stays legible over any background it scrolls past. Reference: `app/blog/BlogLogo.tsx`, `app/system/layout.tsx`.
+The fixed signature mark, top-left. Two Lottie faces: the **signature** (`Sig2026.json`) on index pages, and the **spin** (`LogoSpin2026.json`) on article pages, which spins with scroll direction. It uses `mix-blend-mode: difference` + `invert(1)` so it stays legible over any background it scrolls past. Reference: `app/blog/BlogLogo.tsx`, `app/system/layout.tsx`.
 
 <ComponentPreview>
-  <img className="logo-demo" src="/assets/Sig2026.gif" alt="MXMLLN" width={88} height={88} />
+  <LogoDemo />
 </ComponentPreview>
 
 ### Nav bar

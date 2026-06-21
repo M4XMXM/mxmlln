@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import lottie from 'lottie-web';
 
 /**
  * Lightly-interactive replicas of the site chrome, for the /system previews.
@@ -8,6 +9,53 @@ import { useState } from 'react';
  * away. The real components live in app/blog/ — see each ComponentPreview's
  * `source`. The live Minimap is also mounted on this page's right rail.
  */
+
+// The two faces of the mark, both Lottie. "Signature" is the index-page state;
+// "Spin" is what article pages drive with scroll direction.
+const LOGO_VARIANTS = [
+  { key: 'signature', label: 'Signature', path: '/assets/Sig2026.json' },
+  { key: 'spin', label: 'Spin', path: '/assets/LogoSpin2026.json' },
+] as const;
+
+type LogoVariant = (typeof LOGO_VARIANTS)[number]['key'];
+
+export function LogoDemo() {
+  const [variant, setVariant] = useState<LogoVariant>('signature');
+  const lottieRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!lottieRef.current) return;
+    const path = LOGO_VARIANTS.find((v) => v.key === variant)!.path;
+    const anim = lottie.loadAnimation({
+      container: lottieRef.current,
+      path,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+    });
+    return () => anim.destroy();
+  }, [variant]);
+
+  return (
+    <div className="logo-demo-wrap">
+      <div ref={lottieRef} className="logo-demo" aria-label="MXMLLN" />
+      <div className="segmented" role="tablist" aria-label="Logo variant">
+        {LOGO_VARIANTS.map((v) => (
+          <button
+            key={v.key}
+            type="button"
+            role="tab"
+            aria-selected={variant === v.key}
+            className={`segmented-option ${variant === v.key ? 'segmented-option--active' : ''}`}
+            onClick={() => setVariant(v.key)}
+          >
+            {v.label}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 const NAV_ITEMS = ['Work', 'Words', 'About'];
 

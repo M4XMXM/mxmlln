@@ -304,13 +304,54 @@
   background: #1a1a1a;
 }
 
-/* Logo demo: hint at the article-page scroll-spin on hover. */
-.logo-demo {
-  cursor: pointer;
-  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+/* Logo demo: live Lottie mark with a segmented control to swap faces. */
+.logo-demo-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
 }
-.logo-demo:hover {
-  transform: rotate(360deg);
+.logo-demo {
+  width: 88px;
+  height: 88px;
+}
+.logo-demo svg {
+  display: block;
+}
+
+/* Segmented control — pill track with a sliding active option. */
+.segmented {
+  display: inline-flex;
+  padding: 3px;
+  gap: 2px;
+  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 999px;
+}
+.segmented-option {
+  appearance: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1;
+  color: #555;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+.segmented-option:hover {
+  color: #1a1a1a;
+}
+.segmented-option--active {
+  background: #fff;
+  color: #1a1a1a;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
 
 /* ─── Minimap (shared visual language with /blog) ────────── */

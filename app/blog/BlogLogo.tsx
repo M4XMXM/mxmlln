@@ -15,14 +15,16 @@ export function BlogLogo() {
   const lastScrollYRef = useRef(0);
 
   useEffect(() => {
-    if (!isArticlePage || !lottieRef.current) return;
+    if (!lottieRef.current) return;
 
+    // Index pages show the signature (plays once); article pages show the
+    // spin mark, paused until scroll drives it (see the scroll effect below).
     animRef.current = lottie.loadAnimation({
       container: lottieRef.current,
-      path: '/assets/LogoSpin2026.json',
+      path: isArticlePage ? '/assets/LogoSpin2026.json' : '/assets/Sig2026.json',
       renderer: 'svg',
-      loop: true,
-      autoplay: false,
+      loop: isArticlePage,
+      autoplay: !isArticlePage,
     });
 
     return () => {
@@ -65,12 +67,8 @@ export function BlogLogo() {
 
   return (
     <div className="blog-logo">
-      <a href="/blog">
-        {isArticlePage ? (
-          <div ref={lottieRef} className="blog-logo-lottie" aria-hidden />
-        ) : (
-          <img src="/assets/Sig2026.gif" alt="MXMLLN" width={100} height={100} />
-        )}
+      <a href="/blog" aria-label="MXMLLN">
+        <div ref={lottieRef} className="blog-logo-lottie" aria-hidden />
       </a>
     </div>
   );
