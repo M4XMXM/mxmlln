@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-> **Design system:** Before designing or generating any new UI, read `content/system.mdx` — the single source of truth for tokens, type, components (`registry/`), and patterns. It renders at the unlisted `/system` route (`app/system/`). `app/globals.css` is canonical for token values; keep `content/system.mdx` in sync when they change.
+> **Design system:** Before designing or generating any new UI, read `content/system.mdx` — the reference for color/type/radius/elevation/motion tokens, chrome components (logo, nav, minimap), and the `registry/` primitives. It renders at the unlisted `/system` route (`app/system/`). `app/globals.css` is the canonical source for token values: when the code and the doc disagree, the code wins — update `content/system.mdx` to match.
 
 ## Project Overview
 
