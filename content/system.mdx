@@ -66,15 +66,11 @@ The persistent UI that frames every long-form page (blog, this page).
 
 ### Logo
 
-The signature mark, fixed top-left. Two faces — a static **signature** and a **spin** — both vector (Lottie). Drawn with `mix-blend-mode: difference` so it stays legible over whatever sits behind it.
-
 <ComponentPreview>
   <LogoDemo />
 </ComponentPreview>
 
 ### Nav bar
-
-Floating glass pill, centered up top. Uppercase Archivo links at low opacity; the active link gets a solid white fill.
 
 <ComponentPreview background="glass">
   <NavDemo />
@@ -82,8 +78,6 @@ Floating glass pill, centered up top. Uppercase Archivo links at low opacity; th
 
 ### Menu
 
-The labeled popover list — white card, rounded, soft shadow. Top-level items sit flush; nested items indent and shrink; the item in view gets a bold, full-contrast label. This is the reusable primitive; the Minimap — a fixed right-rail of notches that reveals this menu on hover and tracks scroll position — is a construct built on top of it.
-
-<ComponentPreview tall>
+<ComponentPreview>
   <MenuDemo />
 </ComponentPreview>

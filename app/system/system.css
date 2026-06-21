@@ -295,14 +295,6 @@
   opacity: 1;
 }
 
-/* Menu demo: the real popover, shown in normal flow (the live one is
-   position:fixed and revealed on Minimap hover). */
-.minimap-popover--demo {
-  position: static;
-  right: auto;
-  margin-right: 0;
-}
-
 /* Logo demo: live Lottie mark with a segmented control to swap faces. */
 .logo-demo-wrap {
   display: flex;
@@ -402,6 +394,14 @@
   min-width: 200px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
   white-space: nowrap;
+}
+/* Menu demo: the same popover, shown in normal flow (the live one is
+   position:fixed and revealed on Minimap hover). Defined after the base rule
+   so the static override wins on source order. */
+.minimap-popover--demo {
+  position: static;
+  right: auto;
+  margin-right: 0;
 }
 .minimap-link {
   display: block;
