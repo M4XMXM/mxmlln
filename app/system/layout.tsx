@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Archivo, Homemade_Apple } from 'next/font/google';
-import { SystemLogo } from './components/SystemLogo';
+import { SiteLogo } from '../components/SiteLogo';
 
 const archivo = Archivo({
   subsets: ['latin'],
@@ -21,7 +21,13 @@ export const metadata: Metadata = {
 export default function SystemLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`system-layout ${archivo.variable} ${homemadeApple.variable}`}>
-      <SystemLogo />
+      <SiteLogo
+        href="/"
+        ariaLabel="Back to maximin.design"
+        spin
+        className="system-logo"
+        lottieClassName="system-logo-lottie"
+      />
       {children}
     </div>
   );
