@@ -13,7 +13,7 @@ import {
   Type,
 } from './components/TokenSwatch';
 import { ComponentPreview } from './components/ComponentPreview';
-import { NavDemo, MinimapDemo } from './components/ChromeDemos';
+import { LogoDemo, NavDemo, MenuDemo } from './components/ChromeDemos';
 import './system.css';
 
 // Unlisted reference page: live at /system, but kept out of search + AI crawlers.
@@ -64,8 +64,9 @@ const mdxComponents: MDXComponents = {
   ShadowBox,
   Type,
   ComponentPreview,
+  LogoDemo,
   NavDemo,
-  MinimapDemo,
+  MenuDemo,
 };
 
 export default function SystemPage() {

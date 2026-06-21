@@ -62,28 +62,20 @@ Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s eas
 
 ## Components
 
-The persistent UI that frames every long-form page (blog, this page).
-
 ### Logo
 
-The fixed signature mark, top-left. On index pages it's the `Sig2026.gif`; on article pages it becomes a Lottie (`LogoSpin2026.json`) that spins with scroll direction. It uses `mix-blend-mode: difference` + `invert(1)` so it stays legible over any background it scrolls past. Reference: `app/blog/BlogLogo.tsx`, `app/system/layout.tsx`.
-
 <ComponentPreview>
-  <img className="logo-demo" src="/assets/Sig2026.gif" alt="MXMLLN" width={88} height={88} />
+  <LogoDemo />
 </ComponentPreview>
 
 ### Nav bar
-
-Floating glass pill, centered top. Uppercase Archivo links at low opacity; the active link gets a solid white fill. Reference: `.blog-nav` in `app/blog/blog.css`.
 
 <ComponentPreview background="glass">
   <NavDemo />
 </ComponentPreview>
 
-### Minimap
+### Menu
 
-Fixed right-rail table-of-contents. Renders a notch per heading (`h2` full-width, `h3` shorter), highlights the section in view via `IntersectionObserver`, and reveals a labeled popover on hover. Reference: `app/blog/Minimap.tsx` — it scans a CSS selector for headings, so it works on any prose page (this page included).
-
-<ComponentPreview tall>
-  <MinimapDemo />
+<ComponentPreview>
+  <MenuDemo />
 </ComponentPreview>
