@@ -80,52 +80,37 @@ export function NavDemo() {
   );
 }
 
-// Mix of h2 (level 2) and h3 (level 3) so the demo shows the sub-notch design.
-const MINIMAP_SECTIONS = [
+// Mix of top-level (level 2) and nested (level 3) items so the demo shows the
+// indented sub-item design.
+const MENU_ITEMS = [
   { label: 'Color', level: 2 },
   { label: 'Typography', level: 2 },
   { label: 'Components', level: 2 },
   { label: 'Logo', level: 3 },
   { label: 'Nav bar', level: 3 },
-  { label: 'Minimap', level: 3 },
+  { label: 'Menu', level: 3 },
 ];
 
-export function MinimapDemo() {
-  // Active is "section in view" — driven by scroll in the real component, so it
-  // doesn't follow the cursor here. Clicking a label jumps to it (sets active).
+// The labeled popover list the Minimap reveals on hover. Documented on its own
+// because the list is the reusable primitive; the rail of notches around it is
+// a construct specific to the Minimap. Clicking an item sets the active state.
+export function MenuDemo() {
   const [active, setActive] = useState(2);
-  const [open, setOpen] = useState(false);
   return (
-    <div
-      className="minimap-demo-wrap"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}
-    >
-      <div className="minimap-notches">
-        {MINIMAP_SECTIONS.map((s, i) => (
-          <div
-            key={s.label}
-            className={`minimap-notch ${s.level === 3 ? 'minimap-notch--sub' : ''} ${i === active ? 'minimap-notch--active' : ''}`}
-          />
-        ))}
-      </div>
-      {open && (
-        <div className="minimap-popover">
-          {MINIMAP_SECTIONS.map((s, i) => (
-            <a
-              key={s.label}
-              href="#"
-              className={`minimap-link ${s.level === 3 ? 'minimap-link--sub' : ''} ${i === active ? 'minimap-link--active' : ''}`}
-              onClick={(e) => {
-                e.preventDefault();
-                setActive(i);
-              }}
-            >
-              {s.label}
-            </a>
-          ))}
-        </div>
-      )}
+    <div className="minimap-popover minimap-popover--demo">
+      {MENU_ITEMS.map((s, i) => (
+        <a
+          key={s.label}
+          href="#"
+          className={`minimap-link ${s.level === 3 ? 'minimap-link--sub' : ''} ${i === active ? 'minimap-link--active' : ''}`}
+          onClick={(e) => {
+            e.preventDefault();
+            setActive(i);
+          }}
+        >
+          {s.label}
+        </a>
+      ))}
     </div>
   );
 }

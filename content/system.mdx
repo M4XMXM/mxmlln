@@ -80,10 +80,10 @@ Floating glass pill, centered top. Uppercase Archivo links at low opacity; the a
   <NavDemo />
 </ComponentPreview>
 
-### Minimap
+### Menu
 
-Fixed right-rail table-of-contents. Renders a notch per heading (`h2` full-width, `h3` shorter), highlights the section in view via `IntersectionObserver`, and reveals a labeled popover on hover. Reference: `app/blog/Minimap.tsx` — it scans a CSS selector for headings, so it works on any prose page (this page included).
+The labeled popover list — white card, rounded, soft shadow. Top-level items sit flush; nested items indent and shrink; the item in view gets a bold, full-contrast label. This is the reusable primitive; the Minimap (a fixed right-rail of notches that reveals this menu on hover and tracks scroll via `IntersectionObserver`) is a construct built on top of it. Reference: the popover in `app/blog/Minimap.tsx`.
 
 <ComponentPreview tall>
-  <MinimapDemo />
+  <MenuDemo />
 </ComponentPreview>

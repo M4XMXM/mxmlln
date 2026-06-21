@@ -290,18 +290,12 @@
   opacity: 1;
 }
 
-/* Minimap demo: real popover behavior, scoped (real one is position:fixed). */
-.minimap-demo-wrap {
-  position: relative;
-  display: inline-flex;
-}
-/* Real component darkens idle notches on rail hover via .minimap:hover —
-   replicate it for the scoped wrapper. */
-.minimap-demo-wrap:hover .minimap-notch {
-  background: #999;
-}
-.minimap-demo-wrap:hover .minimap-notch--active {
-  background: #1a1a1a;
+/* Menu demo: the real popover, shown in normal flow (the live one is
+   position:fixed and revealed on Minimap hover). */
+.minimap-popover--demo {
+  position: static;
+  right: auto;
+  margin-right: 0;
 }
 
 /* Logo demo: live Lottie mark with a segmented control to swap faces. */
