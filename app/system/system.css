@@ -483,6 +483,111 @@
   cursor: not-allowed;
 }
 
+/* ─── Chat bubbles ───────────────────────────────────────── */
+/* Replicas of the portfolio chatbot message types — see
+   public/components/NavBar.css (.chatQuery / .chatBlurb / .chatSuggestionCard). */
+.ui-chat {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 460px;
+}
+/* User query — right-aligned surface bubble. */
+.ui-chat-query-row {
+  display: flex;
+  justify-content: flex-end;
+}
+.ui-chat-query {
+  background: #f5f5f5;
+  border-radius: 24px;
+  padding: 14px 20px;
+  max-width: 80%;
+}
+.ui-chat-query p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #1a1a1a;
+}
+/* Assistant text reply — logo avatar + blurb. */
+.ui-chat-blurb {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+.ui-chat-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-radius: 100%;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+.ui-chat-avatar img {
+  width: 30px;
+  height: 30px;
+}
+.ui-chat-blurb p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: #1a1a1a;
+}
+/* Assistant reply with a link card — recommends a piece of work. */
+.ui-chat-card-link {
+  display: block;
+  text-decoration: none;
+}
+.ui-chat-card {
+  display: flex;
+  flex-direction: row;
+  height: 132px;
+  background: #f5f5f5;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  border-radius: 24px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: border-color 0.3s ease;
+}
+.ui-chat-card-link:hover .ui-chat-card {
+  border-color: #06aeef;
+}
+.ui-chat-card-image {
+  width: 110px;
+  min-width: 110px;
+  height: 100%;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(6, 174, 239, 0.5), transparent 60%),
+    linear-gradient(135deg, #1a1a1a, #444);
+}
+.ui-chat-card-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 16px 20px;
+}
+.ui-chat-card-title {
+  margin: 0 0 6px;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #1a1a1a;
+}
+.ui-chat-card-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: #666;
+}
+
 /* ─── Minimap (shared visual language with /blog) ────────── */
 .minimap {
   position: fixed;

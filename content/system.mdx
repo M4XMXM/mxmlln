@@ -72,10 +72,18 @@ Three weights of emphasis. **Primary** is the single ink-filled action; **second
 
 ### Input
 
-Text fields use a `16px` radius with a `2px` translucent border that goes solid ink on focus, plus a soft focus ring. The **composer** is the real chat pattern from `NavBar` — a field with an embedded submit arrow that stays disabled until there's input.
+The resting style is lifted from the live chatbot field (`.chatInputField` in `NavBar.css`): white fill, `16px` radius, a `2px rgba(0,0,0,0.15)` border, `16px` Archivo. The solid-ink focus border and soft ring are a *proposed* addition — the shipped input has no focus treatment yet. The **composer** is the real chat pattern — a field with an embedded submit arrow that stays disabled until there's input.
 
 <ComponentPreview>
   <InputDemo />
+</ComponentPreview>
+
+### Chat bubbles
+
+The chatbot speaks in three message types, all on the `#f5f5f5` surface. A **user query** is a right-aligned pill (`24px` radius); an **assistant reply** pairs the logo avatar with a text blurb; and an **assistant recommendation** is a link card (soft shadow, cyan `#06AEEF` border on hover) that surfaces a piece of work. Mirrors `.chatQuery` / `.chatBlurb` / `.chatSuggestionCard` in `NavBar.css`.
+
+<ComponentPreview tall>
+  <ChatDemo />
 </ComponentPreview>
 
 ### Logo

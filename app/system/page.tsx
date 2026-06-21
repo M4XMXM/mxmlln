@@ -15,6 +15,7 @@ import {
 import { ComponentPreview } from './components/ComponentPreview';
 import { LogoDemo, NavDemo, MenuDemo } from './components/ChromeDemos';
 import { ButtonDemo, InputDemo } from './components/FormDemos';
+import { ChatDemo } from './components/ChatDemos';
 import './system.css';
 
 // Unlisted reference page: live at /system, but kept out of search + AI crawlers.
@@ -70,6 +71,7 @@ const mdxComponents: MDXComponents = {
   MenuDemo,
   ButtonDemo,
   InputDemo,
+  ChatDemo,
 };
 
 export default function SystemPage() {
