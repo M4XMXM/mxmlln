@@ -20,6 +20,9 @@ This is the personal portfolio of Maximillian Piras, a product designer speciali
 - `controllers/openaiController.js` - AI chat functionality and API handling
 - `public/components/` - Modular UI components (CardStack, ChatIntelligence, etc.)
 
+## Design System (Reference)
+The canonical reference for visual design — color/type/radius/elevation/motion tokens, reusable components (`registry/`), and recurring patterns — lives in `content/system.mdx` and renders at the unlisted `/system` route. Read it before designing or generating new UI. `app/globals.css` holds the canonical token values.
+
 ## Design Philosophy
 - **Focus**: Amplifying human capabilities with delightful & instinctual technology
 - **Specialties**: AI interface design, animation, branding, illustration

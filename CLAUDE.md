@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Design system:** Before designing or generating any new UI, read `content/system.mdx` — the reference for color/type/radius/elevation/motion tokens, chrome components (logo, nav, minimap), and the `registry/` primitives. It renders at the unlisted `/system` route (`app/system/`). `app/globals.css` is the canonical source for token values: when the code and the doc disagree, the code wins — update `content/system.mdx` to match.
+
 ## Project Overview
 
 Personal design portfolio of Maximillian Piras showcasing product design work for tech startups, with specialization in AI-powered interfaces, UX design, and creative technology. The site features interactive card stacks, AI chat integration, and animated UI components.

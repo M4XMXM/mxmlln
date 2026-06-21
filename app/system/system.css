@@ -1,0 +1,413 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap');
+
+.system-layout {
+  min-height: 100vh;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+}
+
+/* Logo — fixed, links home */
+.system-logo {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  mix-blend-mode: difference;
+}
+.system-logo a {
+  display: block;
+  line-height: 0;
+  transition: opacity 0.3s ease;
+}
+.system-logo a:hover {
+  opacity: 0.6;
+}
+.system-logo img {
+  filter: invert(1) contrast(1000);
+}
+
+/* Page shell */
+.system-page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 48px 24px 96px;
+}
+
+.system-header {
+  margin-bottom: 56px;
+  padding-bottom: 40px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.system-header-eyebrow {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-weight: 500;
+  font-size: 20px;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+.system-header h1 {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1.1;
+  letter-spacing: -0.5px;
+  margin: 0;
+}
+.system-header-desc {
+  font-size: 17px;
+  line-height: 1.6;
+  color: #666;
+  margin: 16px 0 0;
+  max-width: 60ch;
+}
+
+/* Prose — mirrors .blog-prose so MDX reads consistently */
+.system-prose {
+  font-size: 16px;
+  line-height: 1.75;
+  color: #333;
+}
+.system-prose > *:last-child {
+  margin-bottom: 0;
+}
+.system-prose h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 64px 0 16px;
+  letter-spacing: -0.3px;
+  scroll-margin-top: 32px;
+}
+.system-prose h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 40px 0 12px;
+  scroll-margin-top: 32px;
+}
+.system-prose p {
+  margin: 0 0 24px;
+}
+.system-prose a {
+  color: #1a1a1a;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: opacity 0.2s;
+}
+.system-prose a:hover {
+  opacity: 0.6;
+}
+.system-prose strong {
+  font-weight: 600;
+}
+.system-prose ul,
+.system-prose ol {
+  margin: 0 0 24px;
+  padding-left: 1.5em;
+}
+.system-prose ul {
+  list-style-type: disc;
+}
+.system-prose ol {
+  list-style-type: decimal;
+}
+.system-prose li {
+  margin-bottom: 8px;
+}
+.system-prose code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.875em;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.system-prose hr {
+  border: none;
+  border-top: 1px solid #e0e0e0;
+  margin: 56px 0;
+}
+
+/* ─── Token grid ─────────────────────────────────────────── */
+.token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 16px;
+  margin: 8px 0 32px;
+}
+.token {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.token--wide {
+  grid-column: 1 / -1;
+}
+.token-chip {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+.token-radius {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  background: #1a1a1a;
+}
+.token-shadow {
+  width: 100%;
+  height: 72px;
+  background: #fff;
+  border-radius: 12px;
+  margin-bottom: 4px;
+}
+.token-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+.token-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: #666;
+  background: #f5f5f5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  align-self: flex-start;
+}
+.token-value--block {
+  align-self: stretch;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+.token-note {
+  font-size: 12px;
+  color: #999;
+  line-height: 1.4;
+}
+
+/* ─── Type specimens ─────────────────────────────────────── */
+.type-specimen {
+  padding: 20px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+.type-specimen-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+.type-specimen-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.type-specimen-sample {
+  color: #1a1a1a;
+  line-height: 1.2;
+}
+
+/* ─── Component preview ──────────────────────────────────── */
+.component-preview {
+  margin: 24px 0 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.component-preview-canvas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 160px;
+  padding: 40px 24px;
+}
+.component-preview-canvas--light {
+  background: #fff;
+}
+.component-preview-canvas--dark {
+  background: #1a1a1a;
+  color: #fff;
+}
+.component-preview-canvas--checker {
+  background-color: #fafafa;
+  background-image:
+    linear-gradient(45deg, #f0f0f0 25%, transparent 25%),
+    linear-gradient(-45deg, #f0f0f0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #f0f0f0 75%),
+    linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+/* Colorful blobs behind glass chrome so backdrop-filter: blur() is visible. */
+.component-preview-canvas--glass {
+  background-color: #f4f4f5;
+  background-image:
+    radial-gradient(circle at 18% 28%, rgba(255, 86, 120, 0.55), transparent 42%),
+    radial-gradient(circle at 82% 22%, rgba(70, 140, 255, 0.55), transparent 42%),
+    radial-gradient(circle at 68% 82%, rgba(96, 214, 150, 0.5), transparent 42%),
+    radial-gradient(circle at 28% 78%, rgba(255, 196, 64, 0.5), transparent 42%);
+}
+/* Top-aligned, taller canvas so left/downward popovers aren't clipped by the
+   card's overflow:hidden. */
+.component-preview-canvas--tall {
+  min-height: 280px;
+  align-items: flex-start;
+  padding-top: 28px;
+}
+
+/* ─── Chrome demos (static replicas for previews) ────────── */
+/* Mirrors .blog-nav values, minus position:fixed so it sits in a canvas. */
+.nav-demo {
+  display: flex;
+  align-items: center;
+  height: 52px;
+  border-radius: 40px;
+  backdrop-filter: blur(80px);
+  -webkit-backdrop-filter: blur(80px);
+  background-color: rgba(240, 240, 240, 0.65);
+  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.15);
+  border: solid 2px rgba(0, 0, 0, 0.1);
+  padding: 0 8px;
+  gap: 2px;
+}
+.nav-demo a {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: #1a1a1a;
+  padding: 12px 16px;
+  border-radius: 40px;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.nav-demo a:hover {
+  opacity: 0.75;
+}
+.nav-demo a.active {
+  background-color: #fff;
+  opacity: 1;
+}
+
+/* Minimap demo: real popover behavior, scoped (real one is position:fixed). */
+.minimap-demo-wrap {
+  position: relative;
+  display: inline-flex;
+}
+/* Real component darkens idle notches on rail hover via .minimap:hover —
+   replicate it for the scoped wrapper. */
+.minimap-demo-wrap:hover .minimap-notch {
+  background: #999;
+}
+.minimap-demo-wrap:hover .minimap-notch--active {
+  background: #1a1a1a;
+}
+
+/* Logo demo: hint at the article-page scroll-spin on hover. */
+.logo-demo {
+  cursor: pointer;
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.logo-demo:hover {
+  transform: rotate(360deg);
+}
+
+/* ─── Minimap (shared visual language with /blog) ────────── */
+.minimap {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 100;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.minimap-notches {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  padding: 8px 6px;
+  cursor: pointer;
+}
+.minimap-notch {
+  width: 16px;
+  height: 2px;
+  background: #ccc;
+  border-radius: 1px;
+  transition: background 0.2s, width 0.2s;
+}
+.minimap-notch--sub {
+  width: 10px;
+}
+.minimap-notch--active {
+  background: #1a1a1a;
+}
+.minimap:hover .minimap-notch {
+  background: #999;
+}
+.minimap:hover .minimap-notch--active {
+  background: #1a1a1a;
+}
+.minimap-popover {
+  position: absolute;
+  top: 0;
+  right: 100%;
+  margin-right: 8px;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 8px 0;
+  min-width: 200px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  white-space: nowrap;
+}
+.minimap-link {
+  display: block;
+  padding: 6px 16px;
+  font-size: 13px;
+  color: #666;
+  text-decoration: none;
+  transition: color 0.15s, background 0.15s;
+}
+.minimap-link--sub {
+  padding-left: 28px;
+  font-size: 12px;
+}
+.minimap-link:hover {
+  color: #1a1a1a;
+  background: #f5f5f5;
+}
+.minimap-link--active {
+  color: #1a1a1a;
+  font-weight: 600;
+}
+@media (max-width: 768px) {
+  .minimap {
+    display: none;
+  }
+}
+
+/* ─── Responsive ─────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .system-logo {
+    top: 10px;
+    left: 10px;
+  }
+  .system-logo img {
+    width: 76px;
+    height: 76px;
+  }
+  .system-page {
+    padding-top: 102px;
+  }
+}
+@media (max-width: 640px) {
+  .system-header h1 {
+    font-size: 30px;
+  }
+  .system-prose {
+    font-size: 15px;
+  }
+}
