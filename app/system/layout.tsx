@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Archivo, Homemade_Apple } from 'next/font/google';
+import { SystemLogo } from './components/SystemLogo';
 
 const archivo = Archivo({
   subsets: ['latin'],
@@ -20,11 +21,7 @@ export const metadata: Metadata = {
 export default function SystemLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className={`system-layout ${archivo.variable} ${homemadeApple.variable}`}>
-      <div className="system-logo">
-        <a href="/" aria-label="Back to maximin.design">
-          <img src="/assets/Sig2026.gif" alt="MXMLLN" width={100} height={100} />
-        </a>
-      </div>
+      <SystemLogo />
       {children}
     </div>
   );

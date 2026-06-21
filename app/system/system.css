@@ -23,8 +23,13 @@
 .system-logo a:hover {
   opacity: 0.6;
 }
-.system-logo img {
+.system-logo img,
+.system-logo-lottie {
   filter: invert(1) contrast(1000);
+}
+.system-logo-lottie {
+  width: 100px;
+  height: 100px;
 }
 
 /* Page shell */
@@ -430,7 +435,8 @@
     top: 10px;
     left: 10px;
   }
-  .system-logo img {
+  .system-logo img,
+  .system-logo-lottie {
     width: 76px;
     height: 76px;
   }
