@@ -3,7 +3,7 @@ title: Design System
 eyebrow: MVXMXM
 ---
 
-## Foundations — Color
+## Color
 
 Near-monochrome by default. Ink on white, with a small ladder of grays for borders, surfaces, and secondary text. Color is reserved for content (work samples, gradients), not chrome.
 
@@ -18,7 +18,7 @@ Near-monochrome by default. Ink on white, with a small ladder of grays for borde
   <Swatch name="Surface alt" value="#f9fafb" color="#f9fafb" note="preview canvas" />
 </Swatches>
 
-## Foundations — Typography
+## Typography
 
 Two faces do the work: **Archivo** for everything structural, and **Homemade Apple** as a handwritten accent for dates, eyebrows, and labels. **JetBrains Mono** is used only for code. Fonts are loaded via `next/font` in each layout and exposed as `--font-archivo` / `--font-homemade-apple`.
 
@@ -29,7 +29,7 @@ Two faces do the work: **Archivo** for everything structural, and **Homemade App
 <Type name="Handwritten accent" sample="words by maximillian" size="20px" weight={400} font="handwritten" note="dates, eyebrows, labels" />
 <Type name="Mono" sample="const tokens = true" size="14px" weight={400} font="mono" note="code only" />
 
-## Foundations — Radius
+## Radius
 
 Soft, generous corners. Pills (`40px`) for floating chrome, large radii for cards.
 
@@ -42,7 +42,7 @@ Soft, generous corners. Pills (`40px`) for floating chrome, large radii for card
   <RadiusBox name="Pill" value="40px" />
 </Swatches>
 
-## Foundations — Elevation
+## Elevation
 
 Shadows are soft and wide, never harsh. The glass nav combines a heavy backdrop blur with a translucent fill.
 
@@ -52,7 +52,7 @@ Shadows are soft and wide, never harsh. The glass nav combines a heavy backdrop 
   <ShadowBox name="Folio card" value="0 20px 40px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)" />
 </Swatches>
 
-## Foundations — Motion
+## Motion
 
 Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s ease` as its house transition; text effects use `cubic-bezier(0.4, 0, 0.2, 1)`. Motion is built on **framer-motion** via the `registry/` primitives below — prefer those over hand-rolled keyframes.
 
