@@ -1,0 +1,166 @@
+---
+title: Design System
+eyebrow: Reference for humans & agents
+description: The tokens, type, components, and patterns behind maximin.design. This file is the single source of truth — edit it here and the /system page updates. globals.css is the canonical definition for tokens; this doc documents and previews them.
+---
+
+This is an internal, unlisted reference — it isn't linked from the site nav, and it's set to `noindex`. It exists so that **coding agents** (and future-me) have one place to learn how the site is built before designing or generating new UI.
+
+**For agents:** the canonical token definitions live in `app/globals.css` (`:root` + `@theme`). Components live in `registry/`. This document mirrors and explains them; when they disagree, the code wins — update this file to match.
+
+## Foundations — Color
+
+Near-monochrome by default. Ink on white, with a small ladder of grays for borders, surfaces, and secondary text. Color is reserved for content (work samples, gradients), not chrome.
+
+<Swatches>
+  <Swatch name="Background" value="#ffffff" color="#ffffff" note="--background" />
+  <Swatch name="Foreground / Ink" value="#1a1a1a" color="#1a1a1a" note="--foreground" />
+  <Swatch name="Muted text" value="#666666" color="#666666" note="captions, descriptions" />
+  <Swatch name="Subtle text" value="#999999" color="#999999" note="metadata, figcaptions" />
+  <Swatch name="Hairline" value="#e0e0e0" color="#e0e0e0" note="rules, dividers" />
+  <Swatch name="Border" value="#e5e7eb" color="#e5e7eb" note="cards, previews" />
+  <Swatch name="Surface" value="#f5f5f5" color="#f5f5f5" note="code, chips" />
+  <Swatch name="Surface alt" value="#f9fafb" color="#f9fafb" note="preview canvas" />
+</Swatches>
+
+## Foundations — Typography
+
+Two faces do the work: **Archivo** for everything structural, and **Homemade Apple** as a handwritten accent for dates, eyebrows, and labels. **JetBrains Mono** is used only for code. Fonts are loaded via `next/font` in each layout and exposed as `--font-archivo` / `--font-homemade-apple`.
+
+<Type name="Display" sample="Form follows functionality." size="48px" weight={800} font="sans" note="hero titles" />
+<Type name="H1" sample="Form follows functionality." size="40px" weight={800} font="sans" />
+<Type name="H2" sample="Section heading" size="28px" weight={700} font="sans" />
+<Type name="Body" sample="The quick brown fox jumps over the lazy dog." size="16px" weight={400} font="sans" note="line-height 1.75" />
+<Type name="Handwritten accent" sample="words by maximillian" size="20px" weight={400} font="handwritten" note="dates, eyebrows, labels" />
+<Type name="Mono" sample="const tokens = true" size="14px" weight={400} font="mono" note="code only" />
+
+## Foundations — Radius
+
+Soft, generous corners. Pills (`40px`) for floating chrome, large radii for cards.
+
+<Swatches>
+  <RadiusBox name="Chip / input" value="6px" />
+  <RadiusBox name="Code / small" value="8px" />
+  <RadiusBox name="Card" value="16px" />
+  <RadiusBox name="Card (folio)" value="24px" />
+  <RadiusBox name="Hero card" value="36px" />
+  <RadiusBox name="Pill" value="40px" />
+</Swatches>
+
+## Foundations — Elevation
+
+Shadows are soft and wide, never harsh. The glass nav combines a heavy backdrop blur with a translucent fill.
+
+<Swatches>
+  <ShadowBox name="Card hover" value="0 12px 24px rgba(0,0,0,0.08)" />
+  <ShadowBox name="Glass nav" value="0 3px 30px rgba(0,0,0,0.15)" />
+  <ShadowBox name="Folio card" value="0 20px 40px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)" />
+</Swatches>
+
+## Foundations — Motion
+
+Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s ease` as its house transition; text effects use `cubic-bezier(0.4, 0, 0.2, 1)`. Motion is built on **framer-motion** via the `registry/` primitives below — prefer those over hand-rolled keyframes.
+
+- **Standard transition:** `all 0.35s ease`
+- **Quick (hover/opacity):** `0.2s ease`
+- **Easing curve:** `cubic-bezier(0.4, 0, 0.2, 1)`
+
+## Components
+
+Reusable primitives live in `registry/`. They're client components (`"use client"`) built on framer-motion. Previews below run the real code.
+
+### BlurFade
+
+Fades + slides content in, optionally when scrolled into view. `registry/ui/blur-fade.tsx`.
+
+<ComponentPreview
+  title="BlurFade"
+  source="registry/ui/blur-fade.tsx"
+  code={`<BlurFade inView direction="up">
+  Designed to amplify human capability.
+</BlurFade>`}
+>
+  <BlurFade inView direction="up">
+    <span style={{ fontSize: 24, fontWeight: 700 }}>
+      Designed to amplify human capability.
+    </span>
+  </BlurFade>
+</ComponentPreview>
+
+Props: `direction` (`up`/`down`/`left`/`right`), `delay`, `duration`, `offset`, `blur`, `inView`.
+
+### TextAnimate
+
+Word-by-word blur-in for headings. `registry/magicui/TextAnimate.tsx`.
+
+<ComponentPreview
+  title="TextAnimate"
+  source="registry/magicui/TextAnimate.tsx"
+  code={`<TextAnimate animation="blurInUp" as="h2">
+  Form follows functionality
+</TextAnimate>`}
+>
+  <TextAnimate animation="blurInUp" as="span">
+    <span style={{ fontSize: 28, fontWeight: 700 }}>Form follows functionality</span>
+  </TextAnimate>
+</ComponentPreview>
+
+Props: `animation` (`blurIn`/`blurInUp`), `as` (element tag). Strings animate per-word; other children animate as one block.
+
+### MorphingText
+
+Cross-fades + blurs between values when the keyed child changes. `registry/magicui/morphing-text.tsx`.
+
+<ComponentPreview
+  title="MorphingText"
+  source="registry/magicui/morphing-text.tsx"
+  code={`<MorphingText>{label}</MorphingText>
+// re-renders with a new child morph between states`}
+>
+  <MorphingText>
+    <span style={{ fontSize: 28, fontWeight: 700 }}>Morphing</span>
+  </MorphingText>
+</ComponentPreview>
+
+The morph triggers on `key` change (`key={String(children)}`), so feed it changing text.
+
+### AnimatedShinyText
+
+> **Note:** currently a passthrough stub — it renders a `<span>` with the given `className` and no shimmer yet. Documented here so its intended role (shimmering accent text) is tracked. Flesh out the animation in `registry/magicui/AnimatedShinyText.tsx` before relying on it.
+
+<ComponentPreview
+  title="AnimatedShinyText"
+  source="registry/magicui/AnimatedShinyText.tsx"
+  code={`<AnimatedShinyText>Coming soon</AnimatedShinyText>`}
+>
+  <AnimatedShinyText><span style={{ fontSize: 20, color: '#999' }}>Coming soon</span></AnimatedShinyText>
+</ComponentPreview>
+
+## Patterns
+
+Recurring recipes that aren't single components.
+
+### Glassmorphism chrome
+
+Floating nav/panels use a heavy backdrop blur over a translucent light fill with a hairline border. Reference: `.blog-nav`.
+
+```css
+backdrop-filter: blur(80px);
+-webkit-backdrop-filter: blur(80px);
+background-color: rgba(240, 240, 240, 0.65);
+box-shadow: 0 3px 30px rgba(0, 0, 0, 0.15);
+border: solid 2px rgba(0, 0, 0, 0.1);
+border-radius: 40px;
+```
+
+### Mix-blend logo
+
+The fixed logo uses `mix-blend-mode: difference` (and `invert(1)` on the mark) so it stays legible over any background it scrolls past. Reference: `.blog-logo`, `.system-logo`.
+
+### Card stacks (FolioEngine)
+
+The portfolio's signature interaction. Cards are absolutely positioned with calculated z-index, randomized rotations (stored per-stack in a `Map`), and negative margins (`-160px`) to create the stacked look. All states are inline styles transitioned at `0.35s ease`, not CSS classes. See `public/components/FolioEngine.js` and `CLAUDE.md` for the expand/collapse flow.
+
+### Content column
+
+Long-form pages (blog, this page) use a centered column — `max-width: 700–760px`, `padding: 48px 24px 80px` — with a fixed `Minimap` for in-page navigation and the fixed logo top-left.

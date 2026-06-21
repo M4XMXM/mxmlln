@@ -2,6 +2,8 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+> **Design system:** Before designing or generating any new UI, read `content/system.mdx` — the single source of truth for tokens, type, components (`registry/`), and patterns. It renders at the unlisted `/system` route (`app/system/`). `app/globals.css` is canonical for token values; keep `content/system.mdx` in sync when they change.
+
 ## Project Overview
 
 Personal design portfolio of Maximillian Piras showcasing product design work for tech startups, with specialization in AI-powered interfaces, UX design, and creative technology. The site features interactive card stacks, AI chat integration, and animated UI components.
