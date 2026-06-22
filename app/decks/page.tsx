@@ -1,10 +1,23 @@
 import { readdirSync, statSync, existsSync } from 'fs';
 import { join } from 'path';
 import Link from 'next/link';
+import { SiteLogo } from '../components/SiteLogo';
 
 interface Deck {
   slug: string;
   title: string;
+  thumbnail: string | null;
+}
+
+// Convention: drop a thumbnail.{svg,png,jpg,webp} in public/decks/<slug>/.
+const THUMB_EXTS = ['svg', 'png', 'jpg', 'jpeg', 'webp', 'gif'];
+
+function findThumbnail(slug: string): string | null {
+  const dir = join(process.cwd(), 'public', 'decks', slug);
+  for (const ext of THUMB_EXTS) {
+    if (existsSync(join(dir, `thumbnail.${ext}`))) return `/decks/${slug}/thumbnail.${ext}`;
+  }
+  return null;
 }
 
 // Auto-discovers any subfolder of app/decks/ that has a page.tsx (its own route).
@@ -20,6 +33,7 @@ function getDecks(): Deck[] {
       .map((slug) => ({
         slug,
         title: slug.replace(/-/g, ' '),
+        thumbnail: findThumbnail(slug),
       }))
       .sort((a, b) => a.slug.localeCompare(b.slug));
   } catch {
@@ -32,26 +46,37 @@ export default function DecksIndex() {
 
   return (
     <main className="decks-index">
-      <header className="decks-hero">
-        <p className="decks-subhead">unlisted · work in progress</p>
-        <h1 className="decks-title">Decks</h1>
-        <p className="decks-lede">
-          Prototype graphics for presentations. Live by URL, not yet surfaced anywhere.
-        </p>
-      </header>
+      <SiteLogo
+        href="/"
+        ariaLabel="MXMLLN"
+        className="decks-logo"
+        lottieClassName="decks-logo-lottie"
+      />
+      <div className="decks-index-title-block">
+        <div className="decks-index-title-script">Maximillian Piras</div>
+        <h1>Decks</h1>
+      </div>
 
       {decks.length === 0 ? (
         <p className="decks-empty">No decks yet. Add one at app/decks/&lt;slug&gt;/page.tsx.</p>
       ) : (
-        <ul className="decks-list">
+        <div className="decks-list">
           {decks.map((deck) => (
-            <li key={deck.slug}>
-              <Link href={`/decks/${deck.slug}`} className="decks-link">
-                {deck.title}
-              </Link>
-            </li>
+            <Link
+              key={deck.slug}
+              href={`/decks/${deck.slug}`}
+              className="decks-preview"
+              aria-label={deck.title}
+            >
+              <div className="decks-preview-thumb">
+                {deck.thumbnail && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={deck.thumbnail} alt={deck.title} />
+                )}
+              </div>
+            </Link>
           ))}
-        </ul>
+        </div>
       )}
     </main>
   );

@@ -1,85 +1,272 @@
+/* Index follows the blog's visual system (white page, Archivo + Homemade Apple,
+   700px column, 48px row rhythm with hairline rules). Individual decks render
+   full-bleed (see slideshow section) and ignore this chrome. */
 .decks-layout {
-  font-family: var(--font-archivo), system-ui, sans-serif;
   min-height: 100vh;
-  background: #fafafa;
-  color: #111;
-  padding: 96px 24px 120px;
-  box-sizing: border-box;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
 }
 
+/* Logo — fixed top-left, blog treatment (inverted via difference blend). */
 .decks-logo {
   position: fixed;
-  top: 20px;
-  left: 20px;
-  width: 44px;
-  height: 44px;
-  z-index: 10;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  box-sizing: border-box;
+  mix-blend-mode: difference;
+}
+
+.decks-logo a {
+  position: relative;
+  z-index: 1;
+  display: block;
+  line-height: 0;
+  transition: opacity 0.3s ease;
+}
+
+.decks-logo a:hover {
+  opacity: 0.6;
 }
 
 .decks-logo-lottie {
-  width: 100%;
-  height: 100%;
+  width: 100px;
+  height: 100px;
+  filter: invert(1) contrast(1000);
 }
 
-.decks-index,
-.deck {
-  max-width: 880px;
+/* Index */
+.decks-index {
+  max-width: 700px;
   margin: 0 auto;
+  padding: 24px 24px 80px;
 }
 
-.decks-hero {
-  margin-bottom: 48px;
+.decks-index-title-block {
+  margin-top: 14px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.decks-subhead {
-  font-family: var(--font-homemade-apple), cursive;
-  font-size: 14px;
-  color: #888;
-  margin: 0 0 8px;
+.decks-index-title-script {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  margin-bottom: 4px;
 }
 
-.decks-title {
-  font-size: clamp(40px, 8vw, 72px);
+.decks-index h1 {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-weight: 800;
-  letter-spacing: -0.03em;
+  font-size: 44px;
+  line-height: 1.1;
+  color: #1a1a1a;
   margin: 0;
-  line-height: 1;
-}
-
-.decks-lede {
-  font-size: 18px;
-  color: #555;
-  margin: 16px 0 0;
-  max-width: 52ch;
 }
 
 .decks-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
 }
 
-.decks-link {
-  display: block;
-  padding: 16px 0;
-  font-size: 22px;
-  font-weight: 600;
-  text-transform: capitalize;
-  color: #111;
+.decks-preview {
+  display: flex;
+  align-items: center;
+  gap: 24px;
   text-decoration: none;
-  border-bottom: 1px solid #eaeaea;
-  transition: color 0.15s ease, padding-left 0.15s ease;
+  color: inherit;
+  padding: 48px 0;
+  border-bottom: 1px solid #e0e0e0;
+  transition: opacity 0.2s ease;
 }
 
-.decks-link:hover {
-  color: #555;
-  padding-left: 8px;
+.decks-preview:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.decks-preview:hover {
+  opacity: 0.7;
+}
+
+/* 16:9 thumbnail, mirroring the landscape format of the decks themselves.
+   It's the only content in each row for now, so it fills the column width.
+   Folio card styling (design system): 24px radius + soft drop shadow, with the
+   inset hairline ring rendered via ::after so it sits above the image. */
+.decks-preview-thumb {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #f0f0f0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.decks-preview-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+.decks-preview-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.decks-preview-kicker {
+  display: block;
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #1a1a1a;
+}
+
+.decks-preview h2 {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  text-transform: capitalize;
 }
 
 .decks-empty {
-  font-size: 16px;
-  color: #888;
+  color: #999;
+  font-size: 15px;
+}
+
+@media (max-width: 960px) {
+  .decks-logo {
+    top: 10px;
+    left: 10px;
+  }
+
+  .decks-logo-lottie {
+    width: 76px;
+    height: 76px;
+  }
+
+  .decks-index {
+    padding-top: 102px;
+  }
+}
+
+@media (max-width: 640px) {
+  .decks-index-title-script {
+    font-size: 18px;
+  }
+
+  .decks-index h1 {
+    font-size: 28px;
+  }
+
+  .decks-preview {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .decks-preview-thumb {
+    width: 100%;
+  }
+
+  .decks-preview h2 {
+    font-size: 22px;
+  }
+}
+
+/* ---- Fullscreen slideshow (Deck.tsx) ---- */
+
+/* Full-bleed viewport: the deck fills the entire screen, no chrome. */
+.deck-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Slides are stacked; only the active one is visible. Cross-fade between them. */
+.deck-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease;
+}
+
+.deck-slide[data-active='true'] {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Each slide's own background fills the screen (landscape on any wide display). */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-content {
+  width: 100%;
+  box-sizing: border-box;
+  padding: clamp(32px, 6vw, 96px);
+  text-align: center;
+}
+
+.slide-kicker {
+  font-family: var(--font-homemade-apple), cursive;
+  font-size: clamp(16px, 2vw, 22px);
+  opacity: 0.7;
+  margin: 0 0 12px;
+}
+
+.slide-title {
+  font-size: clamp(48px, 10vw, 120px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin: 0;
+}
+
+.slide-stat {
+  font-size: clamp(96px, 22vw, 280px);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  margin: 0;
+}
+
+.slide-lede {
+  font-size: clamp(18px, 2.4vw, 28px);
+  opacity: 0.8;
+  margin: 24px 0 0;
+}
+
+/* Slide counter, bottom-right. */
+.deck-progress {
+  position: fixed;
+  right: 24px;
+  bottom: 20px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  opacity: 0.6;
+  mix-blend-mode: difference;
+  z-index: 10;
 }

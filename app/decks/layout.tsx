@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { SiteLogo } from '../components/SiteLogo';
 import './decks.css';
 
 // Self-hosted (not next/font/google) so decks build AND render with zero network
@@ -32,15 +31,10 @@ export const metadata: Metadata = {
 };
 
 export default function DecksLayout({ children }: { children: React.ReactNode }) {
+  // Layout supplies fonts + robots only. Chrome (logo, padding) lives on the
+  // index page; individual decks render full-bleed for presenting.
   return (
     <div className={`decks-layout ${archivo.variable} ${homemadeApple.variable}`}>
-      <SiteLogo
-        href="/"
-        ariaLabel="Back to maximin.design"
-        spin
-        className="decks-logo"
-        lottieClassName="decks-logo-lottie"
-      />
       {children}
     </div>
   );
