@@ -1,0 +1,19 @@
+<svg viewBox="0 0 212 91.5" fill="none" xmlns="http://www.w3.org/2000/svg">
+<!-- MOUSE POWER — monoline maze wordmark. Exported from the Figma source
+     (node 10:149), recolored to deck ink. Thin monoweight stroke (matched to the
+     lucide Mouse icon); wider channels so the mouse runs through cleanly. -->
+<g stroke="#111111" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round">
+<path d="M0.500015 90.5L0.500004 0.5L211.5 0.500022L211.5 90.5L26.875 90.5"/>
+<path d="M14.5001 38.4999V14.4999H26.5001V38.4999H38.5001V14.4999L50.5001 14.4999V38.4999"/>
+<path d="M124.5 52.5L124.5 76.4999L112.5 76.4999L112.5 52.4999L100.5 52.5L100.5 64.9999L100.5 76.4999L88.5 76.4999L88.5 52.4999"/>
+<path d="M63.5 14.4999V38.4999H87.5V14.4999H63.5Z"/>
+<path d="M50.5 52.5V76.5H74.5V52.5H50.5Z"/>
+<path d="M137.5 38.4999H161.5V26.4999H137.5V14.4999H161.5"/>
+<path d="M186.01 26.4999H198.5V14.4999H174.5L174.5 38.4999H197.52"/>
+<path d="M149.01 64.4999H161.5V52.4999H137.5L137.5 76.4999H160.52"/>
+<path d="M198.5 76.4999H186.915V64.4999H198.5V52.4999H174.5L174.5 76.4999"/>
+<path d="M27 65.089L27 76.4999L38.5 76.4999L38.5 52.5L14.5 52.4999L14.5 91"/>
+<path d="M100.5 14.4999V38.4999H124.5V14.4999"/>
+<path d="M112.5 14.4999V26.4999"/>
+</g>
+</svg>

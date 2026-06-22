@@ -283,6 +283,23 @@
   margin: clamp(14px, 1.6vw, 32px) 0 0;
 }
 
+/* Mousepower title hero — the maze graphic (app/decks/mousepower). Sized as the
+   headline would be: viewport-relative, centred, capped so it never reaches the
+   slide's logo/edge insets. */
+.maze-title {
+  position: relative;
+  width: min(74vw, 940px);
+  margin: clamp(8px, 1.4vw, 24px) auto;
+}
+
+/* The 3D maze: a single self-contained SVG (perspective-projected walls + mouse). */
+.maze-title-3d {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
 /* Title slide: a border of spinning logos framing the lockup. Top/bottom rows
    span the width (corners included) via space-between; the side columns fill
    between them via space-evenly. All insets are symmetric + viewport-relative,
