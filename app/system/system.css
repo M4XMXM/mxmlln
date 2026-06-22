@@ -265,12 +265,17 @@
   background: #fff;
 }
 
-/* Logo demo: live Lottie mark with a segmented control to swap faces. */
-.logo-demo-wrap {
+/* Logo demo: live Lottie mark with a segmented control to swap faces.
+   The control sits on the section's title row to keep the preview compact. */
+.logo-demo-header {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 20px;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 40px 0 12px;
+}
+.logo-demo-header h3 {
+  margin: 0;
 }
 .logo-demo {
   width: 88px;
