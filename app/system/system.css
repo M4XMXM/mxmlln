@@ -491,7 +491,7 @@
   flex-direction: column;
   gap: 16px;
   width: 100%;
-  max-width: 460px;
+  max-width: 520px;
 }
 /* User query — right-aligned surface bubble. */
 .ui-chat-query-row {
@@ -548,10 +548,10 @@
 .ui-chat-card {
   display: flex;
   flex-direction: row;
-  height: 132px;
+  height: 170px;
   background: #f5f5f5;
   border: 2px solid rgba(0, 0, 0, 0.15);
-  border-radius: 24px;
+  border-radius: 40px;
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   transition: border-color 0.3s ease;
@@ -560,31 +560,31 @@
   border-color: #06aeef;
 }
 .ui-chat-card-image {
-  width: 110px;
-  min-width: 110px;
+  width: 130px;
+  min-width: 130px;
   height: 100%;
   background:
-    radial-gradient(circle at 30% 30%, rgba(6, 174, 239, 0.5), transparent 60%),
-    linear-gradient(135deg, #1a1a1a, #444);
+    radial-gradient(circle at 32% 28%, rgba(255, 255, 255, 0.4), transparent 55%),
+    linear-gradient(140deg, #4263eb 0%, #7048e8 100%);
 }
 .ui-chat-card-text {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 16px 20px;
+  padding: 24px;
 }
 .ui-chat-card-title {
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 800;
   line-height: 1.2;
   color: #1a1a1a;
 }
 .ui-chat-card-desc {
   margin: 0;
-  font-size: 13px;
-  line-height: 1.35;
+  font-size: 14px;
+  line-height: 1.4;
   color: #666;
 }
 
