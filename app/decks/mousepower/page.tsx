@@ -1,4 +1,5 @@
 import { Deck } from '../Deck';
+import { LogoBorder } from '../LogoBorder';
 
 // Mousepower deck — a fullscreen slideshow. Each child of <Deck> is one slide;
 // navigate with arrow keys (Space / Home / End too). Slides here are placeholder
@@ -10,33 +11,43 @@ import { Deck } from '../Deck';
 export default function MousepowerDeck() {
   return (
     <Deck>
-      <div className="slide" style={{ background: '#0f0f12', color: '#fff' }}>
+      {/* Title slide — "Designing in Parallel" lockup framed by a border of the
+          spinning signature logo (the "face" pattern from the reference). */}
+      <div className="slide slide--title" style={{ background: '#f5f5f5', color: '#111' }}>
+        <LogoBorder />
         <div className="slide-content">
-          <p className="slide-kicker" style={{ color: '#8a8a92' }}>placeholder template</p>
-          <h1 className="slide-title">Mousepower</h1>
-          <p className="slide-lede">Use → to advance, ← to go back.</p>
+          <p className="slide-eyebrow">Maximillian Piras</p>
+          <h1 className="slide-section-title">Deck Template</h1>
+          <p className="slide-footnote">reference slides</p>
         </div>
       </div>
 
-      <div className="slide" style={{ background: '#fafafa', color: '#111' }}>
+      {/* Section-title slide, replicating the reference deck's "Models & Modes". */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <div className="slide-content">
-          <h1 className="slide-title">Slide Two</h1>
-          <p className="slide-lede">A light slide, to make the transition obvious.</p>
+          <p className="slide-eyebrow">part 2 of 4</p>
+          <h1 className="slide-section-title">
+            Models <span className="slide-amp">&amp;</span> Modes
+          </h1>
+          <p className="slide-footnote">in memory of Larry Tesler</p>
         </div>
       </div>
 
-      <div className="slide" style={{ background: '#1d4ed8', color: '#fff' }}>
+      {/* Stat slide — big-number emphasis in the same type system. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <div className="slide-content">
-          <p className="slide-kicker">a big number</p>
+          <p className="slide-eyebrow">a big number</p>
           <h1 className="slide-stat">100×</h1>
-          <p className="slide-lede">Stat-style slide for emphasis.</p>
+          <p className="slide-footnote">to prove a point</p>
         </div>
       </div>
 
-      <div className="slide" style={{ background: '#111', color: '#fff' }}>
+      {/* Closing slide — bookends the title slide with the spinning-logo border. */}
+      <div className="slide slide--title" style={{ background: '#f5f5f5', color: '#111' }}>
+        <LogoBorder />
         <div className="slide-content">
-          <h1 className="slide-title">Thanks</h1>
-          <p className="slide-lede">End of deck — ← to review.</p>
+          <h1 className="slide-section-title">Thanks</h1>
+          <p className="slide-footnote">@M4XMXM</p>
         </div>
       </div>
     </Deck>

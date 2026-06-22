@@ -22,6 +22,16 @@ const homemadeApple = localFont({
   fallback: ['cursive'],
 });
 
+// Playfair Display SemiBold — used only for the ornate ampersand on section
+// titles. Self-hosted (latin subset) to keep the deck offline-safe.
+const playfair = localFont({
+  src: './fonts/PlayfairDisplay-SemiBold-latin.woff2',
+  weight: '600',
+  display: 'swap',
+  variable: '--font-playfair',
+  fallback: ['Georgia', 'serif'],
+});
+
 // Unlisted section: decks are live by URL but linked from nowhere and kept out
 // of search + AI crawlers. robots here is inherited by every nested deck route.
 // To "publish" a deck, link to it (nav / sketchbook) — that's the only switch.
@@ -34,7 +44,7 @@ export default function DecksLayout({ children }: { children: React.ReactNode })
   // Layout supplies fonts + robots only. Chrome (logo, padding) lives on the
   // index page; individual decks render full-bleed for presenting.
   return (
-    <div className={`decks-layout ${archivo.variable} ${homemadeApple.variable}`}>
+    <div className={`decks-layout ${archivo.variable} ${homemadeApple.variable} ${playfair.variable}`}>
       {children}
     </div>
   );
