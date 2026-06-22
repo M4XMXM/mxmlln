@@ -1,0 +1,362 @@
+/* Index follows the blog's visual system (white page, Archivo + Homemade Apple,
+   700px column, 48px row rhythm with hairline rules). Individual decks render
+   full-bleed (see slideshow section) and ignore this chrome. */
+.decks-layout {
+  min-height: 100vh;
+  background: #fff;
+  color: #1a1a1a;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+}
+
+/* Logo — fixed top-left, blog treatment (inverted via difference blend). */
+.decks-logo {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  box-sizing: border-box;
+  mix-blend-mode: difference;
+}
+
+.decks-logo a {
+  position: relative;
+  z-index: 1;
+  display: block;
+  line-height: 0;
+  transition: opacity 0.3s ease;
+}
+
+.decks-logo a:hover {
+  opacity: 0.6;
+}
+
+.decks-logo-lottie {
+  width: 100px;
+  height: 100px;
+  filter: invert(1) contrast(1000);
+}
+
+/* Index */
+.decks-index {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 24px 24px 80px;
+}
+
+.decks-index-title-block {
+  margin-top: 14px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.decks-index-title-script {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 1.5;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.decks-index h1 {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1.1;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+.decks-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.decks-preview {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  text-decoration: none;
+  color: inherit;
+  padding: 48px 0;
+  border-bottom: 1px solid #e0e0e0;
+  transition: opacity 0.2s ease;
+}
+
+.decks-preview:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.decks-preview:hover {
+  opacity: 0.7;
+}
+
+/* 16:9 thumbnail, mirroring the landscape format of the decks themselves.
+   It's the only content in each row for now, so it fills the column width.
+   Folio card styling (design system): 24px radius + soft drop shadow, with the
+   inset hairline ring rendered via ::after so it sits above the image. */
+.decks-preview-thumb {
+  position: relative;
+  flex: 1 1 auto;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #f0f0f0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  transition: box-shadow 0.35s ease, transform 0.35s ease;
+}
+
+.decks-preview-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  pointer-events: none;
+}
+
+.decks-preview-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.decks-preview-kicker {
+  display: block;
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.5;
+  color: #1a1a1a;
+}
+
+.decks-preview h2 {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.decks-empty {
+  color: #999;
+  font-size: 15px;
+}
+
+@media (max-width: 960px) {
+  .decks-logo {
+    top: 10px;
+    left: 10px;
+  }
+
+  .decks-logo-lottie {
+    width: 76px;
+    height: 76px;
+  }
+
+  .decks-index {
+    padding-top: 102px;
+  }
+}
+
+@media (max-width: 640px) {
+  .decks-index-title-script {
+    font-size: 18px;
+  }
+
+  .decks-index h1 {
+    font-size: 28px;
+  }
+
+  .decks-preview {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .decks-preview-thumb {
+    width: 100%;
+  }
+
+  .decks-preview h2 {
+    font-size: 22px;
+  }
+}
+
+/* ---- Fullscreen slideshow (Deck.tsx) ---- */
+
+/* Full-bleed viewport: the deck fills the entire screen, no chrome. */
+.deck-viewport {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+}
+
+/* Slides are stacked; only the active one is visible. Cross-fade between them. */
+.deck-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease;
+}
+
+.deck-slide[data-active='true'] {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Each slide's own background fills the screen (landscape on any wide display). */
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.slide-content {
+  width: 100%;
+  box-sizing: border-box;
+  padding: clamp(32px, 6vw, 96px);
+  text-align: center;
+  /* Optical centering: nudge the lockup slightly above true center. As a
+     vertically-centered flex item, a bottom margin lifts content by ~half its
+     value, which reads as more balanced than dead-center. */
+  margin-bottom: clamp(24px, 4vh, 52px);
+}
+
+/* Big-number stat — same family/weight as the headlines, just larger. */
+.slide-stat {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: clamp(96px, 22vw, 280px);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin: 0;
+}
+
+/* Section-divider slide: handwritten eyebrow + footnote framing a heavy headline,
+   with an ornate Playfair ampersand for an "X & Y" title.
+   Type specs (at a 1920px canvas, scaled as vw so proportions hold):
+     - eyebrow / footnote: Homemade Apple Regular, 36px, 150% lh, -2.2% tracking
+     - headline:           Archivo SemiBold 600, 150px, 110% lh, 0 tracking
+     - ampersand:          Playfair Display SemiBold 600, 150px, 110%, +4% tracking */
+.slide-eyebrow {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-size: clamp(18px, 1.875vw, 40px);
+  line-height: 1.5;
+  letter-spacing: -0.022em;
+  margin: 0 0 clamp(8px, 1vw, 20px);
+}
+
+.slide-section-title {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: clamp(48px, 7.8vw, 170px);
+  line-height: 1.1;
+  letter-spacing: 0;
+  margin: 0;
+}
+
+.slide-amp {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.04em;
+}
+
+.slide-footnote {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-size: clamp(18px, 1.875vw, 40px);
+  line-height: 1.5;
+  letter-spacing: -0.022em;
+  /* Slightly more than the eyebrow's bottom margin: the headline has no
+     descenders, so an equal margin reads optically tighter below than above. */
+  margin: clamp(14px, 1.6vw, 32px) 0 0;
+}
+
+/* Title slide: a border of spinning logos framing the lockup. Top/bottom rows
+   span the width (corners included) via space-between; the side columns fill
+   between them via space-evenly. All insets are symmetric + viewport-relative,
+   so the frame distributes evenly and responsively. */
+.logo-border {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.logo-edge {
+  position: absolute;
+  display: flex;
+  align-items: center;
+}
+
+.logo-edge--top,
+.logo-edge--bottom {
+  left: clamp(24px, 4vw, 88px);
+  right: clamp(24px, 4vw, 88px);
+  justify-content: space-between;
+}
+
+.logo-edge--top {
+  top: clamp(20px, 5vh, 64px);
+}
+
+.logo-edge--bottom {
+  bottom: clamp(20px, 5vh, 64px);
+}
+
+.logo-edge--left,
+.logo-edge--right {
+  top: 0;
+  bottom: 0;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+.logo-edge--left {
+  left: clamp(24px, 4vw, 88px);
+}
+
+.logo-edge--right {
+  right: clamp(24px, 4vw, 88px);
+}
+
+.logo-mark {
+  flex: 0 0 auto;
+  width: clamp(40px, 5vw, 96px);
+  aspect-ratio: 1;
+}
+
+/* Lift the lockup above the grid and fade the tiles out behind it so the text
+   reads cleanly (a soft halo in the slide's background colour). */
+.slide--title .slide-content {
+  position: relative;
+  z-index: 1;
+  background: radial-gradient(
+    ellipse 55% 68% at 50% 50%,
+    #f5f5f5 32%,
+    rgba(245, 245, 245, 0) 72%
+  );
+}
+
+/* Slide counter, bottom-right. */
+.deck-progress {
+  position: fixed;
+  right: 24px;
+  bottom: 20px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+  opacity: 0.6;
+  mix-blend-mode: difference;
+  z-index: 10;
+}
