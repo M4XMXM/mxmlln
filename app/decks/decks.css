@@ -1,0 +1,85 @@
+.decks-layout {
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  min-height: 100vh;
+  background: #fafafa;
+  color: #111;
+  padding: 96px 24px 120px;
+  box-sizing: border-box;
+}
+
+.decks-logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: 44px;
+  height: 44px;
+  z-index: 10;
+}
+
+.decks-logo-lottie {
+  width: 100%;
+  height: 100%;
+}
+
+.decks-index,
+.deck {
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.decks-hero {
+  margin-bottom: 48px;
+}
+
+.decks-subhead {
+  font-family: var(--font-homemade-apple), cursive;
+  font-size: 14px;
+  color: #888;
+  margin: 0 0 8px;
+}
+
+.decks-title {
+  font-size: clamp(40px, 8vw, 72px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  margin: 0;
+  line-height: 1;
+}
+
+.decks-lede {
+  font-size: 18px;
+  color: #555;
+  margin: 16px 0 0;
+  max-width: 52ch;
+}
+
+.decks-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.decks-link {
+  display: block;
+  padding: 16px 0;
+  font-size: 22px;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #111;
+  text-decoration: none;
+  border-bottom: 1px solid #eaeaea;
+  transition: color 0.15s ease, padding-left 0.15s ease;
+}
+
+.decks-link:hover {
+  color: #555;
+  padding-left: 8px;
+}
+
+.decks-empty {
+  font-size: 16px;
+  color: #888;
+}
