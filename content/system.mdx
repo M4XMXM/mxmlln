@@ -41,16 +41,6 @@ Soft, generous corners. Pills (`40px`) for floating chrome, large radii for card
   <RadiusBox name="Pill" value="40px" />
 </Swatches>
 
-## Elevation
-
-Shadows are soft and wide, never harsh. The glass nav combines a heavy backdrop blur with a translucent fill.
-
-<Swatches>
-  <ShadowBox name="Card hover" value="0 12px 24px rgba(0,0,0,0.08)" />
-  <ShadowBox name="Glass nav" value="0 3px 30px rgba(0,0,0,0.15)" />
-  <ShadowBox name="Folio card" value="0 20px 40px rgba(0,0,0,0.08), inset 0 0 0 1px rgba(0,0,0,0.04)" />
-</Swatches>
-
 ## Motion
 
 Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s ease` as its house transition; text effects use `cubic-bezier(0.4, 0, 0.2, 1)`. Motion is built on **framer-motion** via the `registry/` primitives below — prefer those over hand-rolled keyframes.
@@ -63,18 +53,20 @@ Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s eas
 
 ### Button
 
-Three weights of emphasis. **Primary** is the single ink-filled action; **secondary** is a hairline outline on white; **ghost** is text-only until hovered. All are pills (`40px`) to match the floating chrome, set in Archivo 600. Disabled drops to 35% and blocks the cursor.
-
 <ComponentPreview>
   <ButtonDemo />
 </ComponentPreview>
 
 ### Input
 
-The resting style is lifted from the live chatbot field (`.chatInputField` in `NavBar.css`): white fill, `16px` radius, a `2px rgba(0,0,0,0.15)` border, `16px` Archivo. The solid-ink focus border and soft ring are a *proposed* addition — the shipped input has no focus treatment yet. The **composer** is the real chat pattern — a field with an embedded submit arrow that stays disabled until there's input.
-
 <ComponentPreview>
   <InputDemo />
+</ComponentPreview>
+
+### Card
+
+<ComponentPreview>
+  <CardDemo />
 </ComponentPreview>
 
 ### Chat bubbles
