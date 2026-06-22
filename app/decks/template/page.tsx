@@ -1,18 +1,18 @@
 import { Deck } from '../Deck';
 import { LogoBorder } from '../LogoBorder';
 
-// Mousepower deck — a fullscreen slideshow. Each child of <Deck> is one slide;
-// navigate with arrow keys (Space / Home / End too). Slides here are placeholder
-// examples with distinct backgrounds so navigation is easy to test. Replace them
-// with real graphics; static assets go in public/decks/mousepower/.
+// Template reference deck — the canonical example of the deck visual system
+// (see app/decks/README.md). Each child of <Deck> is one slide; navigate with
+// arrow keys (Space / Home / End too). It demonstrates the core slide
+// archetypes: title, section divider, stat, and closer. Static assets live in
+// public/decks/template/.
 //
 // Inherits robots:{index:false,follow:false} from the parent layout, so it's
-// reachable at /decks/mousepower but unlisted everywhere.
-export default function MousepowerDeck() {
+// reachable at /decks/template but unlisted everywhere.
+export default function TemplateDeck() {
   return (
     <Deck>
-      {/* Title slide — "Designing in Parallel" lockup framed by a border of the
-          spinning signature logo (the "face" pattern from the reference). */}
+      {/* Title slide — lockup framed by a border of the spinning signature logo. */}
       <div className="slide slide--title" style={{ background: '#f5f5f5', color: '#111' }}>
         <LogoBorder />
         <div className="slide-content">
@@ -22,7 +22,7 @@ export default function MousepowerDeck() {
         </div>
       </div>
 
-      {/* Section-title slide, replicating the reference deck's "Models & Modes". */}
+      {/* Section divider — eyebrow + big headline (with Playfair ampersand) + footnote. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <div className="slide-content">
           <p className="slide-eyebrow">part 2 of 4</p>
@@ -47,7 +47,7 @@ export default function MousepowerDeck() {
         <LogoBorder />
         <div className="slide-content">
           <h1 className="slide-section-title">Thanks</h1>
-          <p className="slide-footnote">@M4XMXM</p>
+          <p className="slide-footnote">@MVXMXM</p>
         </div>
       </div>
     </Deck>

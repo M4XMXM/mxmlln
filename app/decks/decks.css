@@ -243,8 +243,9 @@
   margin: 0;
 }
 
-/* Section-title slide, replicating the deck's "Models & Modes" reference.
-   Type specs (at the 1920px Figma canvas, scaled as vw so proportions hold):
+/* Section-divider slide: handwritten eyebrow + footnote framing a heavy headline,
+   with an ornate Playfair ampersand for an "X & Y" title.
+   Type specs (at a 1920px canvas, scaled as vw so proportions hold):
      - eyebrow / footnote: Homemade Apple Regular, 36px, 150% lh, -2.2% tracking
      - headline:           Archivo SemiBold 600, 150px, 110% lh, 0 tracking
      - ampersand:          Playfair Display SemiBold 600, 150px, 110%, +4% tracking */

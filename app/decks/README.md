@@ -33,12 +33,12 @@ The whole deck reads as one system. Match it.
 - **Handwritten accents** — Homemade Apple, 150% line-height, −2.2% tracking
   (`.slide-eyebrow`, `.slide-footnote`). Used for eyebrows/footnotes/dates.
   **Always lowercase unless a proper name** ("part 2 of 4", "to prove a point";
-  but "Maximillian Piras", "Larry Tesler", "@M4XMXM").
+  but "Maximillian Piras", "Larry Tesler", "@MVXMXM").
 - **Optical centering** — the lockup (`.slide-content`) sits slightly above true
   center via a bottom margin; footnotes get a touch more top gap than eyebrows
   get bottom gap (headlines lack descenders, so equal margins read tight below).
 
-## Slide archetypes (see `mousepower/page.tsx`)
+## Slide archetypes (see `template/page.tsx`)
 
 - **Title** — `slide--title` + `<LogoBorder />`, eyebrow / headline / footnote.
 - **Section divider** — eyebrow / big headline (with `.slide-amp` if it has an
@@ -52,8 +52,8 @@ The whole deck reads as one system. Match it.
 2. Assets in `public/decks/<slug>/`; reference as `/decks/<slug>/file.ext`.
 3. Thumbnail: `public/decks/<slug>/thumbnail.{svg,png,jpg,webp}` — the index
    picks it up automatically. It's a **hand-authored artifact**, so regenerate
-   it whenever the title slide changes (mousepower's embeds the fonts + logo so
-   it renders self-contained, matching the live slide).
+   it whenever the title slide changes (the template's embeds the fonts + logo
+   so it renders self-contained, matching the live slide).
 
 ## Publishing
 
