@@ -70,13 +70,9 @@ Almost everything eases between `0.2s` and `0.5s`. `FolioEngine` uses `0.35s eas
 
 ### Nav bar
 
-A single floating glass pill that **morphs in place** rather than opening a separate panel. Collapsed, it reads `logo · About · Work · My AI · contact`, where the current section sits in a white on-state capsule. Two of those slots aren't links — they're triggers: the **logo** (left) and the **contact dot** (right), plus **My AI**. Tapping any of them drops the button row away, grows the *same container* into a compartment (info, chat, or contact), and raises a blurred dark overlay behind it. Click the logo or contact dot below to see the morph; click the scrim or ✕ to collapse.
+The live component (`components/NavBar.{css,js}`), embedded as-is. Click the logo or the contact button to watch the pill morph into its compartments.
 
-The mechanics live in `NavBar.js`: one `#navDynamicContainer` animates its own `width`/`height`/`background` (`0.5s`) while `#navBarSegController` fades and slides down, and each compartment's content fades in on a slight delay. Chat additionally swaps to an animated gradient fill and, on mobile, expands to full-screen.
-
-<ComponentPreview background="glass">
-  <NavDemo />
-</ComponentPreview>
+<NavDemo />
 
 ### Menu
 

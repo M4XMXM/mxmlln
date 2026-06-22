@@ -57,143 +57,18 @@ export function LogoDemo() {
   );
 }
 
-// The nav is a single glass pill that *morphs* in place. Two of its items are
-// not links but triggers: the logo (left) and the contact dot (right) — plus
-// "My AI" — each collapses the pill's button row and grows the same container
-// into a compartment, while a blurred overlay rises behind it. This replica
-// reproduces that morph at preview scale rather than navigating away.
-type NavState = 'pill' | 'info' | 'ai' | 'contact';
-
-const NAV_COMPARTMENTS: Record<
-  Exclude<NavState, 'pill'>,
-  { header: string | null }
-> = {
-  info: { header: 'MXMLLN Folio' },
-  ai: { header: null }, // chat header is just a close button, right-aligned
-  contact: { header: 'Contact' },
-};
-
+// The nav bar is not reimplemented here — it's the real, production component
+// (markup + NavBar.css + NavBar.js) rendered inside an iframe so its glass,
+// morph, and overlay are byte-for-byte the live site. Source: public/system-
+// navbar.html, which loads /components/NavBar.{css,js} and /css/StyleMatters.
 export function NavDemo() {
-  const [state, setState] = useState<NavState>('pill');
-  const open = state !== 'pill';
-  const logoRef = useRef<HTMLSpanElement>(null);
-
-  // The pill's logo is the same spinning mark as the live site; it doubles as
-  // the trigger for the info compartment.
-  useEffect(() => {
-    if (!logoRef.current) return;
-    const anim = lottie.loadAnimation({
-      container: logoRef.current,
-      path: '/assets/LogoSpin2026.json',
-      renderer: 'svg',
-      loop: true,
-      autoplay: true,
-    });
-    return () => anim.destroy();
-  }, []);
-
-  const close = () => setState('pill');
-
   return (
-    <div className="navbar-demo-stage">
-      <div
-        className={`navbar-demo-overlay ${open ? 'is-open' : ''}`}
-        onClick={close}
-        aria-hidden
-      />
-
-      <div className={`navbar-demo-shell navbar-demo-shell--${state}`}>
-        {/* Collapsed state: the segmented controller row. */}
-        <div className="navbar-demo-pill" aria-hidden={open}>
-          <button
-            type="button"
-            className="navbar-demo-logo"
-            onClick={() => setState('info')}
-            title="Logo → morphs into the info compartment"
-            tabIndex={open ? -1 : 0}
-          >
-            <span ref={logoRef} className="navbar-demo-logo-mark" aria-label="MXMLLN" />
-          </button>
-          <span className="navbar-demo-item">👋 About</span>
-          <span className="navbar-demo-item navbar-demo-item--on">📐 Work</span>
-          <button
-            type="button"
-            className="navbar-demo-item navbar-demo-item--btn"
-            onClick={() => setState('ai')}
-            tabIndex={open ? -1 : 0}
-          >
-            💬 My AI
-          </button>
-          <button
-            type="button"
-            className="navbar-demo-contact"
-            onClick={() => setState('contact')}
-            title="Contact → morphs into the contact compartment"
-            tabIndex={open ? -1 : 0}
-          >
-            <span className="navbar-demo-contact-mark" aria-label="Contact" />
-          </button>
-        </div>
-
-        {/* Expanded state: the morphed compartment. */}
-        <div className="navbar-demo-compartment" aria-hidden={!open}>
-          {open && (
-            <div className="navbar-demo-header">
-              {NAV_COMPARTMENTS[state].header && (
-                <span className="navbar-demo-header-text">
-                  {NAV_COMPARTMENTS[state].header}
-                </span>
-              )}
-              <button
-                type="button"
-                className="navbar-demo-close"
-                onClick={close}
-                aria-label="Close compartment"
-              >
-                ✕
-              </button>
-            </div>
-          )}
-
-          {state === 'info' && (
-            <div className="navbar-demo-info">
-              <span className="navbar-demo-sig" aria-hidden />
-              <button type="button" className="navbar-demo-source">
-                View source on GitHub
-              </button>
-            </div>
-          )}
-
-          {state === 'ai' && (
-            <div className="navbar-demo-ai">
-              <div className="navbar-demo-ai-empty">
-                <span className="navbar-demo-ai-mark" aria-hidden />
-                <strong>Maximillian AI</strong>
-                <p>Tell me what you&rsquo;re looking for &amp; I&rsquo;ll find the most relevant work.</p>
-              </div>
-              <div className="navbar-demo-ai-input">
-                <span className="navbar-demo-ai-placeholder">
-                  Tell me what you&rsquo;re looking for…
-                </span>
-                <span className="navbar-demo-ai-send" aria-hidden>
-                  ↑
-                </span>
-              </div>
-            </div>
-          )}
-
-          {state === 'contact' && (
-            <div className="navbar-demo-contacts">
-              {['✉', '𝕏', 'in'].map((g) => (
-                <span key={g} className="navbar-demo-contact-circle">
-                  {g}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+    <iframe
+      className="navbar-demo-frame"
+      src="/system-navbar.html"
+      title="Live nav bar component"
+      loading="lazy"
+    />
   );
 }
 
