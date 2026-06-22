@@ -2,6 +2,7 @@
 
 :root {
   --background: #ffffff;
+  --background-alt: #f5f5f5;
   --foreground: #1a1a1a;
   --accent: #00BBFF;
   --font-sans: var(--font-archivo), 'Archivo', sans-serif;
@@ -10,6 +11,7 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-background-alt: var(--background-alt);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
 }
