@@ -15,6 +15,7 @@ import {
 import { ComponentPreview } from './components/ComponentPreview';
 import { LogoDemo, NavDemo, MenuDemo } from './components/ChromeDemos';
 import { ButtonDemo, InputDemo } from './components/FormDemos';
+import { CardDemo } from './components/CardDemos';
 import { ChatDemo } from './components/ChatDemos';
 import './system.css';
 
@@ -71,6 +72,7 @@ const mdxComponents: MDXComponents = {
   MenuDemo,
   ButtonDemo,
   InputDemo,
+  CardDemo,
   ChatDemo,
 };
 

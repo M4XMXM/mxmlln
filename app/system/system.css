@@ -460,6 +460,43 @@
   cursor: not-allowed;
 }
 
+/* ─── Card ───────────────────────────────────────────────── */
+/* Resting elevation combines the two card shadows from the Elevation section:
+   the wide "Folio card" lift + inset hairline, layered over the tighter
+   "Card hover" shadow. Radius is the 16px "Card" token. */
+.ui-card {
+  width: 100%;
+  max-width: 340px;
+  padding: 24px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow:
+    0 20px 40px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+}
+.ui-card-eyebrow {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-size: 16px;
+  color: #666;
+  margin-bottom: 6px;
+}
+.ui-card-title {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.2px;
+  color: #1a1a1a;
+  margin: 0 0 10px;
+}
+.ui-card-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: #666;
+  margin: 0;
+}
+
 /* ─── Chat bubbles ───────────────────────────────────────── */
 /* Pulled verbatim from the production chatbot styles in
    public/components/NavBar.css. The only additions are the .chat-demo-thread
