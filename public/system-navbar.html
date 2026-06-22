@@ -15,6 +15,10 @@
   <style>
     /* The demo frame is its own viewport; the nav positions fixed within it. */
     html, body { margin: 0; height: 100%; overflow: hidden; }
+    /* Render the brand marks as solid black to match the monochrome chrome. */
+    #navLogoSpin, #sigLogo, #chatEmptyLogo, #chatResponseLogo { filter: brightness(0); }
+    /* All three text items toggle the on-state, so all get the pointer. */
+    .demoNavItem { cursor: pointer; }
   </style>
   <!-- No-op the analytics hooks the markup calls on click. -->
   <script>window.gtag = function () {};</script>
@@ -28,11 +32,9 @@
             <div id="navLogoSpin" onclick="openNavInfoView()" class="openNavInfoView" style="width:40px;height:40px;cursor:pointer;">
                 <img src="./assets/LogoSpin2024.SML.gif" id="navLogoSpinFallback" height="40px" width="40px" alt="Open info menu">
             </div>
-            <a href="about.html" onclick="gtag('event', 'About', {'event_category' : 'Nav Item', 'event_label' : 'View About Page'});">
-                <font class="navBarItem">👋 ABOUT</font>
-            </a>
-            <font class="navBarItem_OnState">📐 WORK</font>
-            <font class="navBarItem" onclick="openNavChatView()" id="openChatView" class="openChatView">💬 MY AI</font>
+            <font class="navBarItem demoNavItem">👋 ABOUT</font>
+            <font class="navBarItem_OnState demoNavItem">📐 WORK</font>
+            <font class="navBarItem demoNavItem">💬 MY AI</font>
             <img src="./assets/ContactSML.png" height="40px" width="40px" onclick="openNavContactView()" id="openNavContactView" class="openNavContactView" alt="Open contact menu" fetchpriority="high">
         </div>
     </div>
@@ -238,6 +240,19 @@
     }
     if (document.readyState === 'complete') initLottieAnimations();
     else window.addEventListener('load', initLottieAnimations);
+  </script>
+  <script>
+    // Demo-only: the text items shift the on-state highlight instead of
+    // navigating to /about or opening the chat UI. The logo and contact button
+    // keep their real behavior (the expanding info / contact compartments).
+    document.querySelectorAll('.demoNavItem').forEach(function (item) {
+      item.addEventListener('click', function () {
+        document.querySelectorAll('.demoNavItem').forEach(function (other) {
+          other.className = 'navBarItem demoNavItem';
+        });
+        item.className = 'navBarItem_OnState demoNavItem';
+      });
+    });
   </script>
 </body>
 </html>
