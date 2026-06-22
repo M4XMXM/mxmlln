@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import lottie from 'lottie-web';
+import { ComponentPreview } from './ComponentPreview';
 
 /**
  * Lightly-interactive replicas of the site chrome, for the /system previews.
@@ -37,23 +38,28 @@ export function LogoDemo() {
   }, [variant]);
 
   return (
-    <div className="logo-demo-wrap">
-      <div ref={lottieRef} className="logo-demo" aria-label="MXMLLN" />
-      <div className="segmented" role="tablist" aria-label="Logo variant">
-        {LOGO_VARIANTS.map((v) => (
-          <button
-            key={v.key}
-            type="button"
-            role="tab"
-            aria-selected={variant === v.key}
-            className={`segmented-option ${variant === v.key ? 'segmented-option--active' : ''}`}
-            onClick={() => setVariant(v.key)}
-          >
-            {v.label}
-          </button>
-        ))}
+    <>
+      <div className="logo-demo-header">
+        <h3 id="logo">Logo</h3>
+        <div className="segmented" role="tablist" aria-label="Logo variant">
+          {LOGO_VARIANTS.map((v) => (
+            <button
+              key={v.key}
+              type="button"
+              role="tab"
+              aria-selected={variant === v.key}
+              className={`segmented-option ${variant === v.key ? 'segmented-option--active' : ''}`}
+              onClick={() => setVariant(v.key)}
+            >
+              {v.label}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
+      <ComponentPreview>
+        <div ref={lottieRef} className="logo-demo" aria-label="MXMLLN" />
+      </ComponentPreview>
+    </>
   );
 }
 
