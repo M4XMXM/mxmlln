@@ -1,44 +1,52 @@
-'use client';
-
 /**
- * Faithful replicas of the portfolio chatbot's message types, grounded in the
- * real markup + styles in public/components/NavBar.{html,css} (.chatQuery,
- * .chatBlurb, .chatSuggestionCard). Shown as a short thread so each bubble type
- * reads in context: a user query, an assistant text reply, and an assistant
- * reply that recommends work via a link card. The values live in system.css.
+ * The portfolio chatbot's message types, using the production markup + class
+ * names from public/components/NavBar.html so the specimens render identically
+ * to the live chat (styles pulled verbatim into system.css). Content mirrors a
+ * real recommendation from controllers/openaiController.js. Static, so no
+ * 'use client' is needed.
  */
 export function ChatDemo() {
   return (
-    <div className="ui-chat">
-      {/* User query — right-aligned surface bubble */}
-      <div className="ui-chat-query-row">
-        <div className="ui-chat-query">
+    <div className="chat-demo-thread">
+      {/* User query */}
+      <div className="chatQueryContainer">
+        <div className="chatQuery">
           <p>Show me your work on AI interfaces.</p>
         </div>
       </div>
 
-      {/* Assistant text reply — avatar + blurb */}
-      <div className="ui-chat-blurb">
-        <div className="ui-chat-avatar">
+      {/* Assistant text reply */}
+      <div className="chatBlurb">
+        <div className="chatResponseLogoContainer">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/assets/LogoHover.gif" alt="" />
+          <img src="/assets/LogoHover.gif" className="chatResponseLogo" alt="" />
         </div>
-        <p>Sure — here&rsquo;s a case study you might like.</p>
+        <p>Let&rsquo;s find a relevant case study for you.</p>
       </div>
 
-      {/* Assistant reply with a link card */}
-      <a className="ui-chat-card-link" href="#" onClick={(e) => e.preventDefault()}>
-        <div className="ui-chat-card">
-          <div className="ui-chat-card-image" aria-hidden="true" />
-          <div className="ui-chat-card-text">
-            <p className="ui-chat-card-title">Designing AI Beyond Conversation</p>
-            <p className="ui-chat-card-desc">
-              Patterns for interfaces that go past the chat box — generative UI,
-              ambient agents, and direct manipulation.
-            </p>
+      {/* Assistant recommendation — link card */}
+      <div className="chatCardURL">
+        <a href="/blog/designing-ai-beyond-conversational-interfaces">
+          <div className="chatSuggestionCard">
+            <div className="chatCardImageContainer">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/assets/Abstraction.gif" className="chatCardImage" alt="" />
+            </div>
+            <div className="chatCardTextBlock">
+              <div className="chatCardHeader">
+                <p className="chatCardHeaderTitle">When Words Cannot Describe</p>
+              </div>
+              <div className="chatCardDescription">
+                <p className="chatCardDescriptionText">
+                  In this article for Smashing Magazine, I write about how
+                  Artificial Intelligence is evolving the computing paradigm,
+                  letting designers craft more intuitive user interfaces.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </a>
+        </a>
+      </div>
     </div>
   );
 }
