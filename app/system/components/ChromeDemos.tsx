@@ -57,26 +57,18 @@ export function LogoDemo() {
   );
 }
 
-const NAV_ITEMS = ['Work', 'Words', 'About'];
-
+// The nav bar is not reimplemented here — it's the real, production component
+// (markup + NavBar.css + NavBar.js) rendered inside an iframe so its glass,
+// morph, and overlay are byte-for-byte the live site. Source: public/system-
+// navbar.html, which loads /components/NavBar.{css,js} and /css/StyleMatters.
 export function NavDemo() {
-  const [active, setActive] = useState(0);
   return (
-    <nav className="nav-demo">
-      {NAV_ITEMS.map((label, i) => (
-        <a
-          key={label}
-          href="#"
-          className={i === active ? 'active' : ''}
-          onClick={(e) => {
-            e.preventDefault();
-            setActive(i);
-          }}
-        >
-          {label}
-        </a>
-      ))}
-    </nav>
+    <iframe
+      className="navbar-demo-frame"
+      src="/system-navbar.html"
+      title="Live nav bar component"
+      loading="lazy"
+    />
   );
 }
 

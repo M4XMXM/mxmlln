@@ -258,41 +258,18 @@
   padding-top: 28px;
 }
 
-/* ─── Chrome demos (static replicas for previews) ────────── */
-/* Mirrors .blog-nav values, minus position:fixed so it sits in a canvas. */
-.nav-demo {
-  display: flex;
-  align-items: center;
-  height: 52px;
-  border-radius: 40px;
-  backdrop-filter: blur(80px);
-  -webkit-backdrop-filter: blur(80px);
-  background-color: rgba(240, 240, 240, 0.65);
-  box-shadow: 0 3px 30px rgba(0, 0, 0, 0.15);
-  border: solid 2px rgba(0, 0, 0, 0.1);
-  padding: 0 8px;
-  gap: 2px;
-}
-.nav-demo a {
-  font-family: var(--font-archivo), 'Archivo', sans-serif;
-  font-weight: 600;
-  font-size: 13px;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-decoration: none;
-  color: #1a1a1a;
-  padding: 12px 16px;
-  border-radius: 40px;
-  opacity: 0.5;
-  cursor: pointer;
-  transition: opacity 0.3s ease;
-}
-.nav-demo a:hover {
-  opacity: 0.75;
-}
-.nav-demo a.active {
-  background-color: #fff;
-  opacity: 1;
+/* ─── Chrome demos ───────────────────────────────────────── */
+/* Nav bar — the real production component, rendered in an iframe so its glass,
+   morph, and overlay are byte-for-byte the live site (see public/system-
+   navbar.html). The iframe is its own viewport; the nav positions fixed in it. */
+.navbar-demo-frame {
+  display: block;
+  width: 100%;
+  height: 520px;
+  margin: 24px 0 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #fff;
 }
 
 /* Logo demo: live Lottie mark with a segmented control to swap faces. */
