@@ -46,16 +46,6 @@ export function RadiusBox({ name, value }: { name: string; value: string }) {
   );
 }
 
-export function ShadowBox({ name, value }: { name: string; value: string }) {
-  return (
-    <div className="token token--wide">
-      <div className="token-shadow" style={{ boxShadow: value }} aria-hidden />
-      <div className="token-name">{name}</div>
-      <code className="token-value token-value--block">{value}</code>
-    </div>
-  );
-}
-
 export function Type({
   name,
   sample = 'Form follows functionality',

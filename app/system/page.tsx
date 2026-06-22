@@ -9,7 +9,6 @@ import {
   Swatches,
   Swatch,
   RadiusBox,
-  ShadowBox,
   Type,
 } from './components/TokenSwatch';
 import { ComponentPreview } from './components/ComponentPreview';
@@ -64,7 +63,6 @@ const mdxComponents: MDXComponents = {
   Swatches,
   Swatch,
   RadiusBox,
-  ShadowBox,
   Type,
   ComponentPreview,
   LogoDemo,
