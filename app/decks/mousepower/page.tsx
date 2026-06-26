@@ -32,8 +32,7 @@ export default function MousepowerDeck() {
         <ExplorationGrid />
       </div>
 
-      {/* TOKENS — the pixel-coin wordmark (Figma node 49:885), the unit agents
-          are metered in. A bare cover/section slide: just the wordmark, centered. */}
+      {/* TOKENS — the wordmark with a spinning 3D coin for the "O". */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <div className="slide-content">
           <TokensWordmark />

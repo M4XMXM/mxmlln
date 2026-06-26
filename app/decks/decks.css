@@ -960,11 +960,8 @@
   );
 }
 
-/* TOKENS wordmark slide — "TOKENS" with the "O" swapped for a gold pixel coin
-   (app/decks/mousepower/TokensWordmark). Letters use the heaviest self-hosted
-   Archivo weight in deck ink; sized viewport-relative like a headline and capped
-   so it never reaches the slide edges. The coin is ~1em — slightly taller than
-   the caps, so it pokes just above/below the letter line, as in the source. */
+/* TOKENS wordmark slide. Heaviest Archivo, viewport-relative; the "O" is the 3D
+   coin (Coin3D). isolation:isolate is the context the coin glow layers within. */
 .tokens-wordmark {
   display: flex;
   align-items: center;
@@ -976,22 +973,18 @@
   line-height: 1;
   letter-spacing: -0.045em;
   color: #111;
-  /* Own stacking context so the coin's glow can sit behind the letters. */
   position: relative;
   isolation: isolate;
 }
 
-/* Coin "O" — sizing box for the real-3D coin (Coin3D / react-three-fiber). The
-   canvas fills it; a touch taller than 1em so the coin matches the cap height and
-   isn't clipped as it spins. translateY keeps the optical-center nudge. */
+/* Sizing box for the coin canvas. Nudged via offsets, not transform, so it
+   doesn't form a stacking context and the glow can sit behind the letters. */
 .tokens-coin {
   position: relative;
   flex: 0 0 auto;
   width: 1.1em;
   height: 1.1em;
-  margin: 0 -0.06em; /* pull the letters back to ~1em spacing despite the wider box */
-  /* Nudge via offsets, not transform, so this stays out of its own stacking
-     context — lets the glow (below) render behind the letters. */
+  margin: 0 -0.06em;
   top: -0.02em;
   left: 0.02em;
 }
@@ -1004,11 +997,8 @@
   height: 100% !important;
 }
 
-/* Warm gold glow centered on the coin — a soft halo on the ground (reference
-   node 52:985). z-index 0 keeps it behind the letters (z-index 1) and coin
-   (z-index 2); it's wide enough to glow behind the nearby text too. Its scale +
-   opacity are driven each frame from the coin's rotation (Coin3D) so it expands
-   and brightens as a face turns toward the viewer. */
+/* Glow behind coin + letters (z 0 < letters 1 < coin 2). Coin3D animates its
+   scale/opacity from the rotation. */
 .tokens-coin-glow {
   position: absolute;
   left: 50%;
@@ -1027,9 +1017,7 @@
   );
 }
 
-/* Pixel sparkles around the coin (Coin3D). Anchored by left/top (centered via
-   the translate) and grown from scale(0) — Coin3D drives each one's scale from
-   the rotation so they pop in/out as the coin spins. Above the letters + coin. */
+/* Sparkles over the coin; Coin3D animates each one's scale from the rotation. */
 .tokens-sparkle {
   position: absolute;
   z-index: 3;
@@ -1039,9 +1027,7 @@
   image-rendering: pixelated;
 }
 
-/* Warm tint on the letters nearest the coin — the text-side of the glow
-   (reference node 49:840: a gold radial baked into the wordmark fill, strongest
-   by the coin, fading to ink). Done per side via background-clip:text. */
+/* Warm gold tint on the letters, strongest by the coin, fading to ink. */
 .tokens-wordmark > span:not(.tokens-coin) {
   position: relative;
   z-index: 1;

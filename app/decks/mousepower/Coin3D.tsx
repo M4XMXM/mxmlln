@@ -1,22 +1,16 @@
 'use client';
 
-// Coin3D — the "O" in the TOKENS wordmark, rebuilt as real 3D geometry so it
-// shows genuine depth as it spins (a flat SVG can't). The body is the coin's OWN
-// outline extruded (via SVGLoader on coin.svg), so the silhouette + edge keep the
-// pixel-art stepped contour rather than a smoothed octagon; the detailed art is
-// textured on the two faces, and the extruded rim is lit gold. Lives only on this
-// code-split, unlisted deck route, so three.js never touches the rest of the site.
+// The "O" in the TOKENS wordmark: a 3D coin extruded from coin.svg's outline,
+// spinning, with a reflection shimmer, glow, and sparkles.
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
 const COIN_URL = '/decks/mousepower/coin.svg';
-const DEPTH_SVG = 64; // extrude depth in SVG units (~0.16 of the coin's ~400 size)
+const DEPTH_SVG = 64; // extrude depth in SVG units (coin is ~400 wide)
 
-// Pixel sparkles around the coin (positions/sizes mapped from the Figma source,
-// nodes 52:988/1004/1015/1021/1031 — relative to the coin box). Each pops in/out
-// with a grow as the coin spins; `phase` staggers them around the turn.
+// Positioned over the coin box; each pops in/out on its own phase as it spins.
 const SPARKLES = [
   { left: '24%', top: '16%', size: '0.155em', phase: 0 },
   { left: '54%', top: '86%', size: '0.155em', phase: 2.5 },
@@ -25,9 +19,7 @@ const SPARKLES = [
   { left: '80%', top: '70%', size: '0.095em', phase: 5.0 },
 ];
 
-// A tiny equirectangular "studio" — warm-dark with a few bright vertical strips.
-// The coin reflects it, so glints sweep across the faces + rim as it spins (the
-// shimmer). Reflections only; the canvas background stays transparent.
+// Equirectangular env the coin reflects — the bright strips become the shimmer.
 function buildEnvTexture() {
   const c = document.createElement('canvas');
   c.width = 1024;
@@ -39,8 +31,8 @@ function buildEnvTexture() {
   base.addColorStop(1, '#0c0802');
   ctx.fillStyle = base;
   ctx.fillRect(0, 0, 1024, 512);
-  // Strips sit away from azimuth 180° (x≈512, where a face-on coin reflects), so
-  // the face stays clean head-on and the glint sweeps in as it turns.
+  // Off-center (away from x≈512, the face-on reflection point) so the glint
+  // sweeps in as it turns rather than washing out the head-on face.
   for (const [x, a, w] of [
     [250, 1.0, 60],
     [770, 0.95, 52],
@@ -58,8 +50,7 @@ function buildEnvTexture() {
   return tex;
 }
 
-// Rasterize the (vector) coin to a CanvasTexture for the faces — three can't
-// sample an SVG directly. High res so the pixel-art detail stays crisp.
+// Rasterize the SVG to a texture for the faces (three can't sample SVG directly).
 function useCoinTexture(size = 1024) {
   const [tex, setTex] = useState<THREE.CanvasTexture | null>(null);
   useEffect(() => {
@@ -75,7 +66,7 @@ function useCoinTexture(size = 1024) {
       const texture = new THREE.CanvasTexture(canvas);
       texture.colorSpace = THREE.SRGBColorSpace;
       texture.anisotropy = 8;
-      texture.flipY = false; // matches the y-down SVG geometry below
+      texture.flipY = false; // matches the y-down SVG geometry
       texture.needsUpdate = true;
       setTex(texture);
     };
@@ -87,8 +78,7 @@ function useCoinTexture(size = 1024) {
   return tex;
 }
 
-// Extrude the coin's outer outline into 3D, normalized to ~2 units across, with
-// cap UVs remapped to 0..1 so the face texture lines up with the silhouette.
+// Extrude the coin outline, normalize to ~2 units, and map cap UVs to 0..1.
 function useCoinGeometry() {
   const [geo, setGeo] = useState<THREE.ExtrudeGeometry | null>(null);
   useEffect(() => {
@@ -98,7 +88,7 @@ function useCoinGeometry() {
       .then((text) => {
         if (cancelled) return;
         const data = new SVGLoader().parse(text);
-        const shapes = data.paths[0].toShapes(); // path 0 = the coin's solid outline
+        const shapes = data.paths[0].toShapes();
         const g = new THREE.ExtrudeGeometry(shapes, { depth: DEPTH_SVG, bevelEnabled: false, steps: 1 });
         g.center();
         g.computeBoundingBox();
@@ -106,8 +96,6 @@ function useCoinGeometry() {
         const scale = 2 / Math.max(bb.max.x - bb.min.x, bb.max.y - bb.min.y);
         g.scale(scale, scale, scale);
 
-        // Remap UVs to the XY bounding box so the cap texture maps onto the
-        // silhouette (the rim uses the gold material, where UVs don't matter).
         g.computeBoundingBox();
         const b = g.boundingBox!;
         const w = b.max.x - b.min.x;
@@ -140,7 +128,6 @@ function Coin({
   const geo = useCoinGeometry();
   const { gl, scene } = useThree();
 
-  // Build a PMREM environment from the studio strips → metallic reflections.
   useEffect(() => {
     const env = buildEnvTexture();
     const pmrem = new THREE.PMREMGenerator(gl);
@@ -156,30 +143,26 @@ function Coin({
 
   useFrame((_, delta) => {
     if (!group.current) return;
-    group.current.rotation.y += delta * 0.95; // gentle spin → slower shimmer sweep
+    group.current.rotation.y += delta * 0.95;
     const rot = group.current.rotation.y;
-    // Pulse the glow with the spin: |cos| is 1 when a face is toward the viewer,
-    // 0 edge-on — so the halo expands + brightens on each face pass.
+    // Glow and sparkles are driven off the rotation so they stay in sync.
     if (glowRef.current) {
-      const f = Math.abs(Math.cos(rot));
+      const f = Math.abs(Math.cos(rot)); // 1 face-on, 0 edge-on
       glowRef.current.style.transform = `translate(-50%, -50%) scale(${0.78 + 0.27 * f})`;
       glowRef.current.style.opacity = `${0.4 + 0.6 * f}`;
     }
-    // Sparkles pop in/out with a grow as the coin turns — each on its own phase.
     const sparkles = sparkleRefs.current;
     if (sparkles) {
       for (let i = 0; i < sparkles.length; i++) {
         const el = sparkles[i];
         if (!el) continue;
         const raw = Math.sin(rot * 1.5 + SPARKLES[i].phase);
-        const s = raw > 0 ? raw * raw : 0; // grow in → peak → grow out, then rest
-        el.style.transform = `translate(-50%, -50%) scale(${s})`;
+        el.style.transform = `translate(-50%, -50%) scale(${raw > 0 ? raw * raw : 0})`;
       }
     }
   });
 
-  // Physical material with a glossy clearcoat: a sharp specular glint rides over
-  // the gold art and sweeps across each face as the coin turns — the shimmer.
+  // Clearcoat gives the moving specular glint; faces stay low-metalness so the art reads.
   const capMat = useMemo(
     () =>
       new THREE.MeshPhysicalMaterial({
@@ -193,8 +176,7 @@ function Coin({
       }),
     [],
   );
-  // Less metal + a gold emissive floor so the rim never sinks to near-black in
-  // shadow (which read inconsistent next to the self-lit gold face).
+  // Emissive floor keeps the rim from going near-black in shadow.
   const sideMat = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -234,10 +216,7 @@ export function Coin3D() {
   const sparkleRefs = useRef<(HTMLImageElement | null)[]>([]);
   return (
     <span className="tokens-coin">
-      {/* Warm radial glow behind the coin + text (reference node 52:985); its
-          scale/opacity are animated from the coin's rotation in <Coin>. */}
       <span className="tokens-coin-glow" ref={glowRef} aria-hidden="true" />
-      {/* Pixel sparkles around the coin, popped in/out from the rotation. */}
       {SPARKLES.map((sp, i) => (
         <img
           key={i}
