@@ -196,7 +196,10 @@
   overflow: hidden;
 }
 
-/* Slides are stacked; only the active one is visible. Cross-fade between them. */
+/* Slides are stacked; only the active one is visible. The switch is an instant
+   cut (no cross-fade) so per-slide, element-level transitions own the motion —
+   the agents are registered at a common centre, so a cut reads continuously and
+   a fade would only blur the hand-off (e.g. the title mouse → centered agent). */
 .deck-slide {
   position: absolute;
   inset: 0;
@@ -205,7 +208,6 @@
   justify-content: center;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.4s ease;
 }
 
 .deck-slide[data-active='true'] {
@@ -281,6 +283,599 @@
   /* Slightly more than the eyebrow's bottom margin: the headline has no
      descenders, so an equal margin reads optically tighter below than above. */
   margin: clamp(14px, 1.6vw, 32px) 0 0;
+}
+
+/* Autonomous-window slide (mousepower/AutonomousWindow.tsx): the title revealed
+   living inside a v0-style agent app — a chat/reasoning sidebar on the left, the
+   title as the live preview on the right, a second agent (cyan mouse) working the
+   canvas. The deck itself, built by an agent.
+
+   The preview is still a full 100vw×100vh clone of the title slide; the sidebar
+   (--sw) sits to its LEFT, so the window is (--sw + 100vw) wide. The entry zoom
+   starts translated left by --sw/2 (so only the preview fills the viewport,
+   matching the title exactly — seamless, no reflow) and up by --tb/2, then pulls
+   back to the centred windowed view, revealing the sidebar. Chrome, desktop
+   tint, and agent fade in. Gated on the active slide; reduced-motion-safe. */
+.os-desktop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #e8e8e8;
+}
+.os-window {
+  --tb: 44px; /* titlebar height (unscaled) */
+  --sw: 28vw; /* sidebar width (unscaled), open */
+  --rest: 0.56; /* resting window scale */
+  position: relative;
+  flex: none; /* keep its full (oversized) width; the flex parent only centres it */
+  width: max-content; /* = sidebar + preview; grows as the sidebar expands */
+  background: #f5f5f5;
+  border-radius: calc(14px / var(--rest));
+  box-shadow: 0 60px 120px rgba(0, 0, 0, 0.22), 0 24px 48px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  transform: translate(0, 0) scale(var(--rest));
+  transform-origin: center center;
+}
+.os-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  height: var(--tb);
+  padding: 0 16px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+.os-light {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #d4d4d4;
+}
+.os-body {
+  display: flex;
+}
+/* Chat / reasoning sidebar. The outer pane carries the width (animated 0 → --sw)
+   and clips; the inner holds the padding + content at a fixed width, so the pane
+   can collapse to a TRUE 0 (padding on the outer would otherwise floor its
+   width). */
+.os-sidebar {
+  flex: none;
+  width: var(--sw);
+  height: 100vh;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  overflow: hidden;
+}
+.os-sidebar-inner {
+  width: var(--sw);
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 44px 40px;
+}
+/* The screen — a full-viewport clone of the title slide (the live preview). */
+.os-screen {
+  position: relative;
+  flex: none;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+/* Chat thread inside the sidebar (mousepower/AgentChat.tsx). Sizes are unscaled
+   (the whole window is scaled by --rest), tuned to read at the resting scale. */
+.chat-prompt {
+  align-self: flex-start;
+  max-width: 94%;
+  margin-bottom: 30px;
+  padding: 18px 22px;
+  border-radius: 18px;
+  background: #f0f0f0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 500;
+  font-size: 30px;
+  line-height: 1.35;
+  color: #1a1a1a;
+}
+.chat-thinking {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 22px;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: 24px;
+  color: #999;
+}
+.chat-thinking-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00bbff;
+  animation: chat-pulse 1.1s ease-in-out infinite;
+}
+.chat-reasoning {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 16px;
+  overflow: hidden;
+}
+.chat-line {
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 27px;
+  line-height: 1.45;
+  color: #aaa;
+}
+.chat-line--active {
+  color: #555;
+}
+/* Composer at the bottom of the chat pane (non-functional, for the v0 look). */
+.chat-input {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 12px 12px 12px 22px;
+  border: 1px solid #e0e0e0;
+  border-radius: 18px;
+  background: #fff;
+}
+.chat-input-placeholder {
+  flex: 1;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 27px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-input-send {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #00bbff;
+  color: #fff;
+}
+.chat-input-send svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* Two steps. Step 1 (0–1.05s): the window zooms out from the full-bleed title to
+   a centred preview window — the sidebar is collapsed (width 0) so it's just the
+   preview. Step 2 (from ~1.25s): the sidebar expands from 0 to --sw, widening the
+   window and pushing the preview to the right — the chat panel opening. */
+.deck-slide[data-active='true'] .os-window {
+  animation: os-zoom-out 1.05s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.deck-slide[data-active='true'] .os-sidebar {
+  animation: os-sidebar-open 0.6s cubic-bezier(0.4, 0, 0.2, 1) 1.25s both;
+}
+.deck-slide[data-active='true'] .os-titlebar {
+  animation: os-fade-in 0.55s ease 0.35s both;
+}
+.deck-slide[data-active='true'] .os-desktop {
+  animation: os-desk-in 1.05s ease both;
+}
+
+/* Step 1 — plain centred pull-back (sidebar is collapsed, so the window is just
+   the 100vw preview; the -tb/2 nudge keeps the screen dead-centre at scale 1). */
+@keyframes os-zoom-out {
+  from { transform: translate(0, calc(var(--tb) / -2)) scale(1); }
+  to { transform: translate(0, 0) scale(var(--rest)); }
+}
+/* Step 2 — the sidebar pane expands in, pushing the preview right. */
+@keyframes os-sidebar-open {
+  from { width: 0; }
+  to { width: var(--sw); }
+}
+@keyframes os-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes os-desk-in {
+  from { background-color: #f5f5f5; }
+  to { background-color: #e8e8e8; }
+}
+@keyframes chat-pulse {
+  0%, 100% { opacity: 0.35; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* Once the app is assembled, the agent keeps working the preview: each title
+   element is periodically selected (cyan ring, like a design-tool selection),
+   nudged to a new spot, then put back — a loop of edits signalling ongoing work.
+   Scoped to the windowed preview + active slide so the real title is untouched;
+   staggered so something is always being moved. */
+.deck-slide[data-active='true'] .os-screen .slide-eyebrow {
+  animation: edit-eyebrow 10s ease-in-out 2.4s infinite;
+}
+.deck-slide[data-active='true'] .os-screen .maze-title {
+  animation: edit-maze 10s ease-in-out 5.7s infinite;
+}
+.deck-slide[data-active='true'] .os-screen .slide-footnote {
+  animation: edit-footnote 10s ease-in-out 9s infinite;
+}
+/* Each edit: select (cyan ring) → try a few changes (move, resize, recolour,
+   swap font/tracking/italic) → revert → deselect. Non-animatable props (font
+   family/style) jump at the step, which reads as the agent applying a change.
+   Eyebrow + footnote are Homemade Apple by default; the maze is a graphic, so it
+   only repositions + resizes. */
+@keyframes edit-eyebrow {
+  0%, 9% {
+    transform: translate(0, 0) scale(1);
+    color: #111;
+    letter-spacing: -0.022em;
+    font-family: var(--font-homemade-apple), cursive;
+    box-shadow: 0 0 0 0 rgba(0, 187, 255, 0);
+  }
+  14% { box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  21%, 33% {
+    transform: translate(22px, -6px) scale(1.18);
+    color: #111;
+    letter-spacing: -0.022em;
+    font-family: var(--font-homemade-apple), cursive;
+    box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
+  }
+  41%, 57% {
+    transform: translate(22px, -6px) scale(1.18);
+    color: #00bbff;
+    letter-spacing: 0;
+    font-family: var(--font-archivo), sans-serif;
+    box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
+  }
+  69%, 85% {
+    transform: translate(0, 0) scale(1);
+    color: #111;
+    letter-spacing: -0.022em;
+    font-family: var(--font-homemade-apple), cursive;
+    box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
+  }
+  91%, 100% { box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
+}
+@keyframes edit-maze {
+  0%, 10% { transform: translate(0, 0) scale(1); box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
+  15% { box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  23%, 39% { transform: translate(-26px, 10px) scale(0.9); box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  49%, 67% { transform: translate(12px, -6px) scale(1.07); box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  77%, 90% { transform: translate(0, 0) scale(1); box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  95%, 100% { box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
+}
+@keyframes edit-footnote {
+  0%, 9% {
+    transform: translate(0, 0) scale(1);
+    color: #111;
+    letter-spacing: -0.022em;
+    font-style: normal;
+    font-family: var(--font-homemade-apple), cursive;
+    box-shadow: 0 0 0 0 rgba(0, 187, 255, 0);
+  }
+  14% { box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  21%, 35% {
+    transform: translate(18px, 8px) scale(1.08);
+    color: #666;
+    letter-spacing: 0.08em;
+    font-style: normal;
+    font-family: var(--font-archivo), sans-serif;
+    box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
+  }
+  43%, 59% {
+    transform: translate(18px, 8px) scale(1.08);
+    color: #00bbff;
+    letter-spacing: 0;
+    font-style: italic;
+    font-family: var(--font-playfair), Georgia, serif;
+    box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
+  }
+  71%, 87% {
+    transform: translate(0, 0) scale(1);
+    color: #111;
+    letter-spacing: -0.022em;
+    font-style: normal;
+    font-family: var(--font-homemade-apple), cursive;
+    box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
+  }
+  93%, 100% { box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-slide[data-active='true'] .os-window,
+  .deck-slide[data-active='true'] .os-titlebar,
+  .deck-slide[data-active='true'] .os-sidebar,
+  .deck-slide[data-active='true'] .os-desktop,
+  .deck-slide[data-active='true'] .os-screen .slide-eyebrow,
+  .deck-slide[data-active='true'] .os-screen .maze-title,
+  .deck-slide[data-active='true'] .os-screen .slide-footnote,
+  .chat-thinking-dot {
+    animation: none;
+  }
+}
+
+/* Exploration grid (mousepower/ExplorationGrid.tsx): the agent window multiplies
+   into a 3×3 grid — the original in the CENTRE plus eight more, each a full agent
+   window (chat sidebar + preview) exploring a different direction. The grid zooms
+   out from the centre (carried over from slide 2): it starts scaled so the centre
+   cell ≈ the slide-2 window, then settles so all nine fit, the surrounding eight
+   fading in around the centre. Tile proportions mirror slide 2's window so the
+   centre reads continuous through the cut. */
+.explore-desktop {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #e8e8e8;
+}
+.explore-grid {
+  --rest: 0.56; /* slide-2 window scale (matches AutonomousWindow --rest) */
+  --z: 2.4; /* zoom-in factor: at the cut the centrepiece == the slide-2 window */
+  /* Every tile internal is a slide-2 AUTHORED value × --f, so at the zoom scale
+     (--z) the centrepiece's internals equal slide 2's rendered window — consistent
+     copy sizing through the cut. --f = --rest / --z. */
+  --f: 0.23333;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  column-gap: 1.6vw;
+  row-gap: 2.6vh;
+  /* Cells are sized to the slide-2 window ÷ --z (window = (--sw + 100vw) × ≈100vh
+     at --rest = 71.68vw × ~58.5vh). So at scale --z the centrepiece is exactly the
+     slide-2 window — same aspect ratio through the cut, the zoom is a pure scale
+     (no reflow, no aspect shift). */
+  width: calc(71.68vw / var(--z) * 3 + 1.6vw * 2);
+  height: calc(58.5vh / var(--z) * 2 + 2.6vh);
+  /* Pivot on the top-middle tile (the centrepiece). The zoom + translateY keep it
+     viewport-centred at the start, then it slides up into its top-row spot. */
+  transform-origin: 50% 23.7%;
+}
+
+/* Agent window tile: chrome + [sidebar | preview], proportioned like slide 2. */
+.gw {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  /* Same as slide-2's window radius (14px) ÷ --z, so at the zoom it lands on 14px. */
+  border-radius: calc(14px / var(--z));
+  background: #f5f5f5;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12), 0 6px 14px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+}
+/* All chrome sizes = slide-2 authored value × --f (so they match slide 2 at the
+   zoom). Sidebar width is the same fraction (28vw / 128vw window) as slide 2. */
+.gw-titlebar {
+  display: flex;
+  align-items: center;
+  gap: calc(9px * var(--f));
+  height: calc(44px * var(--f));
+  padding: 0 calc(16px * var(--f));
+  background: #fff;
+  border-bottom: calc(1px * var(--f)) solid #e0e0e0;
+}
+.gw-titlebar span {
+  width: calc(12px * var(--f));
+  height: calc(12px * var(--f));
+  border-radius: 50%;
+  background: #d4d4d4;
+}
+.gw-body { flex: 1; display: flex; min-height: 0; }
+.gw-sidebar {
+  flex: none;
+  width: 21.9%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: calc(44px * var(--f)) calc(40px * var(--f));
+  background: #fff;
+  border-right: calc(1px * var(--f)) solid #e0e0e0;
+  overflow: hidden;
+}
+.gw-prompt {
+  align-self: flex-start;
+  max-width: 94%;
+  margin: 0 0 calc(30px * var(--f));
+  background: #f0f0f0;
+  border-radius: calc(18px * var(--f));
+  padding: calc(18px * var(--f)) calc(22px * var(--f));
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 500;
+  font-size: calc(30px * var(--f));
+  line-height: 1.35;
+  color: #1a1a1a;
+}
+.gw-think {
+  display: flex;
+  align-items: center;
+  gap: calc(12px * var(--f));
+  margin: 0 0 calc(22px * var(--f));
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: calc(24px * var(--f));
+  color: #999;
+}
+.gw-dot {
+  width: calc(12px * var(--f));
+  height: calc(12px * var(--f));
+  border-radius: 50%;
+  background: #00bbff;
+}
+.gw-reasoning {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(16px * var(--f));
+  overflow: hidden;
+}
+.gw-line {
+  margin: 0;
+  font-family: var(--font-archivo), sans-serif;
+  font-size: calc(27px * var(--f));
+  line-height: 1.45;
+  color: #aaa;
+}
+.gw-input {
+  display: flex;
+  align-items: center;
+  gap: calc(14px * var(--f));
+  margin-top: calc(24px * var(--f));
+  padding: calc(12px * var(--f)) calc(12px * var(--f)) calc(12px * var(--f)) calc(22px * var(--f));
+  border: calc(1px * var(--f)) solid #e0e0e0;
+  border-radius: calc(18px * var(--f));
+  background: #fff;
+}
+.gw-input-text {
+  flex: 1;
+  min-width: 0;
+  font-family: var(--font-archivo), sans-serif;
+  font-size: calc(27px * var(--f));
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.gw-send {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(46px * var(--f));
+  height: calc(46px * var(--f));
+  border-radius: 50%;
+  background: #00bbff;
+  color: #fff;
+}
+.gw-send svg { width: calc(26px * var(--f)); height: calc(26px * var(--f)); }
+.gw-preview {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(clamp(32px, 6vw, 96px) * var(--f));
+}
+/* The canvas the agent is editing — sizes to its content so the selection ring
+   hugs it; the edit loop animates this element. */
+.gw-canvas {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(clamp(8px, 1vw, 20px) * var(--f));
+  border-radius: calc(6px * var(--f));
+  text-align: center;
+}
+.gw-canvas .slide-eyebrow,
+.gw-canvas .slide-footnote { margin: 0; font-size: calc(clamp(18px, 1.875vw, 40px) * var(--f)); }
+.gw-canvas .maze-title { width: calc(min(74vw, 940px) * var(--f)); margin: 0; }
+
+/* Creative explorations of the theme (mouse / power / agents) — not literal
+   wordmarks. Sized off the maze width (min(74vw,940px) × --f) for a consistent
+   scale across canvases. */
+.gw-ascii {
+  margin: 0;
+  font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: calc(min(74vw, 940px) * var(--f) / 26.4);
+  line-height: 1;
+  white-space: pre;
+  color: #00bbff;
+}
+/* A swarm of mice — many agents at once. */
+.gw-mice {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: calc(min(74vw, 940px) * var(--f) / 9);
+  color: #00bbff;
+}
+.gw-mice svg {
+  width: calc(min(74vw, 940px) * var(--f) / 4.4);
+  height: auto;
+  display: block;
+}
+/* A single hero glyph — the cursor, or the "power". */
+.gw-glyph {
+  width: calc(min(74vw, 940px) * var(--f) / 1.7);
+  height: auto;
+  display: block;
+}
+.gw-glyph--cursor { color: #111; }
+.gw-glyph--bolt { color: #00bbff; }
+/* A monogram. */
+.gw-mono {
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 800;
+  font-size: calc(min(74vw, 940px) * var(--f) / 1.6);
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: #111;
+}
+.gw-mono span { color: #00bbff; }
+
+/* Zoom out from the centre; the surrounding eight fade in (the centre persists,
+   smoothly resizing from the slide-2 placement into its grid cell). */
+.deck-slide[data-active='true'] .explore-grid {
+  animation: explore-zoom 1.1s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+.deck-slide[data-active='true'] .gw:not(.gw--center) {
+  animation: explore-fade 0.6s ease 0.45s both;
+}
+@keyframes explore-zoom {
+  /* translateY(26.3%) pairs with the 50% 23.7% origin: it puts the top-middle
+     tile at the viewport centre at the zoomed-in start; settling to translateY(0)
+     slides it up into its top-row spot as the grid scales down. */
+  from { transform: translateY(26.3%) scale(var(--z)); }
+  to { transform: translateY(0) scale(1); }
+}
+@keyframes explore-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Each canvas is being actively edited — a periodic select-ring + nudge,
+   staggered per tile so the agents look like they're exploring in parallel. The
+   centrepiece is delayed so it stays idle through the zoom (matching slide 2 at
+   the cut); the others use negative delays to start mid-cycle for instant variety. */
+.deck-slide[data-active='true'] .gw-canvas {
+  animation: gw-edit 5.5s ease-in-out infinite;
+}
+.deck-slide[data-active='true'] .gw--mice .gw-canvas { animation-delay: -1s; }
+.deck-slide[data-active='true'] .gw--center .gw-canvas { animation-delay: 1.4s; }
+.deck-slide[data-active='true'] .gw--cursor .gw-canvas { animation-delay: -2.3s; }
+.deck-slide[data-active='true'] .gw--bolt .gw-canvas { animation-delay: -3.6s; }
+.deck-slide[data-active='true'] .gw--mono .gw-canvas { animation-delay: -0.5s; }
+.deck-slide[data-active='true'] .gw--ascii .gw-canvas { animation-delay: -4.4s; }
+@keyframes gw-edit {
+  0%, 58% { transform: translate(0, 0) scale(1); box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
+  64% { box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  70%, 82% { transform: translate(5%, -4%) scale(1.05); box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  90% { transform: translate(0, 0) scale(1); box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
+  96%, 100% { box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-slide[data-active='true'] .explore-grid,
+  .deck-slide[data-active='true'] .gw:not(.gw--center),
+  .deck-slide[data-active='true'] .gw-canvas {
+    animation: none;
+  }
 }
 
 /* Mousepower title hero — the maze graphic (app/decks/mousepower). Sized as the
@@ -377,3 +972,9 @@
   mix-blend-mode: difference;
   z-index: 10;
 }
+
+
+
+
+
+
