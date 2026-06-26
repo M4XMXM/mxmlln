@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef } from 'react';
 import { useAnimationFrame, useReducedMotion } from 'framer-motion';
 import { Mouse } from 'lucide-react';
 
@@ -50,6 +50,11 @@ const SHADE_TOP = '#9b9b9b'; // light tone
 // edges read the same darkness as the floor of the panes.
 const EDGE_BASE = SHADE_BASE;
 const EDGE_TOP = '#d4d4d4';
+// Mouse: the design-system accent (#00BBFF). Kept as a backlit gradient like the
+// walls — a darker cyan in shadow easing to the accent at the lit end — so it
+// stays dimensional while reading clearly as the brand cyan.
+const MOUSE_DARK = '#0090c4';
+const MOUSE_LIGHT = '#00bbff';
 
 // Perspective from straight above center: depth shrinks toward the camera, so
 // higher points (wall tops) magnify outward from center — more along y than x.
@@ -73,10 +78,13 @@ const NODES_RAW: [number, number][] = [
   // letter-pocket dead-ends: M(l,r,notch), U(l,r), W(l,r,mid). Pulled ~9u back
   // from each closed wall so the mouse stops clear instead of poking through.
   [20.5, 23.5], [44.5, 23.5], [32.5, 29.5], [106.5, 29.5], [118.5, 29.5], [94.5, 67.5], [118.5, 67.5], [106.5, 61.5],
+  // centre of the maze (on the inter-row corridor) — the mouse's starting point.
+  [106, 45.5],
 ];
+const CENTER_NODE = NODES_RAW.length - 1;
 const EDGES: [number, number][] = [
   [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], // top moat
-  [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 15], [15, 16], [16, 17], [17, 18], // inter-row
+  [9, 10], [10, 11], [11, 12], [12, 13], [13, 14], [14, 33], [33, 15], [15, 16], [16, 17], [17, 18], // inter-row (via centre node 33)
   [19, 20], [20, 21], [21, 22], [22, 23], [23, 24], // bottom moat
   [0, 9], [8, 18], [18, 24], // left + right moat
   [2, 12], [3, 14], [6, 16], [7, 17], // top↔inter-row gaps
@@ -92,14 +100,34 @@ const ADJ: number[][] = (() => {
   }
   return a;
 })();
-const START_NODE = 0;
+const START_NODE = CENTER_NODE;
 const SPEED = 46; // floor units per second
 
-export function MazeTitle3D() {
+export function MazeTitle3D({
+  recallRef,
+  animate = true,
+  mouseHidden = false,
+}: {
+  // When set, exposes a recall(done) that glides the mouse to floor-centre
+  // (upright) and calls done on arrival — used to hand off to the centered agent
+  // on the next slide (see TitleSlide / Deck).
+  recallRef?: { current: ((done: () => void) => void) | null };
+  // Static render (no wandering mouse / rAF) — used by the exploration-grid tiles
+  // so 6 copies don't each run an animation loop.
+  animate?: boolean;
+  // Fade the mouse out (e.g. while leaving the title slide, for a cleaner
+  // transition). Only sets inline opacity when true, so CSS can otherwise control
+  // it (the windowed preview fades its mouse in after the window settles).
+  mouseHidden?: boolean;
+} = {}) {
   const mouseRef = useRef<SVGGElement>(null);
   const mouseGradRef = useRef<SVGLinearGradientElement>(null);
   const reduced = useReducedMotion();
-  // Random-walk state across the corridor graph.
+  // Unique per-instance prefix for gradient ids, so multiple <MazeTitle3D>s on
+  // screen (e.g. the title + the windowed copy) don't collide on shared ids.
+  const uid = useId().replace(/:/g, '');
+  // Random-walk state across the corridor graph. `recall`, when set, overrides
+  // the walk to ease the mouse straight to centre for the slide transition.
   const walk = useRef({
     pos: [NODES[START_NODE][0], NODES[START_NODE][1]] as [number, number],
     cur: START_NODE,
@@ -107,6 +135,7 @@ export function MazeTitle3D() {
     prev: -1,
     heading: 0,
     pause: 0, // ms left to hesitate at the current node before moving
+    recall: null as null | { elapsed: number; sx: number; sy: number; sh: number; done: (() => void) | null },
   });
 
   // Extrude each wall segment into a quad panel. Faces are shaded base→top (light
@@ -180,11 +209,52 @@ export function MazeTitle3D() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reduced]);
 
+  // Expose recall(done): ease the mouse to floor-centre [0,0], turning upright,
+  // then fire done (the cue for the deck to advance to the centered agent).
+  useEffect(() => {
+    if (!recallRef) return;
+    recallRef.current = (done) => {
+      const w = walk.current;
+      if (reduced) {
+        w.pos[0] = 0;
+        w.pos[1] = 0;
+        w.heading = -90; // rotation 0 → upright, matching the agent
+        apply();
+        done();
+        return;
+      }
+      w.recall = { elapsed: 0, sx: w.pos[0], sy: w.pos[1], sh: w.heading, done };
+    };
+    return () => {
+      recallRef.current = null;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reduced]);
+
   // Stochastic walk: ease along the current corridor; at each node pause briefly,
   // then pick a random neighbour (avoiding an immediate U-turn unless dead-ended).
+  // A pending `recall` pre-empts the walk, gliding straight to centre.
   useAnimationFrame((_t, delta) => {
-    if (reduced) return;
+    if (!animate) return;
     const w = walk.current;
+    if (w.recall) {
+      const RECALL_MS = 620;
+      w.recall.elapsed += Math.min(delta, 64);
+      const t = Math.min(1, w.recall.elapsed / RECALL_MS);
+      const e = t < 0.5 ? 2 * t * t : 1 - ((-2 * t + 2) ** 2) / 2; // easeInOutQuad
+      w.pos[0] = w.recall.sx * (1 - e);
+      w.pos[1] = w.recall.sy * (1 - e);
+      const dh = (((-90 - w.recall.sh + 540) % 360) - 180); // shortest turn to upright
+      w.heading = w.recall.sh + dh * e;
+      apply();
+      if (t >= 1) {
+        const d = w.recall.done;
+        w.recall = null;
+        d?.();
+      }
+      return;
+    }
+    if (reduced) return;
     let dt = Math.min(delta, 64); // clamp big gaps (e.g. tab refocus)
     if (w.pause > 0) {
       const used = Math.min(w.pause, dt);
@@ -237,7 +307,7 @@ export function MazeTitle3D() {
           {panels.map((p, i) => (
             <linearGradient
               key={`f${i}`}
-              id={`mp-wall-${i}`}
+              id={`${uid}-wall-${i}`}
               gradientUnits="userSpaceOnUse"
               x1={p.g[0]}
               y1={p.g[1]}
@@ -252,7 +322,7 @@ export function MazeTitle3D() {
           {panels.map((p, i) => (
             <linearGradient
               key={`e${i}`}
-              id={`mp-edge-${i}`}
+              id={`${uid}-edge-${i}`}
               gradientUnits="userSpaceOnUse"
               x1={p.g[0]}
               y1={p.g[1]}
@@ -268,35 +338,43 @@ export function MazeTitle3D() {
               counter-rotated each frame so the light stays world-consistent. */}
           <linearGradient
             ref={mouseGradRef}
-            id="mp-mouse"
+            id={`${uid}-mouse`}
             gradientUnits="userSpaceOnUse"
             x1={12}
             y1={0}
             x2={12}
             y2={24}
           >
-            <stop offset="0" stopColor={EDGE_BASE} />
-            <stop offset="1" stopColor={EDGE_TOP} />
+            <stop offset="0" stopColor={MOUSE_DARK} />
+            <stop offset="1" stopColor={MOUSE_LIGHT} />
           </linearGradient>
         </defs>
 
         {/* The solver, on the floor (drawn first = farthest, so the walls in
             front of it occlude it as it runs). Random-walks the corridor graph,
-            rotated to face its heading. */}
-        <g ref={mouseRef} transform={`translate(${NODES[START_NODE][0]} ${NODES[START_NODE][1]})`}>
-          <g transform="translate(-5.5 -5.5)">
-            <Mouse size={11} color="url(#mp-mouse)" strokeWidth={STROKE} absoluteStrokeWidth />
+            rotated to face its heading. Omitted in static (non-animated) tiles. */}
+        {animate && (
+          <g
+            ref={mouseRef}
+            className="maze-mouse"
+            style={{ ...(mouseHidden ? { opacity: 0 } : {}), transition: 'opacity 0.35s ease' }}
+            transform={`translate(${NODES[START_NODE][0]} ${NODES[START_NODE][1]})`}
+          >
+            <g transform="translate(-5.5 -5.5)">
+              <Mouse size={11} color={`url(#${uid}-mouse)`} strokeWidth={STROKE} absoluteStrokeWidth />
+            </g>
           </g>
-        </g>
+        )}
 
         {/* Wall panels far→near: backlit faces (far/base glows, near crest in
             shadow). Nearer walls occlude the faces, crests, and mouse behind them. */}
         {panels.map((p, i) => (
           <g key={i}>
-            <path d={p.fill} fill={`url(#mp-wall-${i})`} stroke={`url(#mp-edge-${i})`} strokeWidth={0.8} strokeLinejoin="round" />
-            {/* Crest is the wall's 3D top edge — closest to the viewer, so under
-                backlighting it sits in shadow (matches the dark end of the edge). */}
-            <path d={p.crest} fill="none" stroke={EDGE_BASE} strokeWidth={STROKE} strokeLinecap="round" />
+            <path d={p.fill} fill={`url(#${uid}-wall-${i})`} stroke={`url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinejoin="round" />
+            {/* Crest is the wall's 3D top edge. Same stroke width + gradient as the
+                silhouette so every stroke in the mark reads as one consistent
+                weight (the gradient still darkens toward the near/shadow crest). */}
+            <path d={p.crest} fill="none" stroke={`url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinecap="round" />
           </g>
         ))}
       </svg>
