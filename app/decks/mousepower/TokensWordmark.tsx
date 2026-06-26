@@ -1,15 +1,9 @@
 'use client';
 
-// "TOKENS" with the "O" replaced by the 3D coin (Coin3D).
-//
-// Two modes drive the closing beat, which keeps the coin the SAME size across
-// both slides:
-//   - 'wordmark' (slide 4): the full lockup. While active it registers a forward
-//     interceptor — pressing forward fades the letters out and slides the coin to
-//     viewport centre, then advances.
-//   - 'centered' (slide 5): renders that exact end-state (letters hidden, coin
-//     parked at centre). The deck switches with an instant cut, so matching the
-//     end-state makes the morph read as one continuous motion.
+// "TOKENS" with the "O" as the 3D coin. 'wordmark' registers a forward
+// interceptor that fades the letters and slides the coin to centre, then
+// advances; 'centered' renders that exact end-state. The two must stay in sync —
+// the deck cuts (no fade) between them.
 import { useCallback, useEffect, useRef } from 'react';
 import { useDeck, useSlideIndex } from '../Deck';
 import { Coin3D } from './Coin3D';
@@ -23,8 +17,8 @@ export function TokensWordmark({ mode = 'wordmark' }: { mode?: 'wordmark' | 'cen
   const isActive = activeIndex === myIndex;
   const wmRef = useRef<HTMLDivElement>(null);
 
-  // Horizontal shift that brings the coin's centre to the viewport centre. Undoes
-  // any shift already applied so it's stable across re-measures (resize/fonts).
+  // Shift to bring the coin's centre to the viewport centre. Undoes any prior
+  // shift so it's stable across re-measures (resize / late font load).
   const computeShift = useCallback(() => {
     const wm = wmRef.current;
     const coin = wm?.querySelector<HTMLElement>('.tokens-coin');
@@ -40,8 +34,6 @@ export function TokensWordmark({ mode = 'wordmark' }: { mode?: 'wordmark' | 'cen
     if (wm) wm.style.setProperty('--coin-shift', `${computeShift()}px`);
   }, [computeShift]);
 
-  // 'centered': park the coin at centre and keep it there through resize / late
-  // font load so it lands exactly where slide 4's morph ends.
   useEffect(() => {
     if (mode !== 'centered') return;
     applyShift();
@@ -50,7 +42,6 @@ export function TokensWordmark({ mode = 'wordmark' }: { mode?: 'wordmark' | 'cen
     return () => window.removeEventListener('resize', applyShift);
   }, [mode, applyShift, isActive]);
 
-  // 'wordmark': intercept forward while active — play the morph, then advance.
   useEffect(() => {
     const wm = wmRef.current;
     if (mode !== 'wordmark') return;

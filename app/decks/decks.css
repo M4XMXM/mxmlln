@@ -977,10 +977,8 @@
   isolation: isolate;
 }
 
-/* Closing morph: 'TOKENS' → the coin alone, same size. The letters fade and the
-   coin slides by --coin-shift (computed in JS) to the viewport centre. Slide 5
-   renders the .is-centered end-state, so the deck's instant cut lands on the
-   exact same frame and the two slides read as one continuous motion. */
+/* Letters fade, coin slides by --coin-shift (set in JS). .is-centered is the
+   morph end-state; it must match what .is-morphing animates to (the deck cuts). */
 .tokens-wordmark > span:not(.tokens-coin) {
   transition: opacity 0.42s ease;
 }
@@ -1008,10 +1006,7 @@
   }
 }
 
-/* Slide-5 task orbit. Lives inside .tokens-coin (square, font-size = the coin's),
-   so --orbit-r is coin-relative and the ring rides the coin's slide to centre.
-   The ring rotates counter to the coin's spin; each icon counter-rotates to stay
-   upright; icons pop in (staggered) when the slide lands. */
+/* Lives inside .tokens-coin, so --orbit-r is coin-relative and rides its slide. */
 .tokens-orbit {
   position: absolute;
   inset: 0;
@@ -1037,7 +1032,6 @@
   color: var(--orbit-gold);
   opacity: 0;
   transform: scale(0.3);
-  /* slight overshoot for the "pop". */
   transition:
     opacity 0.45s ease,
     transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1075,19 +1069,15 @@
   }
 }
 
-/* Slide 6 — coin + orbit shrink into the centre of Apple-style activity rings.
-   The stage carries slide-content's optical nudge so the coin lands at the same
-   height as slide 5, making the instant cut + shrink read as one motion. The
-   rings are sized so the icon-ring→inner-ring gap matches the coin→icon-ring
-   gap (equal spacing across coin, icons, rings). */
+/* margin-bottom matches slide-content's nudge so the coin lands at the same
+   height as slide 5; rings are sized for equal coin→icons→rings gaps. */
 .activity-stage {
   position: relative;
   width: min(84vmin, 760px);
   height: min(84vmin, 760px);
   margin-bottom: clamp(24px, 4vh, 52px);
 }
-/* Rings only appear (draw on + fade in) once the cluster has finished shrinking
-   (data-rings), so they never overlap the still-large cluster mid-shrink. */
+/* Appear only after the cluster shrinks (data-rings), to avoid overlap. */
 .activity-rings {
   position: absolute;
   inset: 0;
@@ -1099,9 +1089,8 @@
 .activity-stage[data-rings='true'] .activity-rings {
   opacity: 1;
 }
-/* Core (coin + orbit) starts at slide-5 size (scale 1) so the cut lines up
-   frame-for-frame, then shrinks to --activity-scale on enter. The coin shrinks
-   further (--coin-extra) so it sits small inside the icon ring with space. */
+/* Starts at scale 1 (= slide 5) so the cut lines up, then shrinks. Don't override
+   the orbit's --orbit-r/--orbit-icon here or the cut jumps — size via --activity-scale. */
 .activity-core {
   position: absolute;
   left: 50%;
@@ -1110,16 +1099,12 @@
   align-items: center;
   justify-content: center;
   font-size: clamp(64px, 15vw, 300px);
-  /* Parked size of the icon orbit. Kept small enough that the icon ring clears
-     the inner activity ring. The orbit's own --orbit-r/--orbit-icon are left at
-     their slide-5 values so the cut starts frame-for-frame identical. */
-  --activity-scale: 0.46;
-  --coin-extra: 0.45; /* extra coin-only shrink → negative space inside the orbit */
+  --activity-scale: 0.46; /* orbit's parked scale; small enough to clear the rings */
+  --coin-extra: 0.45; /* extra coin-only shrink for negative space */
   transform: translate(-50%, -50%) scale(1);
   transition: transform 0.95s cubic-bezier(0.4, 0, 0.2, 1);
   isolation: isolate;
 }
-/* Coin starts at scale 1 (matching slide 5) and shrinks beyond the orbit. */
 .activity-core .coin-visual {
   transform: scale(1);
   transition: transform 0.95s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1150,8 +1135,7 @@
   left: 0.02em;
 }
 
-/* Wraps the coin's glow + sparkles + canvas (not the orbit) so slide 6 can scale
-   the coin alone. Fills the coin box; inert on other slides. */
+/* Lets slide 6 scale the coin without the orbit; inert elsewhere. */
 .coin-visual {
   position: absolute;
   inset: 0;

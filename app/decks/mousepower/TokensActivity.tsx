@@ -1,12 +1,7 @@
 'use client';
 
-// Slide 6 — the coin + task orbit shrink into the centre of Apple-style activity
-// rings. The core starts at the previous slide's exact size (scale 1) so the
-// deck's instant cut from slide 5 reads as one continuous motion, then:
-//   1. the coin + orbit shrink to their parked sizes, then
-//   2. only once that settles, the rings draw on (so they never overlap the
-//      still-large cluster mid-shrink).
-// Icons carry over already-shown.
+// The core renders at slide-5 size, then shrinks; the rings draw on only after
+// the shrink settles, so they never overlap the still-large cluster.
 import { useEffect, useState } from 'react';
 import { useDeck, useSlideIndex } from '../Deck';
 import { ActivityRings } from './ActivityRings';
@@ -30,8 +25,7 @@ export function TokensActivity() {
     }
     let raf2 = 0;
     let timer = 0;
-    // Defer one paint so the shrink transitions from the slide-5-matched start
-    // state; once the shrink finishes, bring the rings in.
+    // Defer a paint so the shrink transitions from the slide-5-matched start state.
     const raf1 = requestAnimationFrame(() => {
       raf2 = requestAnimationFrame(() => {
         setShrunk(true);

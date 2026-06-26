@@ -216,35 +216,32 @@ export function Coin3D({ overlay }: { overlay?: ReactNode } = {}) {
   const sparkleRefs = useRef<(HTMLImageElement | null)[]>([]);
   return (
     <span className="tokens-coin">
-      {/* Optional layer rendered over the coin (e.g. the slide-5 task orbit),
-          centred on the coin and riding its translate to viewport centre. */}
       {overlay}
-      {/* Coin visual (glow + sparkles + canvas), wrapped so slide 6 can shrink
-          the coin independently of the orbit for extra negative space. */}
+      {/* Wrapped so slide 6 can scale the coin independently of the orbit. */}
       <span className="coin-visual">
         <span className="tokens-coin-glow" ref={glowRef} aria-hidden="true" />
-      {SPARKLES.map((sp, i) => (
-        <img
-          key={i}
-          ref={(el) => {
-            sparkleRefs.current[i] = el;
-          }}
-          className="tokens-sparkle"
-          src="/decks/mousepower/sparkle.svg"
-          alt=""
-          aria-hidden="true"
-          style={{ left: sp.left, top: sp.top, width: sp.size, height: sp.size }}
-        />
-      ))}
-      <Canvas
-        camera={{ position: [0, 0, 6.7], fov: 20 }}
-        gl={{ alpha: true, antialias: true }}
-        dpr={[1, 2]}
-        style={{ overflow: 'visible' }}
-      >
-        <hemisphereLight args={['#fff6dc', '#7a4a08', 1.0]} />
-        <directionalLight position={[3, 4, 6]} intensity={1.6} />
-        <directionalLight position={[-4, -1, 3]} intensity={0.6} color="#ffd98a" />
+        {SPARKLES.map((sp, i) => (
+          <img
+            key={i}
+            ref={(el) => {
+              sparkleRefs.current[i] = el;
+            }}
+            className="tokens-sparkle"
+            src="/decks/mousepower/sparkle.svg"
+            alt=""
+            aria-hidden="true"
+            style={{ left: sp.left, top: sp.top, width: sp.size, height: sp.size }}
+          />
+        ))}
+        <Canvas
+          camera={{ position: [0, 0, 6.7], fov: 20 }}
+          gl={{ alpha: true, antialias: true }}
+          dpr={[1, 2]}
+          style={{ overflow: 'visible' }}
+        >
+          <hemisphereLight args={['#fff6dc', '#7a4a08', 1.0]} />
+          <directionalLight position={[3, 4, 6]} intensity={1.6} />
+          <directionalLight position={[-4, -1, 3]} intensity={0.6} color="#ffd98a" />
           <Coin glowRef={glowRef} sparkleRefs={sparkleRefs} />
         </Canvas>
       </span>

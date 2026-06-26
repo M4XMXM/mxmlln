@@ -1,16 +1,12 @@
 'use client';
 
-// Apple-Watch-style activity rings: three concentric rounded-cap arcs on faint
-// tracks, each partially filled, drawing on (stroke-dashoffset) when `on` flips.
-// Decorative backdrop for the shrunken coin on slide 6.
+// Apple-Watch-style activity rings. The arcs draw on when `on` flips true.
 type Ring = { id: string; r: number; pct: number; from: string; to: string };
 
-const W = 9; // stroke width in viewBox units (thin bands)
+const W = 9; // stroke width, viewBox units
 const SIZE = 240;
 const C = SIZE / 2;
 
-// Outer→inner = Move (red/pink), Exercise (green), Stand (cyan), per Apple. The
-// three sit tight near the outer edge, leaving a large hole for the cluster.
 const RINGS: Ring[] = [
   { id: 'move', r: 110, pct: 0.82, from: '#FF0A36', to: '#FF4E7E' },
   { id: 'exercise', r: 96, pct: 0.67, from: '#16C93B', to: '#A8FF12' },

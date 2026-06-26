@@ -1,10 +1,5 @@
 'use client';
 
-// Slide 5 — a fixed ring of work an autonomous agent can take over, orbiting the
-// TOKENS coin. The ring slowly rotates counter to the coin's spin while each icon
-// counter-rotates to stay upright; icons pop in (staggered) once the slide lands.
-// Rendered inside .tokens-coin (via Coin3D's `overlay`) so it's centred on the
-// coin and rides its slide-to-centre.
 import {
   Bug,
   CalendarClock,
@@ -29,20 +24,20 @@ const TASKS = [
   { Icon: Bug, label: 'bug triage' },
 ];
 
+// Pass as Coin3D's `overlay`. Set animateIn={false} to skip the pop-in when the
+// icons are already shown on the previous slide.
 export function TokensOrbit({
   active,
   animateIn = true,
 }: {
   active: boolean;
-  // false: icons appear already at rest (no pop) — used when carrying continuity
-  // from a previous slide where they're already shown.
   animateIn?: boolean;
 }) {
   const n = TASKS.length;
   return (
     <div className="tokens-orbit" data-on={active} data-instant={!animateIn} aria-hidden="true">
       {TASKS.map(({ Icon, label }, i) => {
-        const angle = (360 / n) * i; // first icon at top, then clockwise
+        const angle = (360 / n) * i;
         return (
           <span
             key={label}
@@ -51,7 +46,7 @@ export function TokensOrbit({
               transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(-1 * var(--orbit-r))) rotate(${-angle}deg)`,
             }}
           >
-            {/* Counter-rotates against the ring so the icon stays upright. */}
+            {/* counter-rotates the ring's spin to keep the icon upright */}
             <span className="orbit-counter">
               <span className="orbit-icon" style={{ transitionDelay: `${i * 55}ms` }}>
                 <Icon strokeWidth={1.75} />
