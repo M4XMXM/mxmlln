@@ -1,0 +1,6 @@
+<svg viewBox="0 0 5 5" fill="none" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+<!-- TOKENS — pixel-art sparkle (a 5×5 plus), from the Figma source (node 52:988).
+     Pops in/out around the spinning coin (app/decks/mousepower/Coin3D). -->
+<rect x="2" y="0" width="1" height="5" fill="#FFDC00"/>
+<rect x="0" y="2" width="5" height="1" fill="#FFDC00"/>
+</svg>
