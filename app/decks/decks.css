@@ -977,6 +977,152 @@
   isolation: isolate;
 }
 
+/* Letters fade, coin slides by --coin-shift (set in JS). .is-centered is the
+   morph end-state; it must match what .is-morphing animates to (the deck cuts). */
+.tokens-wordmark > span:not(.tokens-coin) {
+  transition: opacity 0.42s ease;
+}
+.tokens-wordmark .tokens-coin {
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tokens-wordmark.is-morphing > span:not(.tokens-coin),
+.tokens-wordmark.is-centered > span:not(.tokens-coin) {
+  opacity: 0;
+}
+.tokens-wordmark.is-morphing .tokens-coin,
+.tokens-wordmark.is-centered .tokens-coin {
+  transform: translateX(var(--coin-shift, 0px));
+  /* Lift above the (fading) letters while it slides past them. */
+  z-index: 4;
+}
+.tokens-wordmark.is-centered .tokens-coin {
+  transition: none; /* slide 5 starts already at centre — no entrance motion */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tokens-wordmark > span:not(.tokens-coin),
+  .tokens-wordmark .tokens-coin {
+    transition: none;
+  }
+}
+
+/* Lives inside .tokens-coin, so --orbit-r is coin-relative and rides its slide. */
+.tokens-orbit {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  pointer-events: none;
+  --orbit-r: 1.32em; /* distance from coin centre to each icon */
+  --orbit-icon: 0.26em; /* icon size */
+  --orbit-gold: #9a7b1e; /* muted gold, harmonised with the coin */
+  animation: orbit-rotate 54s linear infinite;
+}
+.orbit-slot {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  /* transform (ring position + upright counter-rotation) set inline per icon */
+}
+.orbit-counter {
+  display: block;
+  animation: orbit-rotate-rev 54s linear infinite; /* cancels the ring's spin */
+}
+.orbit-icon {
+  display: block;
+  color: var(--orbit-gold);
+  opacity: 0;
+  transform: scale(0.3);
+  transition:
+    opacity 0.45s ease,
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tokens-orbit[data-on='true'] .orbit-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+/* Carried-over from a previous slide: appear at rest, no pop. */
+.tokens-orbit[data-instant='true'] .orbit-icon {
+  transition: none;
+}
+.orbit-icon svg {
+  display: block;
+  width: var(--orbit-icon);
+  height: var(--orbit-icon);
+}
+@keyframes orbit-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbit-rotate-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .tokens-orbit,
+  .orbit-counter {
+    animation: none;
+  }
+  .orbit-icon {
+    transition: none;
+  }
+}
+
+/* margin-bottom matches slide-content's nudge so the coin lands at the same
+   height as slide 5; rings are sized for equal coin→icons→rings gaps. */
+.activity-stage {
+  position: relative;
+  width: min(84vmin, 760px);
+  height: min(84vmin, 760px);
+  margin-bottom: clamp(24px, 4vh, 52px);
+}
+/* Appear only after the cluster shrinks (data-rings), to avoid overlap. */
+.activity-rings {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.activity-stage[data-rings='true'] .activity-rings {
+  opacity: 1;
+}
+/* Starts at scale 1 (= slide 5) so the cut lines up, then shrinks. Don't override
+   the orbit's --orbit-r/--orbit-icon here or the cut jumps — size via --activity-scale. */
+.activity-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(64px, 15vw, 300px);
+  --activity-scale: 0.46; /* orbit's parked scale; small enough to clear the rings */
+  --coin-extra: 0.45; /* extra coin-only shrink for negative space */
+  transform: translate(-50%, -50%) scale(1);
+  transition: transform 0.95s cubic-bezier(0.4, 0, 0.2, 1);
+  isolation: isolate;
+}
+.activity-core .coin-visual {
+  transform: scale(1);
+  transition: transform 0.95s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.activity-stage[data-shrunk='true'] .activity-core {
+  transform: translate(-50%, -50%) scale(var(--activity-scale, 0.27));
+}
+.activity-stage[data-shrunk='true'] .activity-core .coin-visual {
+  transform: scale(var(--coin-extra, 0.58));
+}
+@media (prefers-reduced-motion: reduce) {
+  .activity-rings,
+  .activity-core,
+  .activity-core .coin-visual {
+    transition: none;
+  }
+}
+
 /* Sizing box for the coin canvas. Nudged via offsets, not transform, so it
    doesn't form a stacking context and the glow can sit behind the letters. */
 .tokens-coin {
@@ -987,6 +1133,12 @@
   margin: 0 -0.06em;
   top: -0.02em;
   left: 0.02em;
+}
+
+/* Lets slide 6 scale the coin without the orbit; inert elsewhere. */
+.coin-visual {
+  position: absolute;
+  inset: 0;
 }
 
 .tokens-coin canvas {

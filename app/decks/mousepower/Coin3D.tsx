@@ -3,7 +3,7 @@
 // The "O" in the TOKENS wordmark: a 3D coin extruded from coin.svg's outline,
 // spinning, with a reflection shimmer, glow, and sparkles.
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
@@ -211,36 +211,40 @@ function Coin({
   );
 }
 
-export function Coin3D() {
+export function Coin3D({ overlay }: { overlay?: ReactNode } = {}) {
   const glowRef = useRef<HTMLSpanElement>(null);
   const sparkleRefs = useRef<(HTMLImageElement | null)[]>([]);
   return (
     <span className="tokens-coin">
-      <span className="tokens-coin-glow" ref={glowRef} aria-hidden="true" />
-      {SPARKLES.map((sp, i) => (
-        <img
-          key={i}
-          ref={(el) => {
-            sparkleRefs.current[i] = el;
-          }}
-          className="tokens-sparkle"
-          src="/decks/mousepower/sparkle.svg"
-          alt=""
-          aria-hidden="true"
-          style={{ left: sp.left, top: sp.top, width: sp.size, height: sp.size }}
-        />
-      ))}
-      <Canvas
-        camera={{ position: [0, 0, 6.7], fov: 20 }}
-        gl={{ alpha: true, antialias: true }}
-        dpr={[1, 2]}
-        style={{ overflow: 'visible' }}
-      >
-        <hemisphereLight args={['#fff6dc', '#7a4a08', 1.0]} />
-        <directionalLight position={[3, 4, 6]} intensity={1.6} />
-        <directionalLight position={[-4, -1, 3]} intensity={0.6} color="#ffd98a" />
-        <Coin glowRef={glowRef} sparkleRefs={sparkleRefs} />
-      </Canvas>
+      {overlay}
+      {/* Wrapped so slide 6 can scale the coin independently of the orbit. */}
+      <span className="coin-visual">
+        <span className="tokens-coin-glow" ref={glowRef} aria-hidden="true" />
+        {SPARKLES.map((sp, i) => (
+          <img
+            key={i}
+            ref={(el) => {
+              sparkleRefs.current[i] = el;
+            }}
+            className="tokens-sparkle"
+            src="/decks/mousepower/sparkle.svg"
+            alt=""
+            aria-hidden="true"
+            style={{ left: sp.left, top: sp.top, width: sp.size, height: sp.size }}
+          />
+        ))}
+        <Canvas
+          camera={{ position: [0, 0, 6.7], fov: 20 }}
+          gl={{ alpha: true, antialias: true }}
+          dpr={[1, 2]}
+          style={{ overflow: 'visible' }}
+        >
+          <hemisphereLight args={['#fff6dc', '#7a4a08', 1.0]} />
+          <directionalLight position={[3, 4, 6]} intensity={1.6} />
+          <directionalLight position={[-4, -1, 3]} intensity={0.6} color="#ffd98a" />
+          <Coin glowRef={glowRef} sparkleRefs={sparkleRefs} />
+        </Canvas>
+      </span>
     </span>
   );
 }
