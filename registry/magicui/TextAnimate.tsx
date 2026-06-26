@@ -16,7 +16,11 @@ export function TextAnimate({
   as = "span",
   className = "",
 }: TextAnimateProps) {
-  const Tag = as as React.ElementType;
+  const Tag = as as unknown as React.ComponentType<{
+    className?: string;
+    style?: React.CSSProperties;
+    children?: React.ReactNode;
+  }>;
 
   // If children is a string, animate per word
   if (typeof children === 'string') {

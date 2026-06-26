@@ -2,6 +2,7 @@ import { Deck } from '../Deck';
 import { TitleSlide } from './TitleSlide';
 import { AutonomousWindow } from './AutonomousWindow';
 import { ExplorationGrid } from './ExplorationGrid';
+import { TokensWordmark } from './TokensWordmark';
 
 // Mousepower — an unlisted presentation deck (see app/decks/README.md). Opens on
 // the maze title, then zooms out to reveal the title living inside an OS window
@@ -29,6 +30,13 @@ export default function MousepowerDeck() {
           different creative direction of the theme. See ExplorationGrid. */}
       <div className="slide" style={{ background: '#e8e8e8', color: '#111' }}>
         <ExplorationGrid />
+      </div>
+
+      {/* TOKENS — the wordmark with a spinning 3D coin for the "O". */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <div className="slide-content">
+          <TokensWordmark />
+        </div>
       </div>
     </Deck>
   );
