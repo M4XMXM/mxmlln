@@ -3,6 +3,7 @@ import { TitleSlide } from './TitleSlide';
 import { AutonomousWindow } from './AutonomousWindow';
 import { ExplorationGrid } from './ExplorationGrid';
 import { TokensWordmark } from './TokensWordmark';
+import { TokensActivity } from './TokensActivity';
 
 // Mousepower — an unlisted presentation deck (see app/decks/README.md). Opens on
 // the maze title, then zooms out to reveal the title living inside an OS window
@@ -32,11 +33,28 @@ export default function MousepowerDeck() {
         <ExplorationGrid />
       </div>
 
-      {/* TOKENS — the wordmark with a spinning 3D coin for the "O". */}
+      {/* TOKENS — the wordmark with a spinning 3D coin for the "O". Pressing
+          forward fades the letters out and slides the coin to centre, then cuts
+          to the next slide (which renders that same end-state). */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <div className="slide-content">
-          <TokensWordmark />
+          <TokensWordmark mode="wordmark" />
         </div>
+      </div>
+
+      {/* TOKENS coin — same coin at the same size, parked at centre (the morph's
+          end-state) so the cut from the previous slide reads as one motion. The
+          task orbit rings the coin. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <div className="slide-content">
+          <TokensWordmark mode="centered" />
+        </div>
+      </div>
+
+      {/* Activity rings — the coin + orbit shrink into the centre of Apple-style
+          measurement rings (which draw on). See TokensActivity. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <TokensActivity />
       </div>
     </Deck>
   );

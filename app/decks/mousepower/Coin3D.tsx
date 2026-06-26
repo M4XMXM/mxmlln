@@ -3,7 +3,7 @@
 // The "O" in the TOKENS wordmark: a 3D coin extruded from coin.svg's outline,
 // spinning, with a reflection shimmer, glow, and sparkles.
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import * as THREE from 'three';
 import { SVGLoader } from 'three/examples/jsm/loaders/SVGLoader.js';
 
@@ -211,12 +211,18 @@ function Coin({
   );
 }
 
-export function Coin3D() {
+export function Coin3D({ overlay }: { overlay?: ReactNode } = {}) {
   const glowRef = useRef<HTMLSpanElement>(null);
   const sparkleRefs = useRef<(HTMLImageElement | null)[]>([]);
   return (
     <span className="tokens-coin">
-      <span className="tokens-coin-glow" ref={glowRef} aria-hidden="true" />
+      {/* Optional layer rendered over the coin (e.g. the slide-5 task orbit),
+          centred on the coin and riding its translate to viewport centre. */}
+      {overlay}
+      {/* Coin visual (glow + sparkles + canvas), wrapped so slide 6 can shrink
+          the coin independently of the orbit for extra negative space. */}
+      <span className="coin-visual">
+        <span className="tokens-coin-glow" ref={glowRef} aria-hidden="true" />
       {SPARKLES.map((sp, i) => (
         <img
           key={i}
@@ -239,8 +245,9 @@ export function Coin3D() {
         <hemisphereLight args={['#fff6dc', '#7a4a08', 1.0]} />
         <directionalLight position={[3, 4, 6]} intensity={1.6} />
         <directionalLight position={[-4, -1, 3]} intensity={0.6} color="#ffd98a" />
-        <Coin glowRef={glowRef} sparkleRefs={sparkleRefs} />
-      </Canvas>
+          <Coin glowRef={glowRef} sparkleRefs={sparkleRefs} />
+        </Canvas>
+      </span>
     </span>
   );
 }
