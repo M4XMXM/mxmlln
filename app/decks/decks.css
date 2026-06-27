@@ -878,14 +878,9 @@
   }
 }
 
-/* ── Rack-focus transition (the "argument" run: grid → statement → TOKENS) ────
-   The deck cuts between slides, so the motion splits across the cut: an exiting
-   slide blurs and recedes out of focus (.is-exiting, added by that slide's
-   forward interceptor — duration mirrors EXIT_MS in ExplorationGrid.tsx), and
-   the incoming slide swims from blur into sharp focus (.rack-in, keyed off the
-   active slide). Sharing the out-of-focus seam makes the cut read as one
-   continuous focus change. Grid exit → statement rack-in is the full pull;
-   TOKENS then rack-ins on its own as the answer resolves. */
+/* Rack-focus transition. .is-exiting (added by a slide's forward interceptor;
+   duration mirrors EXIT_MS in ExplorationGrid.tsx) animates the outgoing slide;
+   .rack-in is keyed off the active slide for the incoming one. */
 .is-exiting {
   animation: rack-exit 620ms cubic-bezier(0.4, 0, 1, 1) both;
 }
@@ -1240,12 +1235,9 @@
   z-index: 10;
 }
 
-/* ── Statement slide: "Agents have a measurement problem." (MeasurementProblem)
-   Headline + handwritten aside on the left; photo fills the right half — 50vw
-   wide, full height inside a 40px margin (100dvh − 80px). Collapses to a single
-   column when the viewport turns portrait. */
+/* Statement slide (MeasurementProblem). */
 .measure-slide {
-  --m: 40px; /* uniform photo margin */
+  --m: 40px;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
@@ -1259,11 +1251,10 @@
   padding-right: clamp(32px, 4vw, 64px);
 }
 .measure-headline {
-  /* Figma 100px on a 1920 canvas → ~5.2vw, left-aligned, capped for big screens. */
+  /* Figma 100px on a 1920 canvas → ~5.2vw. */
   font-size: clamp(40px, 5.2vw, 100px);
   max-width: 12em;
 }
-/* The handwritten aside + the arrow that reaches toward the photo. */
 .measure-aside {
   display: flex;
   align-items: flex-end;
@@ -1281,7 +1272,6 @@
      none), so pin its viewBox ratio or it stretches to fill. */
   aspect-ratio: 214.27 / 66.31;
   height: auto;
-  /* Sits low and curves up toward the image, as in the source. */
   margin-bottom: clamp(2px, 0.4vw, 8px);
 }
 .measure-photo {
@@ -1314,9 +1304,7 @@
   }
 }
 
-/* ── Evidence slide: token-cost headlines (TokenEvidence) ─────────────────────
-   A 2×2 grid of article screenshots, each card cropped to its top (header +
-   headline) with a grey source URL beneath. Fills 100dvh inside a 40px margin. */
+/* Evidence grid (TokenEvidence). */
 .evidence-slide {
   --m: 40px;
   width: 100%;
@@ -1349,7 +1337,7 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: top center; /* show the header + headline, as in the source */
+  object-position: top center;
 }
 .evidence-item figcaption {
   flex: 0 0 auto;
@@ -1364,7 +1352,6 @@
   color: #979797;
   text-decoration: underline;
   text-underline-offset: 2px;
-  /* Keep the source URL to a single line, ellipsising if it overruns the card. */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1377,9 +1364,7 @@
   }
 }
 
-/* ── Closing slide: the horsepower metaphor (ClosingPower) ────────────────────
-   Two engravings side by side — steam engine | horse gin — each filling its half
-   to full height inside a 40px margin, rounded 28px with a soft elevation. */
+/* Closing slide (ClosingPower). */
 .closing-slide {
   --m: 40px;
   width: 100%;
@@ -1415,10 +1400,7 @@
   }
 }
 
-/* ── Quote slide: Anthropic on the code-review bottleneck (CodeReviewQuote) ────
-   Pull-quote + handwritten attribution on the left, the recursive-improvement
-   diagram on the right (contained, not cropped — it carries its own card), and a
-   small source line pinned bottom-left. */
+/* Quote slide (CodeReviewQuote). */
 .quote-slide {
   --m: 40px;
   position: relative;

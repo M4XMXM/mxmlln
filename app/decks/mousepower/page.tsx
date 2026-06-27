@@ -37,15 +37,10 @@ export default function MousepowerDeck() {
         <ExplorationGrid />
       </div>
 
-      {/* Statement — the thesis: agents have a measurement problem. Headline +
-          handwritten aside on the left, a photo on the right. See
-          MeasurementProblem. Sits just before the TOKENS answer. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <MeasurementProblem />
       </div>
 
-      {/* Evidence — the problem in the headlines: a 2×2 grid of token-cost
-          articles with sources. See TokenEvidence. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <TokenEvidence />
       </div>
@@ -68,13 +63,10 @@ export default function MousepowerDeck() {
         <TokensActivity />
       </div>
 
-      {/* The horsepower metaphor: steam engine | horse gin. See ClosingPower. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <ClosingPower />
       </div>
 
-      {/* Closing quote — Anthropic on the code-review bottleneck, beside their
-          recursive self-improvement diagram. See CodeReviewQuote. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <CodeReviewQuote />
       </div>

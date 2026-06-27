@@ -1,6 +1,3 @@
-// Quote slide — Anthropic on the code-review bottleneck, beside their recursive
-// self-improvement diagram. The new measurement frontier: as agents merge ever
-// more code, the human becomes the constraint. From Figma node 97:29.
 export function CodeReviewQuote() {
   return (
     <div className="quote-slide rack-in">

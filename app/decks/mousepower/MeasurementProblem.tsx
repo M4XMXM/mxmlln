@@ -1,7 +1,3 @@
-// Statement slide — the thesis. Headline left, a handwritten aside with a
-// hand-drawn arrow pointing across to a photo (me at a whiteboard, the
-// Charlie-Day conspiracy meme on the laptop) on the right. From Figma node 96:27;
-// adapted to the deck's type tokens. Assets in public/decks/mousepower/.
 export function MeasurementProblem() {
   return (
     <div className="measure-slide rack-in">

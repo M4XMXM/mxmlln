@@ -1,6 +1,3 @@
-// Evidence slide — the measurement problem is real and in the news. A 2×2 grid
-// of article screenshots (token spending / AI cost), each with its source URL.
-// From Figma node 96:62. Assets in public/decks/mousepower/.
 const ITEMS = [
   {
     img: 'evidence-fortune-uber.jpg',

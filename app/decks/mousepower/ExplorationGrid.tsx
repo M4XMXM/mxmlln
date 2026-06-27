@@ -108,8 +108,6 @@ export function ExplorationGrid() {
   const isActive = activeIndex === myIndex;
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // On advance, the grid racks out of focus (.is-exiting) and TOKENS racks in on
-  // the next slide — the cut hides in the shared out-of-focus seam.
   useEffect(() => {
     const root = rootRef.current;
     if (!isActive) {
