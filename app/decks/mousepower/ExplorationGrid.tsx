@@ -1,6 +1,14 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
 import { Mouse, MousePointer2, Zap } from 'lucide-react';
+import { useDeck, useSlideIndex } from '../Deck';
 import { MazeTitle3D } from './MazeTitle3D';
 import { GwChat } from './GwChat';
+
+// Rack-focus exit duration; kept in sync with the .explore-desktop.is-exiting
+// rule in decks.css. The interceptor advances the deck when it ends.
+const EXIT_MS = 620;
 
 // Slide 3 — the agent window multiplies into a 3×2 grid: the original (the
 // centrepiece, carried over from slide 2, sitting top-middle) plus five more,
@@ -95,8 +103,28 @@ function AgentWindow({ v, prompt, delay }: { v: string; prompt: string; delay: n
 }
 
 export function ExplorationGrid() {
+  const { activeIndex, setForwardInterceptor } = useDeck();
+  const myIndex = useSlideIndex();
+  const isActive = activeIndex === myIndex;
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  // On advance, the grid racks out of focus (.is-exiting) and TOKENS racks in on
+  // the next slide — the cut hides in the shared out-of-focus seam.
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!isActive) {
+      root?.classList.remove('is-exiting'); // reset if we navigated back
+      return;
+    }
+    setForwardInterceptor((done) => {
+      root?.classList.add('is-exiting');
+      window.setTimeout(done, EXIT_MS);
+    });
+    return () => setForwardInterceptor(null);
+  }, [isActive, setForwardInterceptor]);
+
   return (
-    <div className="explore-desktop">
+    <div className="explore-desktop" ref={rootRef}>
       <div className="explore-grid">
         {TILES.map((t, i) => (
           <AgentWindow key={t.v} v={t.v} prompt={t.prompt} delay={i * 260} />
