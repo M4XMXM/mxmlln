@@ -878,6 +878,30 @@
   }
 }
 
+/* Rack-focus transition. .is-exiting (added by a slide's forward interceptor;
+   duration mirrors EXIT_MS in ExplorationGrid.tsx) animates the outgoing slide;
+   .rack-in is keyed off the active slide for the incoming one. */
+.is-exiting {
+  animation: rack-exit 620ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+@keyframes rack-exit {
+  to { opacity: 0; filter: blur(16px); transform: scale(0.92); }
+}
+.deck-slide[data-active='true'] .rack-in {
+  animation: rack-in 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes rack-in {
+  from { opacity: 0; filter: blur(22px); transform: scale(1.06); }
+  to { opacity: 1; filter: blur(0); transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-exiting,
+  .deck-slide[data-active='true'] .rack-in {
+    animation: none;
+  }
+}
+
 /* Mousepower title hero — the maze graphic (app/decks/mousepower). Sized as the
    headline would be: viewport-relative, centred, capped so it never reaches the
    slide's logo/edge insets. */
@@ -1211,8 +1235,256 @@
   z-index: 10;
 }
 
+/* Statement slide (MeasurementProblem). */
+.measure-slide {
+  --m: 40px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+.measure-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-left: clamp(var(--m), 6vw, 120px);
+  padding-right: clamp(32px, 4vw, 64px);
+}
+.measure-headline {
+  /* Figma 100px on a 1920 canvas → ~5.2vw. */
+  font-size: clamp(40px, 5.2vw, 100px);
+  max-width: 12em;
+}
+.measure-aside {
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(12px, 1.6vw, 32px);
+  margin-top: clamp(16px, 2vw, 40px);
+}
+.measure-caption {
+  margin: 0;
+  flex: 0 0 auto;
+}
+.measure-arrow {
+  flex: 0 1 auto;
+  width: clamp(90px, 11vw, 214px);
+  /* The SVG declares no intrinsic size (width/height 100%, preserveAspectRatio
+     none), so pin its viewBox ratio or it stretches to fill. */
+  aspect-ratio: 214.27 / 66.31;
+  height: auto;
+  margin-bottom: clamp(2px, 0.4vw, 8px);
+}
+.measure-photo {
+  flex: 0 0 50vw;
+  width: 50vw;
+  height: calc(100dvh - var(--m) * 2);
+  margin: var(--m) var(--m) var(--m) 0;
+  object-fit: cover;
+  border-radius: clamp(12px, 1.2vw, 24px);
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12), 0 6px 14px rgba(0, 0, 0, 0.08);
+}
 
+@media (max-aspect-ratio: 1/1) {
+  .measure-slide {
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(20px, 4vw, 48px);
+  }
+  .measure-text {
+    flex: 0 0 auto;
+    padding: 0 clamp(var(--m), 6vw, 120px);
+  }
+  .measure-photo {
+    flex: 0 0 auto;
+    width: calc(100vw - var(--m) * 2);
+    height: auto;
+    max-height: 50dvh;
+    aspect-ratio: 1400 / 1326;
+    margin: 0 var(--m);
+  }
+}
 
+/* Evidence grid (TokenEvidence). */
+.evidence-slide {
+  --m: 40px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--m);
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: repeat(2, 1fr);
+  gap: clamp(16px, 2vw, 40px) clamp(24px, 3.4vw, 66px);
+}
+.evidence-item {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1vw, 18px);
+}
+.evidence-card {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02), 0 10px 18px rgba(0, 0, 0, 0.03),
+    0 18px 56px rgba(0, 0, 0, 0.06);
+}
+.evidence-card img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+}
+.evidence-item figcaption {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.evidence-cap {
+  display: block;
+  max-width: 100%;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: clamp(11px, 1.04vw, 20px);
+  line-height: 1.4;
+  color: #979797;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
+@media (max-aspect-ratio: 1/1) {
+  .evidence-slide {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 1fr);
+  }
+}
 
+/* Closing slide (ClosingPower). */
+.closing-slide {
+  --m: 40px;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: var(--m);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  gap: 20px;
+}
+.closing-card {
+  min-width: 0;
+  min-height: 0;
+  border-radius: 28px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 10px 18px rgba(0, 0, 0, 0.05),
+    0 18px 56px rgba(0, 0, 0, 0.1);
+}
+.closing-card img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: center;
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .closing-slide {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+}
+
+/* Quote slide (CodeReviewQuote). */
+.quote-slide {
+  --m: 40px;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+}
+.quote-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-left: clamp(var(--m), 6vw, 120px);
+  padding-right: clamp(32px, 4vw, 64px);
+}
+.quote-text {
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 400;
+  /* Figma 56px on a 1920 canvas → ~2.92vw. */
+  font-size: clamp(22px, 2.92vw, 56px);
+  line-height: 1.1;
+  max-width: 14em;
+}
+.quote-text p {
+  margin: 0;
+}
+.quote-text strong {
+  font-weight: 600;
+}
+.quote-cite {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-size: clamp(18px, 1.875vw, 40px);
+  line-height: 1.5;
+  margin: clamp(20px, 2.4vw, 48px) 0 0;
+}
+.quote-figure {
+  flex: 0 0 50vw;
+  width: 50vw;
+  height: calc(100dvh - var(--m) * 2);
+  margin: var(--m) var(--m) var(--m) 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.quote-figure img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+.quote-source {
+  position: absolute;
+  left: clamp(20px, 2.5vw, 40px);
+  bottom: clamp(16px, 1.8vw, 28px);
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: clamp(11px, 0.93vw, 14px);
+  letter-spacing: -0.02em;
+  color: #6b6b6b;
+}
+.quote-source a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+@media (max-aspect-ratio: 1/1) {
+  .quote-slide {
+    flex-direction: column;
+    justify-content: center;
+    gap: clamp(20px, 4vw, 48px);
+  }
+  .quote-main {
+    flex: 0 0 auto;
+    padding: 0 clamp(var(--m), 6vw, 120px);
+  }
+  .quote-figure {
+    flex: 0 0 auto;
+    width: calc(100vw - var(--m) * 2);
+    height: auto;
+    max-height: 46dvh;
+    margin: 0 var(--m);
+  }
+}
 

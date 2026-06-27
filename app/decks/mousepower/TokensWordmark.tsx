@@ -60,7 +60,7 @@ export function TokensWordmark({ mode = 'wordmark' }: { mode?: 'wordmark' | 'cen
   return (
     <div
       ref={wmRef}
-      className={`tokens-wordmark${mode === 'centered' ? ' is-centered' : ''}`}
+      className={`tokens-wordmark${mode === 'centered' ? ' is-centered' : ' rack-in'}`}
       role="img"
       aria-label="TOKENS"
     >
