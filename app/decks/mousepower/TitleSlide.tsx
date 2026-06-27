@@ -31,7 +31,7 @@ export function TitleSlide() {
       <div className="slide-content">
         <p className="slide-eyebrow">Maximillian Piras</p>
         <MazeTitle3D mouseHidden={leaving} />
-        <p className="slide-footnote">on the measurement of agents</p>
+        <p className="slide-footnote">on measuring agents</p>
       </div>
     </div>
   );

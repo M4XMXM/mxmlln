@@ -6,8 +6,11 @@ import { MeasurementProblem } from './MeasurementProblem';
 import { TokenEvidence } from './TokenEvidence';
 import { TokensWordmark } from './TokensWordmark';
 import { TokensActivity } from './TokensActivity';
-import { ClosingPower } from './ClosingPower';
+import { HorsepowerSequence } from './HorsepowerSequence';
 import { CodeReviewQuote } from './CodeReviewQuote';
+import { DevloperTweet } from './DevloperTweet';
+import { VerificationStats } from './VerificationStats';
+import { PullRequestQuote } from './PullRequestQuote';
 
 // Mousepower — an unlisted presentation deck (see app/decks/README.md). Opens on
 // the maze title, then zooms out to reveal the title living inside an OS window
@@ -63,12 +66,29 @@ export default function MousepowerDeck() {
         <TokensActivity />
       </div>
 
+      {/* Slide 9 — horsepower build sequence (steam engine → +horse gin →
+          equation). One slide, advanced through three steps with → / ←. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
-        <ClosingPower />
+        <HorsepowerSequence />
       </div>
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <CodeReviewQuote />
+      </div>
+
+      {/* "I Am Devloper" tweet screenshot — code review as the punchline. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <DevloperTweet />
+      </div>
+
+      {/* Verification bottleneck — three stats + Amdahl's-law aside. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <VerificationStats />
+      </div>
+
+      {/* Noah Hein pull-request pull-quote — closes the code-review thread. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <PullRequestQuote />
       </div>
     </Deck>
   );
