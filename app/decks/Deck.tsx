@@ -32,11 +32,17 @@ export function useDeck() {
 }
 
 // Each slide is rendered inside a provider carrying its own index, so a slide
-// component can tell whether it is the active one.
+// component can tell whether it is the active one. Preview miniatures render
+// their clone with index -1 so it can never match activeIndex — keeping every
+// slide's active-gated side effects (interceptors, keydown, animations) inert.
 const SlideIndexContext = createContext(0);
 export function useSlideIndex() {
   return useContext(SlideIndexContext);
 }
+
+// Rendered width of a hover-preview miniature (px). Its height is derived from
+// the live viewport ratio so the thumbnail matches what's on screen.
+const PREVIEW_WIDTH = 200;
 
 /**
  * Fullscreen slideshow shell for a deck. Each top-level child is one slide;
@@ -49,12 +55,48 @@ export function Deck({ children }: { children: React.ReactNode }) {
   const count = slides.length;
   const [index, setIndex] = useState(0);
 
+  // Pagination-tick hover preview: which slide is hovered, that tick's offset
+  // from the row centre (px, so the thumbnail sits above the tick), and the live
+  // viewport size (used to size/scale the miniature so it mirrors the screen).
+  const [hover, setHover] = useState<number | null>(null);
+  const [hoverDX, setHoverDX] = useState(0);
+  const [viewport, setViewport] = useState<{ w: number; h: number } | null>(null);
+
+  // Anchor the preview above a tick: offset = tick centre − row centre, clamped
+  // so a near-edge thumbnail stays fully on screen.
+  const showPreview = useCallback((i: number, tick: HTMLElement) => {
+    const row = tick.parentElement;
+    if (row) {
+      const dx = tick.offsetLeft + tick.offsetWidth / 2 - row.offsetWidth / 2;
+      const max = Math.max(0, (window.innerWidth - PREVIEW_WIDTH) / 2 - 12);
+      setHoverDX(Math.min(Math.max(dx, -max), max));
+    }
+    setHover(i);
+  }, []);
+
   // Forward interceptor + a busy latch so a transition can't be double-fired.
   const interceptor = useRef<Interceptor | null>(null);
   const busy = useRef(false);
 
   const setForwardInterceptor = useCallback((fn: Interceptor | null) => {
     interceptor.current = fn;
+  }, []);
+
+  // Jump straight to a slide (clicking a tick). Clears any pending interceptor
+  // latch so a jump out of a mid-transition slide can't wedge.
+  const jumpTo = useCallback(
+    (i: number) => {
+      busy.current = false;
+      setIndex(Math.min(Math.max(i, 0), count - 1));
+    },
+    [count]
+  );
+
+  useEffect(() => {
+    const measure = () => setViewport({ w: window.innerWidth, h: window.innerHeight });
+    measure();
+    window.addEventListener('resize', measure);
+    return () => window.removeEventListener('resize', measure);
   }, []);
 
   const go = useCallback(
@@ -117,14 +159,46 @@ export function Deck({ children }: { children: React.ReactNode }) {
           </section>
         ))}
         {count > 1 && (
-          <div className="deck-progress" aria-hidden>
-            {slides.map((_, i) => (
-              <span
-                key={i}
-                className="deck-progress-tick"
-                data-active={i === index}
-              />
-            ))}
+          <div className="deck-progress-wrap" onMouseLeave={() => setHover(null)}>
+            {hover !== null && viewport && (
+              <div className="deck-preview" style={{ '--dx': `${hoverDX}px` } as React.CSSProperties}>
+                <span
+                  className="deck-preview-stage"
+                  style={{
+                    width: PREVIEW_WIDTH,
+                    height: Math.round((viewport.h * PREVIEW_WIDTH) / viewport.w),
+                  }}
+                >
+                  <span
+                    className="deck-preview-scale"
+                    style={{
+                      width: viewport.w,
+                      height: viewport.h,
+                      transform: `scale(${PREVIEW_WIDTH / viewport.w})`,
+                    }}
+                  >
+                    <SlideIndexContext.Provider value={-1}>
+                      {slides[hover]}
+                    </SlideIndexContext.Provider>
+                  </span>
+                </span>
+              </div>
+            )}
+            <div className="deck-progress">
+              {slides.map((_, i) => (
+                <button
+                  key={i}
+                  type="button"
+                  className="deck-progress-hit"
+                  aria-label={`Go to slide ${i + 1}`}
+                  onMouseEnter={(e) => showPreview(i, e.currentTarget)}
+                  onFocus={(e) => showPreview(i, e.currentTarget)}
+                  onClick={() => jumpTo(i)}
+                >
+                  <span className="deck-progress-tick" data-active={i === index} />
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>
