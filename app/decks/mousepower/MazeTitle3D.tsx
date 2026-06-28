@@ -43,28 +43,14 @@ const WALL_H = 50; // wall extrusion height (toward the camera)
 // than x to keep depth in the top/bottom walls, which sit closer to centre.
 const FRAME_CREST_SCALE_X = 1.1;
 const FRAME_CREST_SCALE_Y = 1.21;
-// Backlit: light from behind/beneath the maze, so the FAR parts (the floor/base,
-// z=0) glow and the NEAR parts (the crest, closest to the viewer) fall into
-// shadow — the inverse of front-lit. Gradients keep the base→top axis; the tone
-// assignment below puts light at the base and shadow at the top.
-const SHADE_BASE = '#3a3a3a'; // dark tone
-const SHADE_TOP = '#9b9b9b'; // light tone
-// Pane silhouette edge: its own base→top gradient so the rim catches light
-// (reflective highlight up top, shadow at the base) rather than a flat gray.
-// Its base bottoms out at the faces' deepest shadow (SHADE_BASE) so the lowest
-// edges read the same darkness as the floor of the panes.
-const EDGE_BASE = SHADE_BASE;
-const EDGE_TOP = '#d4d4d4';
-// Mouse: the design-system accent (#00BBFF). Kept as a backlit gradient like the
-// walls — a darker cyan in shadow easing to the accent at the lit end — so it
-// stays dimensional while reading clearly as the brand cyan.
-const MOUSE_DARK = '#0090c4';
-const MOUSE_LIGHT = '#00bbff';
-// Flat (gradient-free) palette: solid-white wall faces, ink strokes, solid accent
-// mouse — a clean monoline reading of the same 3D mark.
-const FLAT_FACE = '#ffffff';
-const FLAT_STROKE = '#111111';
-const FLAT_MOUSE = FLAT_STROKE; // black outline, matching the wall strokes
+// Blueprint palette: cyan linework, pale-cyan wall fills (a base→crest gradient
+// for depth, kept translucent so the mouse peeks through), white ink-outlined
+// mouse. Cyan is the design-system accent (#00BBFF).
+const FLAT_FACE_BASE = 'rgba(168, 226, 250, 0.9)'; // wall base (z=0)
+const FLAT_FACE_TOP = 'rgba(213, 243, 253, 0.9)'; // wall crest
+const FLAT_STROKE = '#00BBFF';
+const FLAT_MOUSE = '#3B3B3B';
+const FLAT_MOUSE_FILL = '#ffffff';
 
 // Perspective from straight above center: depth shrinks toward the camera, so
 // higher points (wall tops) magnify outward from center — more along y than x.
@@ -77,7 +63,7 @@ function frameCrest(x: number, y: number): [number, number] {
   return [(x - CX) * FRAME_CREST_SCALE_X, (y - CY) * FRAME_CREST_SCALE_Y];
 }
 
-const STROKE = 1.25; // monoweight, matches the wordmark + mouse
+const STROKE = 0.75; // monoweight, matches the wordmark + mouse
 
 // ---- Corridor graph for the mouse's random walk -----------------------------
 // Nodes are corridor intersections + letter-pocket dead-ends; edges are open
@@ -122,7 +108,6 @@ export function MazeTitle3D({
   recallRef,
   animate = true,
   mouseHidden = false,
-  solid = false,
 }: {
   // When set, exposes a recall(done) that glides the mouse to floor-centre
   // (upright) and calls done on arrival — used to hand off to the centered agent
@@ -131,15 +116,12 @@ export function MazeTitle3D({
   // Static render (no wandering mouse / rAF) — used by the exploration-grid tiles
   // so 6 copies don't each run an animation loop.
   animate?: boolean;
-  // Flat mode: solid-white wall faces + ink strokes (no backlit gradients).
-  solid?: boolean;
   // Fade the mouse out (e.g. while leaving the title slide, for a cleaner
   // transition). Only sets inline opacity when true, so CSS can otherwise control
   // it (the windowed preview fades its mouse in after the window settles).
   mouseHidden?: boolean;
 } = {}) {
   const mouseRef = useRef<SVGGElement>(null);
-  const mouseGradRef = useRef<SVGLinearGradientElement>(null);
   const reduced = useReducedMotion();
   // Unique per-instance prefix for gradient ids, so multiple <MazeTitle3D>s on
   // screen (e.g. the title + the windowed copy) don't collide on shared ids.
@@ -160,7 +142,11 @@ export function MazeTitle3D({
   // from above); the top crest is a crisp stroke (the legible maze pattern).
   // Panels sort far→near so nearer walls occlude the strokes — and the mouse —
   // behind them (hidden-line removal).
-  type Panel = { fill: string; crest: string; g: [number, number, number, number] };
+  type Panel = {
+    fill: string;
+    crest: string;
+    g: [number, number, number, number];
+  };
   const { panels, viewBox } = useMemo(() => {
     const raw: Array<Panel & { dist: number }> = [];
     const xs: number[] = [];
@@ -172,13 +158,17 @@ export function MazeTitle3D({
         const [x1, y1] = pl[k];
         const [x2, y2] = pl[k + 1];
         if (x1 === x2 && y1 === y2) continue; // skip degenerate (closing dupes)
-        // The P's descender (x=14.5 stem into the bottom moat) uses the frame crest
-        // too, so it lands on the frame's bottom rather than overshooting it.
-        const useFrameCrest = isFrame || (x1 === 14.5 && x2 === 14.5 && Math.max(y1, y2) > 76.5);
+        // Crest is chosen per-endpoint. The P's descender (x=14.5 stem into the
+        // bottom moat) uses the frame crest only for its deep (moat) end so it
+        // lands on the frame's bottom rather than overshooting; its upper end keeps
+        // the normal extrusion so it meets the P's top wall at the (14.5, 52.5)
+        // corner. The frame itself always uses the frame crest.
+        const crestOf = (x: number, y: number): [number, number] =>
+          isFrame || (x === 14.5 && y > 76.5) ? frameCrest(x, y) : project(x, y, WALL_H);
         const f1 = project(x1, y1, 0);
         const f2 = project(x2, y2, 0);
-        const t2 = useFrameCrest ? frameCrest(x2, y2) : project(x2, y2, WALL_H);
-        const t1 = useFrameCrest ? frameCrest(x1, y1) : project(x1, y1, WALL_H);
+        const t2 = crestOf(x2, y2);
+        const t1 = crestOf(x1, y1);
         xs.push(f1[0], f2[0], t2[0], t1[0]);
         ys.push(f1[1], f2[1], t2[1], t1[1]);
         const Xc = (x1 + x2) / 2 - CX;
@@ -187,17 +177,35 @@ export function MazeTitle3D({
         // and ordering reduces to radial floor distance from center.
         const dist = Xc * Xc + Yc * Yc + (CAM_H_X - WALL_H / 2) ** 2;
         const p = (a: [number, number]) => `${a[0].toFixed(2)} ${a[1].toFixed(2)}`;
-        // Shade along the z-axis projected: base (z=0, the floor — farthest from
-        // the viewer) is dark, the top edge (z=WALL_H — closest to the viewer) is
-        // light. This holds for both rows: the bottom row's top edge projects to
-        // the bottom of its pane, so its lightest part sits there (nearest in z).
+        // Fill gradient runs base (z=0) → crest (z=WALL_H) along the projected
+        // extrusion, so the crest reads lightest even where it projects downward
+        // (bottom row).
         const bm: [number, number] = [(f1[0] + f2[0]) / 2, (f1[1] + f2[1]) / 2];
         const tm: [number, number] = [(t1[0] + t2[0]) / 2, (t1[1] + t2[1]) / 2];
+        // Wall fill gradient axis. Default: along the extrusion (base→crest).
+        // The bottom frame wall reads wrong that way, so rotate ITS axis 10°
+        // clockwise (screen space, y-down) about its midpoint.
+        let g: [number, number, number, number] = [bm[0], bm[1], tm[0], tm[1]];
+        if (isFrame && y1 === 97.5 && y2 === 97.5) {
+          const cx = (bm[0] + tm[0]) / 2;
+          const cy = (bm[1] + tm[1]) / 2;
+          const ang = (-10 * Math.PI) / 180; // CCW-positive; -10° = 10° clockwise from base→crest
+          const cosA = Math.cos(ang);
+          const sinA = Math.sin(ang);
+          const rot = (px: number, py: number): [number, number] => {
+            const dx = px - cx;
+            const dy = py - cy;
+            return [cx + dx * cosA + dy * sinA, cy - dx * sinA + dy * cosA];
+          };
+          const [bx, by] = rot(bm[0], bm[1]);
+          const [tx, ty] = rot(tm[0], tm[1]);
+          g = [bx, by, tx, ty];
+        }
         raw.push({
           dist,
           fill: `M${p(f1)} L${p(f2)} L${p(t2)} L${p(t1)} Z`,
           crest: `M${p(t1)} L${p(t2)}`,
-          g: [bm[0], bm[1], tm[0], tm[1]],
+          g,
         });
       }
     }
@@ -213,7 +221,7 @@ export function MazeTitle3D({
     };
   }, []);
 
-  // Position + orient the mouse, keeping its lit gradient world-vertical.
+  // Position + orient the mouse to face its heading.
   const apply = () => {
     const w = walk.current;
     const rot = w.heading + 90;
@@ -221,7 +229,6 @@ export function MazeTitle3D({
       'transform',
       `translate(${w.pos[0].toFixed(2)} ${w.pos[1].toFixed(2)}) rotate(${rot.toFixed(1)})`
     );
-    mouseGradRef.current?.setAttribute('gradientTransform', `rotate(${(-rot).toFixed(1)} 12 12)`);
   };
 
   useEffect(() => {
@@ -337,45 +344,14 @@ export function MazeTitle3D({
               x2={p.g[2]}
               y2={p.g[3]}
             >
-              {/* Backlit: base (far) lit, top (near) in shadow. */}
-              <stop offset="0" stopColor={SHADE_TOP} />
-              <stop offset="1" stopColor={SHADE_BASE} />
+              <stop offset="0" stopColor={FLAT_FACE_BASE} />
+              <stop offset="1" stopColor={FLAT_FACE_TOP} />
             </linearGradient>
           ))}
-          {panels.map((p, i) => (
-            <linearGradient
-              key={`e${i}`}
-              id={`${uid}-edge-${i}`}
-              gradientUnits="userSpaceOnUse"
-              x1={p.g[0]}
-              y1={p.g[1]}
-              x2={p.g[2]}
-              y2={p.g[3]}
-            >
-              {/* Backlit rim: bright at the far/base edge, dark at the near crest. */}
-              <stop offset="0" stopColor={EDGE_TOP} />
-              <stop offset="1" stopColor={EDGE_BASE} />
-            </linearGradient>
-          ))}
-          {/* Mouse stroke: backlit (far/base-of-icon lit, near in shadow);
-              counter-rotated each frame so the light stays world-consistent. */}
-          <linearGradient
-            ref={mouseGradRef}
-            id={`${uid}-mouse`}
-            gradientUnits="userSpaceOnUse"
-            x1={12}
-            y1={0}
-            x2={12}
-            y2={24}
-          >
-            <stop offset="0" stopColor={MOUSE_DARK} />
-            <stop offset="1" stopColor={MOUSE_LIGHT} />
-          </linearGradient>
         </defs>
 
-        {/* The solver, on the floor (drawn first = farthest, so the walls in
-            front of it occlude it as it runs). Random-walks the corridor graph,
-            rotated to face its heading. Omitted in static (non-animated) tiles. */}
+        {/* Drawn before the walls so nearer walls occlude it (hidden-line removal).
+            Omitted in static (non-animated) tiles. */}
         {animate && (
           <g
             ref={mouseRef}
@@ -384,20 +360,16 @@ export function MazeTitle3D({
             transform={`translate(${NODES[START_NODE][0]} ${NODES[START_NODE][1]})`}
           >
             <g transform="translate(-5.5 -5.5)">
-              <Mouse size={11} color={solid ? FLAT_MOUSE : `url(#${uid}-mouse)`} fill={solid ? FLAT_FACE : 'none'} strokeWidth={STROKE} absoluteStrokeWidth />
+              <Mouse size={11} color={FLAT_MOUSE} fill={FLAT_MOUSE_FILL} strokeWidth={STROKE} absoluteStrokeWidth />
             </g>
           </g>
         )}
 
-        {/* Wall panels far→near: backlit faces (far/base glows, near crest in
-            shadow). Nearer walls occlude the faces, crests, and mouse behind them. */}
+        {/* Far→near, so nearer walls occlude the faces, crests, and mouse behind. */}
         {panels.map((p, i) => (
           <g key={i}>
-            <path d={p.fill} fill={solid ? FLAT_FACE : `url(#${uid}-wall-${i})`} stroke={solid ? FLAT_STROKE : `url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinejoin="round" />
-            {/* Crest is the wall's 3D top edge. Same stroke width + gradient as the
-                silhouette so every stroke in the mark reads as one consistent
-                weight (the gradient still darkens toward the near/shadow crest). */}
-            <path d={p.crest} fill="none" stroke={solid ? FLAT_STROKE : `url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinecap="round" />
+            <path d={p.fill} fill={`url(#${uid}-wall-${i})`} stroke={FLAT_STROKE} strokeWidth={STROKE} strokeLinejoin="round" />
+            <path d={p.crest} fill="none" stroke={FLAT_STROKE} strokeWidth={STROKE} strokeLinecap="round" />
           </g>
         ))}
       </svg>
