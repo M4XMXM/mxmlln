@@ -7,35 +7,24 @@ import { TokenEvidence } from './TokenEvidence';
 import { TokensWordmark } from './TokensWordmark';
 import { TokensActivity } from './TokensActivity';
 import { HorsepowerSequence } from './HorsepowerSequence';
+import { GinDiagram } from './GinDiagram';
 import { CodeReviewQuote } from './CodeReviewQuote';
 import { DevloperTweet } from './DevloperTweet';
 import { VerificationStats } from './VerificationStats';
 import { PullRequestQuote } from './PullRequestQuote';
 
-// Mousepower — an unlisted presentation deck (see app/decks/README.md). Opens on
-// the maze title, then zooms out to reveal the title living inside an OS window
-// with an autonomous agent working it (the deck, built by an agent), then the
-// window multiplies into a grid of parallel explorations. Static assets live in
-// public/decks/mousepower/.
-//
-// Inherits robots:{index:false,follow:false} from the parent layout, so it's
-// reachable at /decks/mousepower but unlisted everywhere.
+// Unlisted presentation deck (see app/decks/README.md). Inherits
+// robots:{index:false,follow:false} from the parent layout, so it's reachable at
+// /decks/mousepower but unlisted everywhere.
 export default function MousepowerDeck() {
   return (
     <Deck>
-      {/* Title — the maze wordmark as extruded walls, viewed bird's-eye from
-          directly above center, with a lucide <Mouse /> threading the corridors.
-          Advances straight into the zoom-out reveal (no glide-to-centre). */}
       <TitleSlide />
 
-      {/* Autonomous-window reveal — zoom out from the title to show it living
-          inside an OS window, a second agent roaming it. See AutonomousWindow. */}
       <div className="slide" style={{ background: '#e8e8e8', color: '#111' }}>
         <AutonomousWindow />
       </div>
 
-      {/* Exploration grid — the window multiplies into 6, each agent exploring a
-          different creative direction of the theme. See ExplorationGrid. */}
       <div className="slide" style={{ background: '#e8e8e8', color: '#111' }}>
         <ExplorationGrid />
       </div>
@@ -66,27 +55,26 @@ export default function MousepowerDeck() {
         <TokensActivity />
       </div>
 
-      {/* Slide 9 — horsepower build sequence (steam engine → +horse gin →
-          equation). One slide, advanced through three steps with → / ←. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <HorsepowerSequence />
+      </div>
+
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <GinDiagram />
       </div>
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <CodeReviewQuote />
       </div>
 
-      {/* "I Am Devloper" tweet screenshot — code review as the punchline. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <DevloperTweet />
       </div>
 
-      {/* Verification bottleneck — three stats + Amdahl's-law aside. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <VerificationStats />
       </div>
 
-      {/* Noah Hein pull-request pull-quote — closes the code-review thread. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <PullRequestQuote />
       </div>

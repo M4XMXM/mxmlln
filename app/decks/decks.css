@@ -1379,10 +1379,10 @@
   }
 }
 
-/* Closing slide (ClosingPower). */
-/* Horsepower build sequence (HorsepowerSequence) — one slide, three steps driven
-   by [data-step]. Two image cards animate between a centred focus, a two-up
-   dock, and a shrunk-up "make room" state; the equation rises in at step 2. */
+/* Horsepower photos (HorsepowerSequence) — one slide, two steps driven by
+   [data-step]: two image cards animate between a centred focus (step 0) and a
+   two-up dock (step 1). The gin schematic that derives the number is its own
+   slide (GinDiagram / .gin-stage). */
 .hp-stage {
   --m: clamp(20px, 2.6vw, 40px);
   --gap: clamp(12px, 1vw, 20px);
@@ -1428,7 +1428,7 @@
   left: calc(var(--m) + var(--cw) + var(--gap));
 }
 
-/* Step 0 — steam engine alone, centred and larger; horse-gin parked off-right. */
+/* Step 0 — focus the left (engine) card; park the right card off-screen. */
 .hp-stage[data-step='0'] .hp-card--left {
   width: var(--focusW);
   left: calc(50% - var(--focusW) / 2);
@@ -1438,45 +1438,292 @@
   opacity: 0;
 }
 
-/* Step 2 — both cards shrink up to a top band; equation gets the lower third. */
-.hp-stage[data-step='2'] .hp-card {
-  height: 52%;
+/* Horse-gin schematic slide (GinDiagram). The diagram fills the canvas above the
+   equation caption; the SVG's meet scaling keeps it centered. */
+.gin-stage {
+  --m: clamp(20px, 2.6vw, 40px);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
 }
-
-/* Equation — hidden until step 2, then rises into the freed space. */
-.hp-eq {
+.hp-diagram {
+  position: absolute;
+  top: var(--m);
+  left: var(--m);
+  /* Explicit size — an absolutely-positioned <svg> won't stretch to right/bottom
+     offsets (replaced element), so size it directly, reserving room for the
+     equation caption below. */
+  width: calc(100% - 2 * var(--m));
+  height: calc(100% - var(--m) - clamp(40px, 7vh, 76px));
+  color: #111;
+}
+/* Equation caption below the diagram. */
+.hp-eq-text {
   position: absolute;
   left: var(--m);
   right: var(--m);
-  top: calc(52% + var(--m) + clamp(16px, 2vw, 36px));
-  bottom: var(--m);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(18px);
-  transition: opacity 0.5s ease 0.18s, transform 0.5s ease 0.18s;
-  pointer-events: none;
-}
-.hp-stage[data-step='2'] .hp-eq {
-  opacity: 1;
-  transform: none;
-}
-.hp-eq-text {
+  bottom: clamp(14px, 3vh, 36px);
   margin: 0;
+  text-align: center;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-weight: 600;
-  font-size: clamp(20px, 2.9vw, 56px);
+  font-size: clamp(18px, 2.6vw, 48px);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  text-wrap: balance;
-  max-width: 22em;
+  color: #111;
+}
+
+/* The arm + horse + label orbit the post while the diagram slide is active. The
+   horse and label counter-rotate in lock-step so they stay upright — they go
+   around the circle but never spin on their own axis. */
+@keyframes hp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.hp-spin {
+  transform-box: view-box;
+  transform-origin: 150px 112px;
+}
+.deck-slide[data-active='true'] .hp-spin {
+  animation: hp-spin 7s linear infinite;
+}
+@keyframes hp-spin-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+.hp-horse {
+  transform-box: view-box;
+  transform-origin: 150px 42px;
+}
+.deck-slide[data-active='true'] .hp-horse {
+  animation: hp-spin-rev 7s linear infinite;
+}
+.hp-armlabel {
+  transform-box: view-box;
+  transform-origin: 150px 79px;
+}
+.deck-slide[data-active='true'] .hp-armlabel {
+  animation: hp-spin-rev 7s linear infinite;
+}
+/* "180 lbf" rides a concentric orbit about the post (same as the horse) but with
+   a larger radius (rest centre 150,12 → r100), so it sits OUTSIDE the dotted
+   track (r70) at every angle and never dips inside it. Counter-rotates so it
+   stays upright while orbiting in sync with the horse. */
+.hp-forceorbit {
+  transform-box: view-box;
+  transform-origin: 150px 112px;
+}
+.deck-slide[data-active='true'] .hp-forceorbit {
+  animation: hp-spin 7s linear infinite;
+}
+.hp-forcelabel {
+  transform-box: view-box;
+  transform-origin: 150px 12px;
+}
+.deck-slide[data-active='true'] .hp-forcelabel {
+  animation: hp-spin-rev 7s linear infinite;
+}
+/* Flip the horse horizontally on the bottom half of the orbit (25%–75% = the
+   3- to 9-o'clock arc, where it travels leftward) so it faces its direction of
+   travel. Abrupt flips at the 3/9-o'clock points; synced with the orbit. */
+@keyframes hp-horse-face {
+  0% {
+    transform: scaleX(1);
+  }
+  24.99% {
+    transform: scaleX(1);
+  }
+  25% {
+    transform: scaleX(-1);
+  }
+  74.99% {
+    transform: scaleX(-1);
+  }
+  75% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+.hp-horse-face {
+  transform-box: view-box;
+  transform-origin: 150px 42px;
+}
+.deck-slide[data-active='true'] .hp-horse-face {
+  animation: hp-horse-face 7s linear infinite;
+}
+.hp-horse path {
+  /* Outline strokes (no fill); the ground-filled backing disc masks the arm. */
+  fill: none;
+  stroke: currentColor;
+  /* The glyph sits in a scale(1.2) group, so 1.6 / 1.2 renders at the same
+     1.6 viewBox weight as the arm and the rest of the diagram lines. */
+  stroke-width: 1.333;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Leader lines joining each measured element to its label. */
+.hp-lead {
+  stroke: rgba(17, 17, 17, 0.32);
+  stroke-width: 1;
+}
+
+/* In-diagram labels — free text in the slide-13 caption style (uppercase,
+   Archivo 600, wide tracking; see .vstat-cap). */
+.hp-tag-text {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  /* viewBox units; the diagram scales ~2.7x on a 1280 canvas, so ~8 here renders
+     close to .vstat-cap's slide-13 size (clamp(11px,1.667vw,32px)). */
+  font-size: 8px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  fill: #111;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+/* Curved rate label sits with its baseline on the bottom arc, glyphs just inside
+   the dotted track (clear of the dashes). */
+.hp-rate-text {
+  dominant-baseline: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hp-card,
-  .hp-eq {
+  .hp-card {
+    transition: none;
+  }
+  .deck-slide[data-active='true'] .hp-spin,
+  .deck-slide[data-active='true'] .hp-horse,
+  .deck-slide[data-active='true'] .hp-horse-face,
+  .deck-slide[data-active='true'] .hp-armlabel,
+  .deck-slide[data-active='true'] .hp-forceorbit,
+  .deck-slide[data-active='true'] .hp-forcelabel {
+    animation: none;
+  }
+}
+
+/* ── Mousepower build sequence (MousepowerSequence) ──────────────────────── */
+.mp-stage {
+  --m: clamp(20px, 2.6vw, 40px);
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  text-align: center;
+}
+
+.mp-eq {
+  position: relative;
+}
+.mp-eq-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.3em;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: clamp(22px, 3.2vw, 60px);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+.mp-eq-lhs {
+  color: #111;
+}
+.mp-eq-rel {
+  color: #111;
+  margin: 0 0.1em;
+}
+
+/* Naive RHS. */
+.mp-eq-naive {
+  position: relative;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4em;
+  color: #111;
+  transition: opacity 0.4s ease;
+}
+.mp-eq-naive::after {
+  content: '';
+  position: absolute;
+  left: -2%;
+  right: -2%;
+  top: 54%;
+  height: 0.055em;
+  background: #c0392b;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mp-eq-counter {
+  font-size: 0.62em;
+  color: #888;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* On step 1, strike the naive answer and fade it back. */
+.mp-stage[data-step='1'] .mp-eq-naive::after {
+  transform: scaleX(1);
+}
+.mp-stage[data-step='1'] .mp-eq-naive {
+  opacity: 0.4;
+}
+
+/* Dimensionality axes. */
+.mp-axes {
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  margin: clamp(16px, 2vw, 32px) 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  gap: clamp(8px, 1vw, 18px);
+  transform: translateX(-50%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.mp-stage[data-step='1'] .mp-axes {
+  opacity: 1;
+}
+.mp-axis {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: clamp(13px, 1.3vw, 24px);
+  letter-spacing: -0.01em;
+  color: #111;
+  padding: 0.3em 0.7em;
+  border: 1px solid rgba(17, 17, 17, 0.16);
+  border-radius: 999px;
+  background: #fff;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(-10px) scale(0.9);
+  transition: opacity 0.4s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition-delay: calc(var(--i) * 70ms);
+}
+.mp-stage[data-step='1'] .mp-axis {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mp-eq-naive,
+  .mp-eq-naive::after,
+  .mp-axes,
+  .mp-axis {
     transition: none;
   }
 }

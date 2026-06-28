@@ -1,17 +1,12 @@
 'use client';
 
-// Slide-9 build sequence (replaces the old ClosingPower two-up). One deck slide,
-// three forward-advanced steps:
-//   0 — the steam engine alone, focused centre
-//   1 — the horse-gin engraving slides in from the right (two-up)
-//   2 — both images shrink up to make room; the horsepower equation rises in
-// Stepping is handled with a capture-phase key listener so → / ← move through
-// the builds *before* the Deck would change slides; at the first/last build the
-// event falls through to the Deck so navigation leaves the slide normally.
+// Two forward-advanced build steps. A capture-phase key listener advances the
+// build on → / ← *before* the Deck would change slides; at the first/last build
+// the event falls through to the Deck so navigation leaves the slide normally.
 import { useEffect, useState } from 'react';
 import { useDeck, useSlideIndex } from '../Deck';
 
-const STEPS = 3;
+const STEPS = 2;
 const FWD = new Set(['ArrowRight', 'ArrowDown', ' ']);
 const BACK = new Set(['ArrowLeft', 'ArrowUp', 'Backspace']);
 
@@ -45,7 +40,7 @@ export function HorsepowerSequence() {
   }, [active, step]);
 
   return (
-    <div className="hp-stage" data-step={step}>
+    <div className="hp-stage rack-in" data-step={step}>
       <div className="hp-card hp-card--left">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -59,11 +54,6 @@ export function HorsepowerSequence() {
           src="/decks/mousepower/closing-horse-gin.jpg"
           alt="Engraving of a horse driving a mill gin"
         />
-      </div>
-      <div className="hp-eq" aria-hidden={step < 2}>
-        <p className="hp-eq-text">
-          1 horsepower = 33,000 foot-pounds per minute
-        </p>
       </div>
     </div>
   );
