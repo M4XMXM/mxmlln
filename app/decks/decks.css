@@ -194,6 +194,9 @@
   position: fixed;
   inset: 0;
   overflow: hidden;
+  /* Vertical space the pagination tick-row reserves at the bottom (offset + tall
+     tick). Bottom-anchored slide content (source captions) clears this band. */
+  --deck-progress-band: 36px;
 }
 
 /* Slides are stacked; only the active one is visible. The switch is an instant
@@ -1222,17 +1225,29 @@
   padding-right: 0.08em;
 }
 
-/* Slide counter, bottom-right. */
+/* Progress indicator — a centered row of ticks, one per slide; the active
+   slide's tick stands taller. Bottom-center. */
 .deck-progress {
   position: fixed;
-  right: 24px;
+  left: 50%;
+  transform: translateX(-50%);
   bottom: 20px;
-  font-size: 14px;
-  font-variant-numeric: tabular-nums;
-  color: #fff;
-  opacity: 0.6;
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
   mix-blend-mode: difference;
   z-index: 10;
+}
+.deck-progress-tick {
+  width: 2px;
+  height: 8px;
+  background: #fff;
+  opacity: 0.45;
+  transition: height 0.3s ease, opacity 0.3s ease;
+}
+.deck-progress-tick[data-active='true'] {
+  height: 16px;
+  opacity: 0.9;
 }
 
 /* Statement slide (MeasurementProblem). */
@@ -1522,7 +1537,7 @@
 .quote-source {
   position: absolute;
   left: clamp(20px, 2.5vw, 40px);
-  bottom: clamp(16px, 1.8vw, 28px);
+  bottom: calc(var(--deck-progress-band) + clamp(16px, 1.8vw, 28px));
   margin: 0;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-size: clamp(11px, 0.93vw, 14px);
@@ -1593,7 +1608,7 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: clamp(16px, 1.8vw, 28px);
+  bottom: calc(var(--deck-progress-band) + clamp(16px, 1.8vw, 28px));
   margin: 0;
   text-align: center;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
@@ -1692,7 +1707,7 @@
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: clamp(16px, 1.8vw, 28px);
+  bottom: calc(var(--deck-progress-band) + clamp(16px, 1.8vw, 28px));
   margin: 0;
   text-align: center;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
