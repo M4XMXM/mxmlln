@@ -1268,27 +1268,92 @@
 
 /* Progress indicator — a centered row of ticks, one per slide; the active
    slide's tick stands taller. Bottom-center. */
-.deck-progress {
+/* Bottom-centre column: the hover preview stacked above the tick row. One
+   wrapper owns the pointer region so leaving it (not crossing into the preview)
+   is what clears the hover. */
+.deck-progress-wrap {
   position: fixed;
   left: 50%;
+  bottom: 0;
   transform: translateX(-50%);
-  bottom: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding-bottom: 20px;
+  z-index: 10;
+}
+.deck-progress {
+  position: relative;
   display: flex;
   align-items: flex-end;
   gap: 6px;
-  mix-blend-mode: difference;
-  z-index: 10;
+}
+/* Enlarged, transparent hit target around each 2px tick so it's easy to hover. */
+.deck-progress-hit {
+  appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 6px 2px;
+  display: flex;
+  align-items: flex-end;
+  cursor: pointer;
 }
 .deck-progress-tick {
+  display: block;
   width: 2px;
   height: 8px;
-  background: #fff;
-  opacity: 0.45;
+  background: #111;
+  opacity: 0.35;
   transition: height 0.3s ease, opacity 0.3s ease;
+}
+.deck-progress-hit:hover .deck-progress-tick {
+  opacity: 0.85;
 }
 .deck-progress-tick[data-active='true'] {
   height: 16px;
-  opacity: 0.9;
+  opacity: 0.85;
+}
+
+/* Hover preview — a single live miniature of the hovered slide (the slide
+   rendered full-size, then scaled to thumbnail width), anchored above the
+   hovered tick via --dx (its offset from the row centre). */
+.deck-preview {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 14px;
+  transform: translateX(calc(-50% + var(--dx, 0px)));
+  pointer-events: none;
+  animation: deck-preview-in 0.16s ease both;
+}
+@keyframes deck-preview-in {
+  from { opacity: 0; transform: translateX(calc(-50% + var(--dx, 0px))) translateY(6px); }
+  to { opacity: 1; transform: translateX(calc(-50% + var(--dx, 0px))) translateY(0); }
+}
+.deck-preview-stage {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #f5f5f5;
+  outline: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.22);
+}
+/* The full-size slide, scaled into the stage. */
+.deck-preview-scale {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+}
+@media (prefers-reduced-motion: reduce) {
+  .deck-preview {
+    animation: none;
+  }
 }
 
 /* Statement slide (MeasurementProblem). */

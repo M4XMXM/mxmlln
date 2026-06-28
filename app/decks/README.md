@@ -14,7 +14,11 @@ auto-discovers any `app/decks/<slug>/page.tsx`.
 - `page.tsx` (index) — blog-styled list; each row is a Folio-card thumbnail.
 - `Deck.tsx` — the slideshow shell. Each child is one slide; navigate with
   **← / → / ↑ / ↓ / Space / Backspace / Home / End**. Only the active slide
-  shows (cross-fade); a counter sits bottom-right.
+  shows (instant cut). A tick-row progress indicator sits bottom-centre:
+  clicking a tick jumps to that slide, and hovering one pops a live thumbnail of
+  that slide above the tick. The thumbnail reuses the actual slide node rendered
+  with slide-index `-1`, which keeps its active-gated side effects — interceptors,
+  keydown handlers, entrance animations — inert, so it reads as a static preview.
 - `LogoBorder.tsx` — frames a slide with the spinning signature logo
   (`/assets/LogoSpin2026.json`): a row top + bottom and a column each side,
   flex-distributed so it stays even and responsive.
