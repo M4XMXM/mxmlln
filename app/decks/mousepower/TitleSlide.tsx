@@ -30,7 +30,7 @@ export function TitleSlide() {
     <div className="slide slide--title" style={{ background: '#f5f5f5', color: '#111' }}>
       <div className="slide-content">
         <p className="slide-eyebrow">Maximillian Piras</p>
-        <MazeTitle3D mouseHidden={leaving} />
+        <MazeTitle3D mouseHidden={leaving} solid />
         <p className="slide-footnote">on measuring agents</p>
       </div>
     </div>
