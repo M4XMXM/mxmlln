@@ -1822,6 +1822,101 @@
   }
 }
 
+/* ── Mousepower measurement rig (MousepowerMeasure) ──────────────────────────
+   A uniform fan of cursor-tracked rays + live readouts feed the equation. */
+.mpm-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+/* The measurement field sits behind the equation; it never eats pointer events
+   (tracking is on window) so it never intercepts the cursor. */
+.mpm-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+/* Every ray shares one flowing-dot stroke — no special-cased corners; dashes
+   drift outward (dashoffset) so they read as receding into space. */
+.mpm-line {
+  stroke: #111;
+  stroke-width: 1;
+  stroke-dasharray: 2 9;
+  opacity: 0.5;
+}
+.deck-slide[data-active='true'] .mpm-line {
+  animation: mpm-drift 1.2s linear infinite;
+}
+@keyframes mpm-drift {
+  to {
+    stroke-dashoffset: -11;
+  }
+}
+.mpm-probe-ring {
+  fill: none;
+  stroke: #111;
+  stroke-width: 1.25;
+}
+.mpm-probe-cross {
+  stroke: #111;
+  stroke-width: 1;
+  opacity: 0.55;
+}
+/* Diagram labels — same uppercase Archivo treatment as the gin's .hp-tag-text.
+   Tabular figures keep the digits from shimmering as the readouts change. */
+.mpm-tag {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: clamp(10px, 0.83vw, 14px);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  fill: #111;
+  text-anchor: middle;
+  dominant-baseline: middle;
+  font-variant-numeric: tabular-nums;
+}
+.mpm-speed {
+  fill: #6b6b6b;
+}
+
+/* Equation hero — optically centered, with a ground-colored halo so it stays
+   legible over the rays passing behind it. */
+.mpm-eq {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  padding: 0.4em 0.9em;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: clamp(20px, 3vw, 56px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #111;
+  background: radial-gradient(
+    ellipse 60% 70% at 50% 50%,
+    rgba(245, 245, 245, 0.92) 0%,
+    rgba(245, 245, 245, 0.72) 55%,
+    rgba(245, 245, 245, 0) 100%
+  );
+}
+.mpm-eq-val {
+  font-variant-numeric: tabular-nums;
+}
+.mpm-eq-unit {
+  color: #6b6b6b;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .deck-slide[data-active='true'] .mpm-line {
+    animation: none;
+  }
+}
+
 /* Quote slide (CodeReviewQuote). */
 .quote-slide {
   --m: 40px;

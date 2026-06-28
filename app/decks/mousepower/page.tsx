@@ -8,6 +8,7 @@ import { TokensSequence } from './TokensSequence';
 import { DoomLoop } from './DoomLoop';
 import { HorsepowerSequence } from './HorsepowerSequence';
 import { GinDiagram } from './GinDiagram';
+import { MousepowerMeasure } from './MousepowerMeasure';
 import { CodeReviewQuote } from './CodeReviewQuote';
 import { DevloperTweet } from './DevloperTweet';
 import { VerificationStats } from './VerificationStats';
@@ -64,6 +65,13 @@ export default function MousepowerDeck() {
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <GinDiagram />
+      </div>
+
+      {/* The mousepower answer: an interactive measurement rig. Rays track the
+          cursor to every corner and drift into depth, feeding an equation whose
+          number never settles — measurement is too high-dimensional to reduce. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <MousepowerMeasure />
       </div>
 
       {/* Section divider opening the next part. */}
