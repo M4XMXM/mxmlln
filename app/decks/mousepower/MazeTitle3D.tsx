@@ -43,18 +43,14 @@ const WALL_H = 50; // wall extrusion height (toward the camera)
 // than x to keep depth in the top/bottom walls, which sit closer to centre.
 const FRAME_CREST_SCALE_X = 1.1;
 const FRAME_CREST_SCALE_Y = 1.21;
-// Blueprint palette: cyan linework with very pale cyan fills, separated purely by
-// lightness. The mouse is the hero (white fill, ink outline) so it pops like a
-// highlighted callout. Cyan basis is the design-system accent (#00BBFF).
-// Wall fill is a slight base→top gradient (along the projected extrusion axis):
-// a deeper pale cyan at the wall base lightening to near-white at the crest, for
-// a sense of vertical depth. Kept slightly transparent so the mouse peeks through
-// when behind a wall.
-const FLAT_FACE_BASE = 'rgba(168, 226, 250, 0.9)'; // wall base (z=0): deeper pale cyan
-const FLAT_FACE_TOP = 'rgba(213, 243, 253, 0.9)'; // wall crest (top): lighter cyan (a touch below near-white)
-const FLAT_STROKE = '#00BBFF'; // maze linework = design-system cyan
-const FLAT_MOUSE = '#3B3B3B'; // mouse outline = ink, to stand apart from the cyan maze
-const FLAT_MOUSE_FILL = '#ffffff'; // mouse fill = white — lighter than the walls, so it reads as the hero
+// Blueprint palette: cyan linework, pale-cyan wall fills (a base→crest gradient
+// for depth, kept translucent so the mouse peeks through), white ink-outlined
+// mouse. Cyan is the design-system accent (#00BBFF).
+const FLAT_FACE_BASE = 'rgba(168, 226, 250, 0.9)'; // wall base (z=0)
+const FLAT_FACE_TOP = 'rgba(213, 243, 253, 0.9)'; // wall crest
+const FLAT_STROKE = '#00BBFF';
+const FLAT_MOUSE = '#3B3B3B';
+const FLAT_MOUSE_FILL = '#ffffff';
 
 // Perspective from straight above center: depth shrinks toward the camera, so
 // higher points (wall tops) magnify outward from center — more along y than x.
@@ -181,10 +177,9 @@ export function MazeTitle3D({
         // and ordering reduces to radial floor distance from center.
         const dist = Xc * Xc + Yc * Yc + (CAM_H_X - WALL_H / 2) ** 2;
         const p = (a: [number, number]) => `${a[0].toFixed(2)} ${a[1].toFixed(2)}`;
-        // Shade along the z-axis projected: base (z=0, the floor — farthest from
-        // the viewer) is dark, the top edge (z=WALL_H — closest to the viewer) is
-        // light. This holds for both rows: the bottom row's top edge projects to
-        // the bottom of its pane, so its lightest part sits there (nearest in z).
+        // Fill gradient runs base (z=0) → crest (z=WALL_H) along the projected
+        // extrusion, so the crest reads lightest even where it projects downward
+        // (bottom row).
         const bm: [number, number] = [(f1[0] + f2[0]) / 2, (f1[1] + f2[1]) / 2];
         const tm: [number, number] = [(t1[0] + t2[0]) / 2, (t1[1] + t2[1]) / 2];
         // Wall fill gradient axis. Default: along the extrusion (base→crest).
@@ -349,16 +344,14 @@ export function MazeTitle3D({
               x2={p.g[2]}
               y2={p.g[3]}
             >
-              {/* Pale cyan, deeper at the base, lighter toward the crest. */}
               <stop offset="0" stopColor={FLAT_FACE_BASE} />
               <stop offset="1" stopColor={FLAT_FACE_TOP} />
             </linearGradient>
           ))}
         </defs>
 
-        {/* The solver, on the floor (drawn first = farthest, so the walls in
-            front of it occlude it as it runs). Random-walks the corridor graph,
-            rotated to face its heading. Omitted in static (non-animated) tiles. */}
+        {/* Drawn before the walls so nearer walls occlude it (hidden-line removal).
+            Omitted in static (non-animated) tiles. */}
         {animate && (
           <g
             ref={mouseRef}
@@ -372,13 +365,10 @@ export function MazeTitle3D({
           </g>
         )}
 
-        {/* Wall panels far→near: pale-cyan faces with cyan linework. Nearer walls
-            occlude the faces, crests, and mouse behind them (hidden-line removal). */}
+        {/* Far→near, so nearer walls occlude the faces, crests, and mouse behind. */}
         {panels.map((p, i) => (
           <g key={i}>
             <path d={p.fill} fill={`url(#${uid}-wall-${i})`} stroke={FLAT_STROKE} strokeWidth={STROKE} strokeLinejoin="round" />
-            {/* Crest is the wall's 3D top edge. Same stroke width as the silhouette
-                so every stroke in the mark reads as one consistent weight. */}
             <path d={p.crest} fill="none" stroke={FLAT_STROKE} strokeWidth={STROKE} strokeLinecap="round" />
           </g>
         ))}
