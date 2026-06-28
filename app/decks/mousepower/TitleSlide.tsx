@@ -15,6 +15,9 @@ export function TitleSlide() {
   const index = useSlideIndex();
   const active = activeIndex === index;
   const [leaving, setLeaving] = useState(false);
+  // Shading is undecided: press "g" while on the title slide to toggle between
+  // the solid-white treatment (default) and the original gradient shading.
+  const [solid, setSolid] = useState(true);
 
   useEffect(() => {
     if (!active) return;
@@ -26,11 +29,20 @@ export function TitleSlide() {
     return () => setForwardInterceptor(null);
   }, [active, setForwardInterceptor]);
 
+  useEffect(() => {
+    if (!active) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'g' || e.key === 'G') setSolid((s) => !s);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [active]);
+
   return (
     <div className="slide slide--title" style={{ background: '#f5f5f5', color: '#111' }}>
       <div className="slide-content">
         <p className="slide-eyebrow">Maximillian Piras</p>
-        <MazeTitle3D mouseHidden={leaving} />
+        <MazeTitle3D mouseHidden={leaving} solid={solid} />
         <p className="slide-footnote">on measuring agents</p>
       </div>
     </div>

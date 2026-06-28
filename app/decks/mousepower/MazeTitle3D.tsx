@@ -16,7 +16,7 @@ import { Mouse } from 'lucide-react';
 
 // Floor centerlines of each wall (wordmark coords, viewBox 0 0 212 91.5).
 const POLYLINES: number[][][] = [
-  [[0.5, 90.5], [0.5, 0.5], [211.5, 0.5], [211.5, 90.5], [26.88, 90.5]],
+  [[-6.5, 97.5], [-6.5, -6.5], [219.5, -6.5], [219.5, 97.5], [30.5, 97.5]],
   [[14.5, 38.5], [14.5, 14.5], [26.5, 14.5], [26.5, 38.5], [38.5, 38.5], [38.5, 14.5], [50.5, 14.5], [50.5, 38.5]],
   [[124.5, 52.5], [124.5, 76.5], [112.5, 76.5], [112.5, 52.5], [100.5, 52.5], [100.5, 65.0], [100.5, 76.5], [88.5, 76.5], [88.5, 52.5]],
   [[63.5, 14.5], [63.5, 38.5], [87.5, 38.5], [87.5, 14.5], [63.5, 14.5]],
@@ -25,7 +25,7 @@ const POLYLINES: number[][][] = [
   [[186.01, 26.5], [198.5, 26.5], [198.5, 14.5], [174.5, 14.5], [174.5, 38.5], [197.52, 38.5]],
   [[149.01, 64.5], [161.5, 64.5], [161.5, 52.5], [137.5, 52.5], [137.5, 76.5], [160.52, 76.5]],
   [[198.5, 76.5], [186.91, 76.5], [186.91, 64.5], [198.5, 64.5], [198.5, 52.5], [174.5, 52.5], [174.5, 76.5]],
-  [[27.0, 65.09], [27.0, 76.5], [38.5, 76.5], [38.5, 52.5], [14.5, 52.5], [14.5, 91.0]],
+  [[27.0, 65.09], [27.0, 76.5], [38.5, 76.5], [38.5, 52.5], [14.5, 52.5], [14.5, 97.5]],
   [[100.5, 14.5], [100.5, 38.5], [124.5, 38.5], [124.5, 14.5]],
   [[112.5, 14.5], [112.5, 26.5]],
 ];
@@ -38,6 +38,11 @@ const CY = 45.75;
 const CAM_H_X = 540;
 const CAM_H_Y = 200;
 const WALL_H = 50; // wall extrusion height (toward the camera)
+// Frame crest scales: inflate the floor radially from centre per-axis (rather
+// than the camera extrusion) so the corner lean stays consistent. y runs higher
+// than x to keep depth in the top/bottom walls, which sit closer to centre.
+const FRAME_CREST_SCALE_X = 1.1;
+const FRAME_CREST_SCALE_Y = 1.21;
 // Backlit: light from behind/beneath the maze, so the FAR parts (the floor/base,
 // z=0) glow and the NEAR parts (the crest, closest to the viewer) fall into
 // shadow — the inverse of front-lit. Gradients keep the base→top axis; the tone
@@ -55,11 +60,21 @@ const EDGE_TOP = '#d4d4d4';
 // stays dimensional while reading clearly as the brand cyan.
 const MOUSE_DARK = '#0090c4';
 const MOUSE_LIGHT = '#00bbff';
+// Flat (gradient-free) palette: solid-white wall faces, ink strokes, solid accent
+// mouse — a clean monoline reading of the same 3D mark.
+const FLAT_FACE = '#ffffff';
+const FLAT_STROKE = '#111111';
+const FLAT_MOUSE = FLAT_STROKE; // black outline, matching the wall strokes
 
 // Perspective from straight above center: depth shrinks toward the camera, so
 // higher points (wall tops) magnify outward from center — more along y than x.
 function project(x: number, y: number, z: number): [number, number] {
   return [((x - CX) * CAM_H_X) / (CAM_H_X - z), ((y - CY) * CAM_H_Y) / (CAM_H_Y - z)];
+}
+
+// Floor (which projects 1:1, so it's just x-CX/y-CY) scaled per-axis from centre.
+function frameCrest(x: number, y: number): [number, number] {
+  return [(x - CX) * FRAME_CREST_SCALE_X, (y - CY) * FRAME_CREST_SCALE_Y];
 }
 
 const STROKE = 1.25; // monoweight, matches the wordmark + mouse
@@ -69,12 +84,12 @@ const STROKE = 1.25; // monoweight, matches the wordmark + mouse
 // corridors. The mouse wanders this graph stochastically (see useAnimationFrame
 // below). Coords are wordmark floor coords; recentered to floor space after.
 const NODES_RAW: [number, number][] = [
-  // top moat (y 7.5)
-  [7.5, 7.5], [32.5, 7.5], [57, 7.5], [94, 7.5], [106.5, 7.5], [118.5, 7.5], [131, 7.5], [168, 7.5], [204.5, 7.5],
-  // inter-row (y 45.5)
-  [7.5, 45.5], [20.5, 45.5], [44.5, 45.5], [57, 45.5], [81, 45.5], [94, 45.5], [118.5, 45.5], [131, 45.5], [168, 45.5], [204.5, 45.5],
-  // bottom moat (y 83.5)
-  [44.5, 83.5], [81, 83.5], [106.5, 83.5], [131, 83.5], [168, 83.5], [204.5, 83.5],
+  // top moat — centred in the widened outer track (y 4; corners at x 4 / 209)
+  [4, 4], [32.5, 4], [57, 4], [94, 4], [106.5, 4], [118.5, 4], [131, 4], [168, 4], [209, 4],
+  // inter-row (y 45.5; left/right ends ride the left/right moat at x 4 / 209)
+  [4, 45.5], [20.5, 45.5], [44.5, 45.5], [57, 45.5], [81, 45.5], [94, 45.5], [118.5, 45.5], [131, 45.5], [168, 45.5], [209, 45.5],
+  // bottom moat — centred in the widened outer track (y 87; right corner x 209)
+  [44.5, 87], [81, 87], [106.5, 87], [131, 87], [168, 87], [209, 87],
   // letter-pocket dead-ends: M(l,r,notch), U(l,r), W(l,r,mid). Pulled ~9u back
   // from each closed wall so the mouse stops clear instead of poking through.
   [20.5, 23.5], [44.5, 23.5], [32.5, 29.5], [106.5, 29.5], [118.5, 29.5], [94.5, 67.5], [118.5, 67.5], [106.5, 61.5],
@@ -107,6 +122,7 @@ export function MazeTitle3D({
   recallRef,
   animate = true,
   mouseHidden = false,
+  solid = false,
 }: {
   // When set, exposes a recall(done) that glides the mouse to floor-centre
   // (upright) and calls done on arrival — used to hand off to the centered agent
@@ -115,6 +131,8 @@ export function MazeTitle3D({
   // Static render (no wandering mouse / rAF) — used by the exploration-grid tiles
   // so 6 copies don't each run an animation loop.
   animate?: boolean;
+  // Flat mode: solid-white wall faces + ink strokes (no backlit gradients).
+  solid?: boolean;
   // Fade the mouse out (e.g. while leaving the title slide, for a cleaner
   // transition). Only sets inline opacity when true, so CSS can otherwise control
   // it (the windowed preview fades its mouse in after the window settles).
@@ -147,15 +165,20 @@ export function MazeTitle3D({
     const raw: Array<Panel & { dist: number }> = [];
     const xs: number[] = [];
     const ys: number[] = [];
-    for (const pl of POLYLINES) {
+    for (let pi = 0; pi < POLYLINES.length; pi++) {
+      const pl = POLYLINES[pi];
+      const isFrame = pi === 0; // frame uses frameCrest; letters keep the camera extrusion
       for (let k = 0; k < pl.length - 1; k++) {
         const [x1, y1] = pl[k];
         const [x2, y2] = pl[k + 1];
         if (x1 === x2 && y1 === y2) continue; // skip degenerate (closing dupes)
+        // The P's descender (x=14.5 stem into the bottom moat) uses the frame crest
+        // too, so it lands on the frame's bottom rather than overshooting it.
+        const useFrameCrest = isFrame || (x1 === 14.5 && x2 === 14.5 && Math.max(y1, y2) > 76.5);
         const f1 = project(x1, y1, 0);
         const f2 = project(x2, y2, 0);
-        const t2 = project(x2, y2, WALL_H);
-        const t1 = project(x1, y1, WALL_H);
+        const t2 = useFrameCrest ? frameCrest(x2, y2) : project(x2, y2, WALL_H);
+        const t1 = useFrameCrest ? frameCrest(x1, y1) : project(x1, y1, WALL_H);
         xs.push(f1[0], f2[0], t2[0], t1[0]);
         ys.push(f1[1], f2[1], t2[1], t1[1]);
         const Xc = (x1 + x2) / 2 - CX;
@@ -361,7 +384,7 @@ export function MazeTitle3D({
             transform={`translate(${NODES[START_NODE][0]} ${NODES[START_NODE][1]})`}
           >
             <g transform="translate(-5.5 -5.5)">
-              <Mouse size={11} color={`url(#${uid}-mouse)`} strokeWidth={STROKE} absoluteStrokeWidth />
+              <Mouse size={11} color={solid ? FLAT_MOUSE : `url(#${uid}-mouse)`} fill={solid ? FLAT_FACE : 'none'} strokeWidth={STROKE} absoluteStrokeWidth />
             </g>
           </g>
         )}
@@ -370,11 +393,11 @@ export function MazeTitle3D({
             shadow). Nearer walls occlude the faces, crests, and mouse behind them. */}
         {panels.map((p, i) => (
           <g key={i}>
-            <path d={p.fill} fill={`url(#${uid}-wall-${i})`} stroke={`url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinejoin="round" />
+            <path d={p.fill} fill={solid ? FLAT_FACE : `url(#${uid}-wall-${i})`} stroke={solid ? FLAT_STROKE : `url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinejoin="round" />
             {/* Crest is the wall's 3D top edge. Same stroke width + gradient as the
                 silhouette so every stroke in the mark reads as one consistent
                 weight (the gradient still darkens toward the near/shadow crest). */}
-            <path d={p.crest} fill="none" stroke={`url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinecap="round" />
+            <path d={p.crest} fill="none" stroke={solid ? FLAT_STROKE : `url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinecap="round" />
           </g>
         ))}
       </svg>
