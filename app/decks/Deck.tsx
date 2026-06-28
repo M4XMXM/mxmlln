@@ -118,7 +118,13 @@ export function Deck({ children }: { children: React.ReactNode }) {
         ))}
         {count > 1 && (
           <div className="deck-progress" aria-hidden>
-            {index + 1} / {count}
+            {slides.map((_, i) => (
+              <span
+                key={i}
+                className="deck-progress-tick"
+                data-active={i === index}
+              />
+            ))}
           </div>
         )}
       </div>
