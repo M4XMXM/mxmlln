@@ -38,15 +38,9 @@ const CY = 45.75;
 const CAM_H_X = 540;
 const CAM_H_Y = 200;
 const WALL_H = 50; // wall extrusion height (toward the camera)
-// The frame sits at the extremes of the anisotropic camera, so its top/bottom
-// walls (far in y) out-lean its side walls (far in x) and the corners read as a
-// different perspective than the type. Instead of the camera extrusion, the frame
-// crest is the floor inflated from centre by its own x/y scales. Equal scales =
-// true single-perspective (corners agree) but, since top/bottom sit closer to
-// centre than the sides, that leaves them shallow. So nudge the y-scale up: a
-// middle ground that keeps the corners close to radial while restoring depth to
-// the top/bottom walls. Either way the crest is a pure function of position, so
-// adjacent walls still share corner posts (no gaps).
+// Frame crest scales: inflate the floor radially from centre per-axis (rather
+// than the camera extrusion) so the corner lean stays consistent. y runs higher
+// than x to keep depth in the top/bottom walls, which sit closer to centre.
 const FRAME_CREST_SCALE_X = 1.1;
 const FRAME_CREST_SCALE_Y = 1.21;
 // Backlit: light from behind/beneath the maze, so the FAR parts (the floor/base,
@@ -78,9 +72,7 @@ function project(x: number, y: number, z: number): [number, number] {
   return [((x - CX) * CAM_H_X) / (CAM_H_X - z), ((y - CY) * CAM_H_Y) / (CAM_H_Y - z)];
 }
 
-// Crest for the frame: the floor point inflated from centre by per-axis scales
-// (see FRAME_CREST_SCALE_X/Y), so each wall leans out from the nadir. Floor
-// projects 1:1, so the floor point is just (x-CX, y-CY).
+// Floor (which projects 1:1, so it's just x-CX/y-CY) scaled per-axis from centre.
 function frameCrest(x: number, y: number): [number, number] {
   return [(x - CX) * FRAME_CREST_SCALE_X, (y - CY) * FRAME_CREST_SCALE_Y];
 }
@@ -175,15 +167,13 @@ export function MazeTitle3D({
     const ys: number[] = [];
     for (let pi = 0; pi < POLYLINES.length; pi++) {
       const pl = POLYLINES[pi];
-      const isFrame = pi === 0; // frame uses the isotropic crest; letters keep the camera
+      const isFrame = pi === 0; // frame uses frameCrest; letters keep the camera extrusion
       for (let k = 0; k < pl.length - 1; k++) {
         const [x1, y1] = pl[k];
         const [x2, y2] = pl[k + 1];
         if (x1 === x2 && y1 === y2) continue; // skip degenerate (closing dupes)
-        // The P's descender (the x=14.5 stem dropping into the bottom moat) shares
-        // the frame's floor region, so extrude it with the frame crest too — that
-        // lands its back-bottom corner on the bottom wall's top edge and its tip on
-        // the left wall's bottom (the deep letter extrusion would overshoot both).
+        // The P's descender (x=14.5 stem into the bottom moat) uses the frame crest
+        // too, so it lands on the frame's bottom rather than overshooting it.
         const useFrameCrest = isFrame || (x1 === 14.5 && x2 === 14.5 && Math.max(y1, y2) > 76.5);
         const f1 = project(x1, y1, 0);
         const f2 = project(x2, y2, 0);
