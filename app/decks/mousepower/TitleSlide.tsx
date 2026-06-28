@@ -39,11 +39,26 @@ export function TitleSlide() {
   }, [active]);
 
   return (
-    <div className="slide slide--title" style={{ background: '#f5f5f5', color: '#111' }}>
-      <div className="slide-content">
-        <p className="slide-eyebrow">Maximillian Piras</p>
+    <div
+      className="slide slide--title"
+      style={{
+        backgroundColor: '#f5f5f5',
+        // Dot grid pitch locked to the maze's own grid: the SVG renders at
+        // min(74vw,940px) over a 264.6-unit viewBox with 12-unit cells, so a maze
+        // cell is 4.535% of the width — a quarter of that for a dense graph-paper
+        // feel, centered on the graphic.
+        backgroundImage:
+          'radial-gradient(circle, rgba(0, 187, 255, 0.26) 1px, transparent 1.4px)',
+        backgroundSize:
+          'calc(min(74vw, 940px) * 0.01134) calc(min(74vw, 940px) * 0.01134)',
+        backgroundPosition: 'center',
+        color: '#3B3B3B',
+      }}
+    >
+      <div className="slide-content" style={{ background: 'none' }}>
+        <p className="slide-eyebrow">on measuring agents</p>
         <MazeTitle3D mouseHidden={leaving} solid={solid} />
-        <p className="slide-footnote">on measuring agents</p>
+        <p className="slide-footnote">by Maximillian Piras</p>
       </div>
     </div>
   );

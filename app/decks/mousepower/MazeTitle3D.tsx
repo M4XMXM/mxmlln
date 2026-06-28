@@ -60,11 +60,19 @@ const EDGE_TOP = '#d4d4d4';
 // stays dimensional while reading clearly as the brand cyan.
 const MOUSE_DARK = '#0090c4';
 const MOUSE_LIGHT = '#00bbff';
-// Flat (gradient-free) palette: solid-white wall faces, ink strokes, solid accent
-// mouse — a clean monoline reading of the same 3D mark.
-const FLAT_FACE = '#ffffff';
-const FLAT_STROKE = '#111111';
-const FLAT_MOUSE = FLAT_STROKE; // black outline, matching the wall strokes
+// Flat (gradient-free) palette: blueprint reading — cyan linework with very pale
+// cyan fills, separated purely by lightness. The mouse is the saturated hero (a
+// mid-cyan fill) so it pops like a highlighted callout. Cyan basis is the
+// design-system accent (#00BBFF).
+// Wall fill is a slight base→top gradient (along the projected extrusion axis):
+// a deeper pale cyan at the wall base lightening to near-white at the crest, for
+// a sense of vertical depth. Kept slightly transparent so the mouse peeks through
+// when behind a wall.
+const FLAT_FACE_BASE = 'rgba(168, 226, 250, 0.9)'; // wall base (z=0): deeper pale cyan
+const FLAT_FACE_TOP = 'rgba(213, 243, 253, 0.9)'; // wall crest (top): lighter cyan (a touch below near-white)
+const FLAT_STROKE = '#00BBFF'; // maze linework = design-system cyan
+const FLAT_MOUSE = '#3B3B3B'; // mouse outline = ink, to stand apart from the cyan maze
+const FLAT_MOUSE_FILL = '#ffffff'; // mouse fill = white — lighter than the walls, so it reads as the hero
 
 // Perspective from straight above center: depth shrinks toward the camera, so
 // higher points (wall tops) magnify outward from center — more along y than x.
@@ -77,7 +85,7 @@ function frameCrest(x: number, y: number): [number, number] {
   return [(x - CX) * FRAME_CREST_SCALE_X, (y - CY) * FRAME_CREST_SCALE_Y];
 }
 
-const STROKE = 1.25; // monoweight, matches the wordmark + mouse
+const STROKE = 0.75; // monoweight, matches the wordmark + mouse
 
 // ---- Corridor graph for the mouse's random walk -----------------------------
 // Nodes are corridor intersections + letter-pocket dead-ends; edges are open
@@ -160,7 +168,12 @@ export function MazeTitle3D({
   // from above); the top crest is a crisp stroke (the legible maze pattern).
   // Panels sort far→near so nearer walls occlude the strokes — and the mouse —
   // behind them (hidden-line removal).
-  type Panel = { fill: string; crest: string; g: [number, number, number, number] };
+  type Panel = {
+    fill: string;
+    crest: string;
+    g: [number, number, number, number];
+    gSolid: [number, number, number, number];
+  };
   const { panels, viewBox } = useMemo(() => {
     const raw: Array<Panel & { dist: number }> = [];
     const xs: number[] = [];
@@ -172,13 +185,17 @@ export function MazeTitle3D({
         const [x1, y1] = pl[k];
         const [x2, y2] = pl[k + 1];
         if (x1 === x2 && y1 === y2) continue; // skip degenerate (closing dupes)
-        // The P's descender (x=14.5 stem into the bottom moat) uses the frame crest
-        // too, so it lands on the frame's bottom rather than overshooting it.
-        const useFrameCrest = isFrame || (x1 === 14.5 && x2 === 14.5 && Math.max(y1, y2) > 76.5);
+        // Crest is chosen per-endpoint. The P's descender (x=14.5 stem into the
+        // bottom moat) uses the frame crest only for its deep (moat) end so it
+        // lands on the frame's bottom rather than overshooting; its upper end keeps
+        // the normal extrusion so it meets the P's top wall at the (14.5, 52.5)
+        // corner. The frame itself always uses the frame crest.
+        const crestOf = (x: number, y: number): [number, number] =>
+          isFrame || (x === 14.5 && y > 76.5) ? frameCrest(x, y) : project(x, y, WALL_H);
         const f1 = project(x1, y1, 0);
         const f2 = project(x2, y2, 0);
-        const t2 = useFrameCrest ? frameCrest(x2, y2) : project(x2, y2, WALL_H);
-        const t1 = useFrameCrest ? frameCrest(x1, y1) : project(x1, y1, WALL_H);
+        const t2 = crestOf(x2, y2);
+        const t1 = crestOf(x1, y1);
         xs.push(f1[0], f2[0], t2[0], t1[0]);
         ys.push(f1[1], f2[1], t2[1], t1[1]);
         const Xc = (x1 + x2) / 2 - CX;
@@ -193,11 +210,31 @@ export function MazeTitle3D({
         // the bottom of its pane, so its lightest part sits there (nearest in z).
         const bm: [number, number] = [(f1[0] + f2[0]) / 2, (f1[1] + f2[1]) / 2];
         const tm: [number, number] = [(t1[0] + t2[0]) / 2, (t1[1] + t2[1]) / 2];
+        // Solid-mode gradient axis. Default: along the extrusion (base→crest).
+        // The bottom frame wall reads wrong that way, so rotate ITS axis 10°
+        // clockwise (screen space, y-down) about its midpoint.
+        let gSolid: [number, number, number, number] = [bm[0], bm[1], tm[0], tm[1]];
+        if (isFrame && y1 === 97.5 && y2 === 97.5) {
+          const cx = (bm[0] + tm[0]) / 2;
+          const cy = (bm[1] + tm[1]) / 2;
+          const ang = (-10 * Math.PI) / 180; // CCW-positive; -10° = 10° clockwise from base→crest
+          const cosA = Math.cos(ang);
+          const sinA = Math.sin(ang);
+          const rot = (px: number, py: number): [number, number] => {
+            const dx = px - cx;
+            const dy = py - cy;
+            return [cx + dx * cosA + dy * sinA, cy - dx * sinA + dy * cosA];
+          };
+          const [bx, by] = rot(bm[0], bm[1]);
+          const [tx, ty] = rot(tm[0], tm[1]);
+          gSolid = [bx, by, tx, ty];
+        }
         raw.push({
           dist,
           fill: `M${p(f1)} L${p(f2)} L${p(t2)} L${p(t1)} Z`,
           crest: `M${p(t1)} L${p(t2)}`,
           g: [bm[0], bm[1], tm[0], tm[1]],
+          gSolid,
         });
       }
     }
@@ -332,14 +369,24 @@ export function MazeTitle3D({
               key={`f${i}`}
               id={`${uid}-wall-${i}`}
               gradientUnits="userSpaceOnUse"
-              x1={p.g[0]}
-              y1={p.g[1]}
-              x2={p.g[2]}
-              y2={p.g[3]}
+              x1={solid ? p.gSolid[0] : p.g[0]}
+              y1={solid ? p.gSolid[1] : p.g[1]}
+              x2={solid ? p.gSolid[2] : p.g[2]}
+              y2={solid ? p.gSolid[3] : p.g[3]}
             >
-              {/* Backlit: base (far) lit, top (near) in shadow. */}
-              <stop offset="0" stopColor={SHADE_TOP} />
-              <stop offset="1" stopColor={SHADE_BASE} />
+              {solid ? (
+                <>
+                  {/* Flat cyan: deeper at the base, lighter toward the crest. */}
+                  <stop offset="0" stopColor={FLAT_FACE_BASE} />
+                  <stop offset="1" stopColor={FLAT_FACE_TOP} />
+                </>
+              ) : (
+                <>
+                  {/* Backlit: base (far) lit, top (near) in shadow. */}
+                  <stop offset="0" stopColor={SHADE_TOP} />
+                  <stop offset="1" stopColor={SHADE_BASE} />
+                </>
+              )}
             </linearGradient>
           ))}
           {panels.map((p, i) => (
@@ -384,7 +431,7 @@ export function MazeTitle3D({
             transform={`translate(${NODES[START_NODE][0]} ${NODES[START_NODE][1]})`}
           >
             <g transform="translate(-5.5 -5.5)">
-              <Mouse size={11} color={solid ? FLAT_MOUSE : `url(#${uid}-mouse)`} fill={solid ? FLAT_FACE : 'none'} strokeWidth={STROKE} absoluteStrokeWidth />
+              <Mouse size={11} color={solid ? FLAT_MOUSE : `url(#${uid}-mouse)`} fill={solid ? FLAT_MOUSE_FILL : 'none'} strokeWidth={STROKE} absoluteStrokeWidth />
             </g>
           </g>
         )}
@@ -393,7 +440,7 @@ export function MazeTitle3D({
             shadow). Nearer walls occlude the faces, crests, and mouse behind them. */}
         {panels.map((p, i) => (
           <g key={i}>
-            <path d={p.fill} fill={solid ? FLAT_FACE : `url(#${uid}-wall-${i})`} stroke={solid ? FLAT_STROKE : `url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinejoin="round" />
+            <path d={p.fill} fill={`url(#${uid}-wall-${i})`} stroke={solid ? FLAT_STROKE : `url(#${uid}-edge-${i})`} strokeWidth={STROKE} strokeLinejoin="round" />
             {/* Crest is the wall's 3D top edge. Same stroke width + gradient as the
                 silhouette so every stroke in the mark reads as one consistent
                 weight (the gradient still darkens toward the near/shadow crest). */}
