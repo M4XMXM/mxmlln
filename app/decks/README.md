@@ -26,8 +26,8 @@ The whole deck reads as one system. Match it.
 
 - **Ground** `#f5f5f5`, **ink** `#111`. Slides are full-bleed (`.slide`).
 - **Headlines** — Archivo SemiBold **600**, line-height 110%, 0 tracking
-  (`.slide-section-title`, `.slide-stat`). Spec'd at 150px on a 1920 canvas,
-  scaled as `vw` so proportions hold full-screen.
+  (`.slide-section-title`, `.slide-stat`). The section title is spec'd at 125px on
+  a 1920 canvas, scaled as `vw` so proportions hold full-screen.
 - **Ampersand** — Playfair Display SemiBold **600**, +4% tracking
   (`.slide-amp`), e.g. `Models <span className="slide-amp">&amp;</span> Modes`.
 - **Handwritten accents** — Homemade Apple, 150% line-height, −2.2% tracking

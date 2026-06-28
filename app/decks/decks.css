@@ -252,8 +252,8 @@
    with an ornate Playfair ampersand for an "X & Y" title.
    Type specs (at a 1920px canvas, scaled as vw so proportions hold):
      - eyebrow / footnote: Homemade Apple Regular, 36px, 150% lh, -2.2% tracking
-     - headline:           Archivo SemiBold 600, 150px, 110% lh, 0 tracking
-     - ampersand:          Playfair Display SemiBold 600, 150px, 110%, +4% tracking */
+     - headline:           Archivo SemiBold 600, 125px, 110% lh, 0 tracking
+     - ampersand:          Playfair Display SemiBold 600, 125px, 110%, +4% tracking */
 .slide-eyebrow {
   font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
   font-size: clamp(18px, 1.875vw, 40px);
@@ -265,7 +265,7 @@
 .slide-section-title {
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-weight: 600;
-  font-size: clamp(48px, 7.8vw, 170px);
+  font-size: clamp(40px, 6.5vw, 140px);
   line-height: 1.1;
   letter-spacing: 0;
   margin: 0;
@@ -1150,6 +1150,47 @@
   }
 }
 
+/* Slides 7–9 merged (TokensSequence): one persistent coin morphs wordmark →
+   centred+orbit → shrunk+rings across three steps. Reuses .tokens-wordmark and
+   the orbit/ring visuals; the rings sit as a concentric overlay at viewport
+   centre, where the coin parks on steps 1–2. */
+.tokens-seq {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tokens-seq-rings {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(84vmin, 760px);
+  height: min(84vmin, 760px);
+  pointer-events: none;
+}
+.tokens-seq[data-rings='true'] .activity-rings {
+  opacity: 1;
+}
+.tokens-seq .coin-visual {
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Step 2 — shrink the cluster (0.46) with an extra coin-only shrink (0.45),
+   matching the old activity slide; the rings then draw on. */
+.tokens-seq[data-step='2'] .tokens-wordmark .tokens-coin {
+  transform: translateX(var(--coin-shift)) scale(0.46);
+}
+.tokens-seq[data-step='2'] .coin-visual {
+  transform: scale(0.45);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tokens-seq .coin-visual {
+    transition: none;
+  }
+}
+
 /* Sizing box for the coin canvas. Nudged via offsets, not transform, so it
    doesn't form a stacking context and the glow can sit behind the letters. */
 .tokens-coin {
@@ -1275,6 +1316,7 @@
   align-items: flex-end;
   gap: clamp(12px, 1.6vw, 32px);
   margin-top: clamp(16px, 2vw, 40px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 .measure-caption {
   margin: 0;
@@ -1297,6 +1339,26 @@
   object-fit: cover;
   border-radius: clamp(12px, 1.2vw, 24px);
   box-shadow: 0 16px 34px rgba(0, 0, 0, 0.12), 0 6px 14px rgba(0, 0, 0, 0.08);
+  transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Step 0: headline alone — the photo holds its space (so the headline never
+   reflows) but stays invisible; the script caption + arrow are hidden too. They
+   reveal together on step 1 (photo slides in from the right, script fades up). */
+.measure-slide[data-step='0'] .measure-photo {
+  opacity: 0;
+  transform: translateX(48px);
+}
+.measure-slide[data-step='0'] .measure-aside {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .measure-photo,
+  .measure-aside {
+    transition: none;
+  }
 }
 
 @media (max-aspect-ratio: 1/1) {
@@ -1452,13 +1514,17 @@
   top: var(--m);
   left: var(--m);
   /* Explicit size — an absolutely-positioned <svg> won't stretch to right/bottom
-     offsets (replaced element), so size it directly, reserving room for the
-     equation caption below. */
+     offsets (replaced element), so size it directly. The equation overlays the
+     lower area (it's hidden on step 0), so the diagram fills the full canvas. */
   width: calc(100% - 2 * var(--m));
-  height: calc(100% - var(--m) - clamp(40px, 7vh, 76px));
+  height: calc(100% - 2 * var(--m));
   color: #111;
+  /* On step 1 it shrinks toward the upper-middle, freeing the lower area so the
+     equation reads higher on the page. */
+  transform-origin: 50% 34%;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Equation caption below the diagram. */
+/* Equation caption — hidden on step 0, rises into the freed space on step 1. */
 .hp-eq-text {
   position: absolute;
   left: var(--m);
@@ -1466,12 +1532,35 @@
   bottom: clamp(14px, 3vh, 36px);
   margin: 0;
   text-align: center;
+  opacity: 0;
+  transition: opacity 0.5s ease, bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-weight: 600;
   font-size: clamp(18px, 2.6vw, 48px);
   line-height: 1.1;
   letter-spacing: -0.02em;
   color: #111;
+}
+
+/* The beam-gap bridge — invisible until the "12 ft" label clears on step 1. */
+.hp-arm-fill {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+/* Step 1 — hide the in-diagram labels, shrink the schematic, raise the equation. */
+.gin-stage[data-step='1'] .hp-diagram {
+  transform: scale(0.62);
+}
+.gin-stage[data-step='1'] .hp-tag-text {
+  opacity: 0;
+}
+.gin-stage[data-step='1'] .hp-arm-fill {
+  opacity: 1;
+}
+.gin-stage[data-step='1'] .hp-eq-text {
+  opacity: 1;
+  bottom: 24%;
 }
 
 /* The arm + horse + label orbit the post while the diagram slide is active. The
@@ -1586,6 +1675,7 @@
   fill: #111;
   text-anchor: middle;
   dominant-baseline: middle;
+  transition: opacity 0.4s ease;
 }
 /* Curved rate label sits with its baseline on the bottom arc, glyphs just inside
    the dotted track (clear of the dashes). */
@@ -1594,7 +1684,11 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hp-card {
+  .hp-card,
+  .hp-diagram,
+  .hp-eq-text,
+  .hp-tag-text,
+  .hp-arm-fill {
     transition: none;
   }
   .deck-slide[data-active='true'] .hp-spin,
@@ -1967,5 +2061,63 @@
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* Token doom-loop diagram (DoomLoop) — four states cycling clockwise around the
+   centred thesis. All-SVG (viewBox 1280×720, meet-scaled) so labels, emoji, and
+   the cyan loop stay locked in register at any size. */
+.doomloop-stage {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.doomloop-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+.dl-loop {
+  fill: none;
+  stroke: #00bbff;
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+.dl-arrow {
+  fill: none;
+  stroke: #00bbff;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* Node labels — uppercase Archivo 600 in the wide-tracked caption style. */
+.dl-label {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: 23px; /* viewBox units; Figma 32px on a 1920 canvas */
+  letter-spacing: 1.6px;
+  fill: #111;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.dl-emoji {
+  font-size: 46px;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+/* Centre thesis — Archivo Bold with a Playfair ampersand (deck headline style). */
+.dl-headline {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: 46px; /* viewBox units; Figma 70px on a 1920 canvas */
+  letter-spacing: -1px;
+  fill: #111;
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+.dl-amp {
+  font-family: var(--font-playfair), Georgia, serif;
+  font-weight: 700;
 }
 

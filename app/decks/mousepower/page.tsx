@@ -4,8 +4,8 @@ import { AutonomousWindow } from './AutonomousWindow';
 import { ExplorationGrid } from './ExplorationGrid';
 import { MeasurementProblem } from './MeasurementProblem';
 import { TokenEvidence } from './TokenEvidence';
-import { TokensWordmark } from './TokensWordmark';
-import { TokensActivity } from './TokensActivity';
+import { TokensSequence } from './TokensSequence';
+import { DoomLoop } from './DoomLoop';
 import { HorsepowerSequence } from './HorsepowerSequence';
 import { GinDiagram } from './GinDiagram';
 import { CodeReviewQuote } from './CodeReviewQuote';
@@ -29,6 +29,17 @@ export default function MousepowerDeck() {
         <ExplorationGrid />
       </div>
 
+      {/* Section divider opening the next part. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <div className="slide-content rack-in">
+          <p className="slide-eyebrow">part 1 of 3</p>
+          <h1 className="slide-section-title">
+            Of Mice <span className="slide-amp">&amp;</span> Models
+          </h1>
+          <p className="slide-footnote">the age old problem of new technology</p>
+        </div>
+      </div>
+
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <MeasurementProblem />
       </div>
@@ -37,22 +48,14 @@ export default function MousepowerDeck() {
         <TokenEvidence />
       </div>
 
-      {/* The 'centered' slide must mirror this 'wordmark' slide's morph end-state
-          — the deck cuts (no fade) between them. Keep them adjacent and in order. */}
+      {/* Slides 7–9 merged: TOKENS wordmark → centred coin + orbit → shrink +
+          activity rings, advanced as three steps within one slide. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
-        <div className="slide-content">
-          <TokensWordmark mode="wordmark" />
-        </div>
+        <TokensSequence />
       </div>
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
-        <div className="slide-content">
-          <TokensWordmark mode="centered" />
-        </div>
-      </div>
-
-      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
-        <TokensActivity />
+        <DoomLoop />
       </div>
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
@@ -61,6 +64,15 @@ export default function MousepowerDeck() {
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <GinDiagram />
+      </div>
+
+      {/* Section divider opening the next part. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <div className="slide-content rack-in">
+          <p className="slide-eyebrow">part 2 of 3</p>
+          <h1 className="slide-section-title">Canary in the Codebase</h1>
+          <p className="slide-footnote">death by one thousand pull requests</p>
+        </div>
       </div>
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
@@ -77,6 +89,15 @@ export default function MousepowerDeck() {
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
         <PullRequestQuote />
+      </div>
+
+      {/* Section divider opening the final part. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#111' }}>
+        <div className="slide-content rack-in">
+          <p className="slide-eyebrow">part 3 of 3</p>
+          <h1 className="slide-section-title">A Theory of Agent Entropy</h1>
+          <p className="slide-footnote">using uncertainty as a guide</p>
+        </div>
       </div>
     </Deck>
   );
