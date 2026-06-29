@@ -1,15 +1,5 @@
 const STATS = [
   {
-    num: '+91%',
-    cap: (
-      <>
-        time reviewing
-        <br />
-        code each day
-      </>
-    ),
-  },
-  {
     num: '20%',
     cap: (
       <>
@@ -19,7 +9,16 @@ const STATS = [
       </>
     ),
   },
-  { num: '??%', cap: 'productivity gains' },
+  {
+    num: '+91%',
+    cap: (
+      <>
+        time reviewing
+        <br />
+        code each day
+      </>
+    ),
+  },
 ];
 
 export function VerificationStats() {

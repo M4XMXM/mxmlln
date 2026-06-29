@@ -4,7 +4,7 @@
 .decks-layout {
   min-height: 100vh;
   background: #fff;
-  color: #1a1a1a;
+  color: #3B3B3B;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
 }
 
@@ -54,7 +54,7 @@
   font-weight: 500;
   font-size: 20px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: #3B3B3B;
   margin-bottom: 4px;
 }
 
@@ -63,7 +63,7 @@
   font-weight: 800;
   font-size: 44px;
   line-height: 1.1;
-  color: #1a1a1a;
+  color: #3B3B3B;
   margin: 0;
 }
 
@@ -130,7 +130,7 @@
   font-weight: 500;
   font-size: 18px;
   line-height: 1.5;
-  color: #1a1a1a;
+  color: #3B3B3B;
 }
 
 .decks-preview h2 {
@@ -386,7 +386,7 @@
   font-weight: 500;
   font-size: 30px;
   line-height: 1.35;
-  color: #1a1a1a;
+  color: #3B3B3B;
 }
 .chat-thinking {
   display: flex;
@@ -506,6 +506,13 @@
    nudged to a new spot, then put back — a loop of edits signalling ongoing work.
    Scoped to the windowed preview + active slide so the real title is untouched;
    staggered so something is always being moved. */
+/* In the preview, the text elements shrink to their content so the agent's
+   selection ring hugs the words (a block <p> would stretch the ring full-width). */
+.os-screen .slide-eyebrow,
+.os-screen .slide-footnote {
+  display: inline-block;
+  position: relative; /* anchors the .os-sel selection overlay */
+}
 .deck-slide[data-active='true'] .os-screen .slide-eyebrow {
   animation: edit-eyebrow 10s ease-in-out 2.4s infinite;
 }
@@ -523,7 +530,7 @@
 @keyframes edit-eyebrow {
   0%, 9% {
     transform: translate(0, 0) scale(1);
-    color: #111;
+    color: #3B3B3B;
     letter-spacing: -0.022em;
     font-family: var(--font-homemade-apple), cursive;
     box-shadow: 0 0 0 0 rgba(0, 187, 255, 0);
@@ -531,7 +538,7 @@
   14% { box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
   21%, 33% {
     transform: translate(22px, -6px) scale(1.18);
-    color: #111;
+    color: #3B3B3B;
     letter-spacing: -0.022em;
     font-family: var(--font-homemade-apple), cursive;
     box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
@@ -545,7 +552,7 @@
   }
   69%, 85% {
     transform: translate(0, 0) scale(1);
-    color: #111;
+    color: #3B3B3B;
     letter-spacing: -0.022em;
     font-family: var(--font-homemade-apple), cursive;
     box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
@@ -563,7 +570,7 @@
 @keyframes edit-footnote {
   0%, 9% {
     transform: translate(0, 0) scale(1);
-    color: #111;
+    color: #3B3B3B;
     letter-spacing: -0.022em;
     font-style: normal;
     font-family: var(--font-homemade-apple), cursive;
@@ -588,13 +595,74 @@
   }
   71%, 87% {
     transform: translate(0, 0) scale(1);
-    color: #111;
+    color: #3B3B3B;
     letter-spacing: -0.022em;
     font-style: normal;
     font-family: var(--font-homemade-apple), cursive;
     box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85);
   }
   93%, 100% { box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
+}
+
+/* Selection chrome for the windowed preview's edited elements (eyebrow / maze /
+   footnote) — same object-detection look as the grid tiles. Sizes are authored
+   larger because the whole window renders at --rest (0.56) scale, so these land
+   at a weight comparable to the grid's handles. The overlay rides inside each
+   element, so it tracks the edit-loop's nudge; its opacity is pulsed in sync with
+   that element's select-ring, on the SAME 10s cycle + per-element delay. */
+.os-sel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.os-handle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #00bbff;
+}
+.os-handle--tl { top: 0; left: 0; transform: translate(-50%, -50%); }
+.os-handle--tr { top: 0; right: 0; transform: translate(50%, -50%); }
+.os-handle--bl { bottom: 0; left: 0; transform: translate(-50%, 50%); }
+.os-handle--br { bottom: 0; right: 0; transform: translate(50%, 50%); }
+.os-label {
+  position: absolute;
+  top: 0;
+  left: -3px;
+  transform: translateY(-100%);
+  display: inline-block;
+  padding: 5px 10px;
+  background: #00bbff;
+  color: #fff;
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 23px;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 6px 6px 0 0;
+}
+.os-conf {
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+/* One pulse keyframe, delayed per element to match each ring's on/off window. */
+@keyframes os-sel-pulse {
+  0%, 10% { opacity: 0; }
+  15%, 86% { opacity: 1; }
+  92%, 100% { opacity: 0; }
+}
+.deck-slide[data-active='true'] .os-screen .slide-eyebrow .os-sel {
+  animation: os-sel-pulse 10s ease-in-out 2.4s infinite;
+}
+.deck-slide[data-active='true'] .os-screen .maze-title .os-sel {
+  animation: os-sel-pulse 10s ease-in-out 5.7s infinite;
+}
+.deck-slide[data-active='true'] .os-screen .slide-footnote .os-sel {
+  animation: os-sel-pulse 10s ease-in-out 9s infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -605,6 +673,7 @@
   .deck-slide[data-active='true'] .os-screen .slide-eyebrow,
   .deck-slide[data-active='true'] .os-screen .maze-title,
   .deck-slide[data-active='true'] .os-screen .slide-footnote,
+  .deck-slide[data-active='true'] .os-sel,
   .chat-thinking-dot {
     animation: none;
   }
@@ -617,6 +686,12 @@
    cell ≈ the slide-2 window, then settles so all nine fit, the surrounding eight
    fading in around the centre. Tile proportions mirror slide 2's window so the
    centre reads continuous through the cut. */
+/* The opening, merged into one stepped slide (mousepower/MousepowerOpening.tsx):
+   each scene fills the slide and brings its own background. */
+.mp-opening {
+  position: absolute;
+  inset: 0;
+}
 .explore-desktop {
   position: absolute;
   inset: 0;
@@ -635,7 +710,7 @@
   --f: 0.23333;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   column-gap: 1.6vw;
   row-gap: 2.6vh;
   /* Cells are sized to the slide-2 window ÷ --z (window = (--sw + 100vw) × ≈100vh
@@ -643,10 +718,11 @@
      slide-2 window — same aspect ratio through the cut, the zoom is a pure scale
      (no reflow, no aspect shift). */
   width: calc(71.68vw / var(--z) * 3 + 1.6vw * 2);
-  height: calc(58.5vh / var(--z) * 2 + 2.6vh);
-  /* Pivot on the top-middle tile (the centrepiece). The zoom + translateY keep it
-     viewport-centred at the start, then it slides up into its top-row spot. */
-  transform-origin: 50% 23.7%;
+  height: calc(58.5vh / var(--z) * 3 + 2.6vh * 2);
+  /* Pivot on the centre tile (the centrepiece, now the true middle of the 3×3):
+     scaling about 50% 50% keeps it viewport-centred through the zoom, matching the
+     centred slide-2 window at the cut. */
+  transform-origin: 50% 50%;
 }
 
 /* Agent window tile: chrome + [sidebar | preview], proportioned like slide 2. */
@@ -702,7 +778,7 @@
   font-weight: 500;
   font-size: calc(30px * var(--f));
   line-height: 1.35;
-  color: #1a1a1a;
+  color: #3B3B3B;
 }
 .gw-think {
   display: flex;
@@ -778,6 +854,7 @@
 /* The canvas the agent is editing — sizes to its content so the selection ring
    hugs it; the edit loop animates this element. */
 .gw-canvas {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -785,6 +862,52 @@
   gap: calc(clamp(8px, 1vw, 20px) * var(--f));
   border-radius: calc(6px * var(--f));
   text-align: center;
+}
+
+/* The agent's selection chrome on the canvas: four corner handles + an
+   object-detection-style class label, drawn over the .gw-canvas box and faded
+   in/out in sync with the select-ring (same duration + per-tile --d delay). */
+.gw-sel {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+/* Handles + label are sized in ABSOLUTE px (not × --f): the tiles are small, so
+   --f-scaled chrome would shrink to a few px and disappear. Matches the 2px ring. */
+.gw-handle {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid #00bbff;
+}
+.gw-handle--tl { top: 0; left: 0; transform: translate(-50%, -50%); }
+.gw-handle--tr { top: 0; right: 0; transform: translate(50%, -50%); }
+.gw-handle--bl { bottom: 0; left: 0; transform: translate(-50%, 50%); }
+.gw-handle--br { bottom: 0; right: 0; transform: translate(50%, 50%); }
+/* The class tag sits on the top-left corner, above the box edge (YOLO-style). */
+.gw-label {
+  position: absolute;
+  top: 0;
+  left: -2px;
+  transform: translateY(-100%);
+  display: inline-block;
+  padding: 3px 7px;
+  background: #00bbff;
+  color: #fff;
+  font-family: var(--font-archivo), sans-serif;
+  font-weight: 600;
+  font-size: 13px;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 4px 4px 0 0;
+}
+.gw-conf {
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
 }
 .gw-canvas .slide-eyebrow,
 .gw-canvas .slide-footnote { margin: 0; font-size: calc(clamp(18px, 1.875vw, 40px) * var(--f)); }
@@ -819,7 +942,7 @@
   height: auto;
   display: block;
 }
-.gw-glyph--cursor { color: #111; }
+.gw-glyph--cursor { color: #3B3B3B; }
 .gw-glyph--bolt { color: #00bbff; }
 /* A monogram. */
 .gw-mono {
@@ -828,7 +951,7 @@
   font-size: calc(min(74vw, 940px) * var(--f) / 1.6);
   letter-spacing: -0.04em;
   line-height: 1;
-  color: #111;
+  color: #3B3B3B;
 }
 .gw-mono span { color: #00bbff; }
 
@@ -841,11 +964,10 @@
   animation: explore-fade 0.6s ease 0.45s both;
 }
 @keyframes explore-zoom {
-  /* translateY(26.3%) pairs with the 50% 23.7% origin: it puts the top-middle
-     tile at the viewport centre at the zoomed-in start; settling to translateY(0)
-     slides it up into its top-row spot as the grid scales down. */
-  from { transform: translateY(26.3%) scale(var(--z)); }
-  to { transform: translateY(0) scale(1); }
+  /* Pure scale about the centre tile (origin 50% 50%): the centrepiece stays
+     viewport-centred — matching the slide-2 window — as the grid scales down. */
+  from { transform: scale(var(--z)); }
+  to { transform: scale(1); }
 }
 @keyframes explore-fade {
   from { opacity: 0; }
@@ -856,15 +978,23 @@
    staggered per tile so the agents look like they're exploring in parallel. The
    centrepiece is delayed so it stays idle through the zoom (matching slide 2 at
    the cut); the others use negative delays to start mid-cycle for instant variety. */
+/* Per-tile phase offset, shared by the canvas edit loop and its selection
+   overlay so the ring, handles, and label all appear together. */
+.gw--mice { --d: -1s; }
+.gw--center { --d: 1.4s; }
+.gw--cursor { --d: -2.3s; }
+.gw--bolt { --d: -3.6s; }
+.gw--mono { --d: -0.5s; }
+.gw--ascii { --d: -4.4s; }
+.gw--cursors { --d: -1.8s; }
+.gw--mouse { --d: -3s; }
+.gw--bolts { --d: -4.9s; }
 .deck-slide[data-active='true'] .gw-canvas {
-  animation: gw-edit 5.5s ease-in-out infinite;
+  animation: gw-edit 5.5s ease-in-out var(--d, 0s) infinite;
 }
-.deck-slide[data-active='true'] .gw--mice .gw-canvas { animation-delay: -1s; }
-.deck-slide[data-active='true'] .gw--center .gw-canvas { animation-delay: 1.4s; }
-.deck-slide[data-active='true'] .gw--cursor .gw-canvas { animation-delay: -2.3s; }
-.deck-slide[data-active='true'] .gw--bolt .gw-canvas { animation-delay: -3.6s; }
-.deck-slide[data-active='true'] .gw--mono .gw-canvas { animation-delay: -0.5s; }
-.deck-slide[data-active='true'] .gw--ascii .gw-canvas { animation-delay: -4.4s; }
+.deck-slide[data-active='true'] .gw-sel {
+  animation: gw-sel 5.5s ease-in-out var(--d, 0s) infinite;
+}
 @keyframes gw-edit {
   0%, 58% { transform: translate(0, 0) scale(1); box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
   64% { box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
@@ -872,11 +1002,18 @@
   90% { transform: translate(0, 0) scale(1); box-shadow: 0 0 0 2px rgba(0, 187, 255, 0.85); }
   96%, 100% { box-shadow: 0 0 0 0 rgba(0, 187, 255, 0); }
 }
+/* Handles + label track the ring's on/off window from gw-edit. */
+@keyframes gw-sel {
+  0%, 58% { opacity: 0; }
+  64%, 90% { opacity: 1; }
+  96%, 100% { opacity: 0; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .deck-slide[data-active='true'] .explore-grid,
   .deck-slide[data-active='true'] .gw:not(.gw--center),
-  .deck-slide[data-active='true'] .gw-canvas {
+  .deck-slide[data-active='true'] .gw-canvas,
+  .deck-slide[data-active='true'] .gw-sel {
     animation: none;
   }
 }
@@ -986,6 +1123,14 @@
     rgba(245, 245, 245, 0) 72%
   );
 }
+/* Match the windowed preview, where the eyebrow/footnote are inline-block (so the
+   agent's selection ring hugs the text). Block <p>s here would collapse their
+   margins with the maze's, leaving a tighter text↔maze gap than the preview —
+   inline-block keeps the lockup spacing identical across the title/window/grid. */
+.slide--title .slide-eyebrow,
+.slide--title .slide-footnote {
+  display: inline-block;
+}
 
 /* TOKENS wordmark slide. Heaviest Archivo, viewport-relative; the "O" is the 3D
    coin (Coin3D). isolation:isolate is the context the coin glow layers within. */
@@ -999,7 +1144,7 @@
   font-size: clamp(64px, 15vw, 300px);
   line-height: 1;
   letter-spacing: -0.045em;
-  color: #111;
+  color: #3B3B3B;
   position: relative;
   isolation: isolate;
 }
@@ -1039,7 +1184,8 @@
   inset: 0;
   z-index: 5;
   pointer-events: none;
-  --orbit-r: 1.32em; /* distance from coin centre to each icon */
+  --orbit-r: 1.16em; /* distance from coin centre to each icon — pulled in so the
+     token → icons → rings gaps read roughly equidistant in the rings step */
   --orbit-icon: 0.26em; /* icon size */
   --orbit-gold: #9a7b1e; /* muted gold, harmonised with the coin */
   animation: orbit-rotate 54s linear infinite;
@@ -1305,7 +1451,7 @@
   display: block;
   width: 2px;
   height: 8px;
-  background: #111;
+  background: #3B3B3B;
   opacity: 0.35;
   transition: height 0.3s ease, opacity 0.3s ease;
 }
@@ -1510,59 +1656,69 @@
    [data-step]: two image cards animate between a centred focus (step 0) and a
    two-up dock (step 1). The gin schematic that derives the number is its own
    slide (GinDiagram / .gin-stage). */
+/* Two diagrams sit directly on the ground (no card fill): a centred flex row,
+   each image fit to its natural width and capped to a shared max-height so both
+   read at the same scale. */
 .hp-stage {
-  --m: clamp(20px, 2.6vw, 40px);
-  --gap: clamp(12px, 1vw, 20px);
-  /* Docked half-card width (used for width AND left — both % resolve to the
-     stage width, so they stay consistent). */
-  --cw: calc((100% - 2 * var(--m) - var(--gap)) / 2);
-  --focusW: 54%;
+  --mh: 64vh; /* shared, EXPLICIT image height — both diagrams match exactly */
+  --gap: clamp(28px, 5vw, 96px);
+  /* gin aspect (trimmed: 2776 / 2151) — used to centre the engine in step 0 */
+  --gin-ar: 1.29;
   position: relative;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap);
+  padding: clamp(24px, 3vw, 56px);
   overflow: hidden;
+  /* Same cyan dot-grid as the title slide, for visual continuity. */
+  background-color: #f5f5f5;
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 187, 255, 0.26) 1px,
+    transparent 1.4px
+  );
+  background-size: calc(min(74vw, 940px) * 0.01134) calc(min(74vw, 940px) * 0.01134);
+  background-position: center;
 }
 .hp-card {
-  position: absolute;
-  top: var(--m);
-  height: calc(100% - 2 * var(--m));
-  width: var(--cw);
-  border-radius: clamp(16px, 1.8vw, 28px);
-  overflow: hidden;
-  background: #fff;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04), 0 10px 18px rgba(0, 0, 0, 0.05),
-    0 18px 56px rgba(0, 0, 0, 0.1);
-  transition: left 0.62s cubic-bezier(0.4, 0, 0.2, 1),
-    top 0.62s cubic-bezier(0.4, 0, 0.2, 1),
-    width 0.62s cubic-bezier(0.4, 0, 0.2, 1),
-    height 0.62s cubic-bezier(0.4, 0, 0.2, 1),
-    transform 0.62s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.45s ease;
+  flex: 0 0 auto;
+  max-width: 56vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(16px, 2.8vh, 44px);
+  /* Only opacity/blur (and the engine's centring slide) animate — the gin never
+     resizes; it simply fades + racks into focus. */
+  transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .hp-card img {
-  width: 100%;
-  height: 100%;
   display: block;
-  object-fit: cover;
-  object-position: center;
+  width: auto;
+  height: var(--mh); /* explicit + shared => both render at exactly equal height */
 }
-/* Docked two-up (step 1, the base). */
-.hp-card--left {
-  left: var(--m);
-}
-.hp-card--right {
-  left: calc(var(--m) + var(--cw) + var(--gap));
+/* Handwritten caption under each diagram. */
+.hp-label {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-size: clamp(16px, 1.6vw, 32px);
+  line-height: 1.5;
+  letter-spacing: -0.022em;
+  color: #3B3B3B;
 }
 
-/* Step 0 — focus the left (engine) card; park the right card off-screen. */
-.hp-stage[data-step='0'] .hp-card--left {
-  width: var(--focusW);
-  left: calc(50% - var(--focusW) / 2);
-}
-.hp-stage[data-step='0'] .hp-card--right {
-  transform: translateX(125%);
+/* Step 0 — engine centred alone; the gin holds its slot (no resize) and only
+   fades + blurs in on step 1. The engine slides from centre to its right slot. */
+.hp-stage[data-step='0'] .hp-card--gin {
   opacity: 0;
+  filter: blur(22px);
+}
+.hp-stage[data-step='0'] .hp-card--engine {
+  transform: translateX(calc((var(--mh) * var(--gin-ar) + var(--gap)) / -2));
 }
 
 /* Horse-gin schematic slide (GinDiagram). The diagram fills the canvas above the
@@ -1573,6 +1729,15 @@
   width: 100%;
   height: 100%;
   box-sizing: border-box;
+  /* Same cyan dot-grid as the title slide, for visual continuity. */
+  background-color: #f5f5f5;
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 187, 255, 0.26) 1px,
+    transparent 1.4px
+  );
+  background-size: calc(min(74vw, 940px) * 0.01134) calc(min(74vw, 940px) * 0.01134);
+  background-position: center;
 }
 .hp-diagram {
   position: absolute;
@@ -1583,7 +1748,7 @@
      lower area (it's hidden on step 0), so the diagram fills the full canvas. */
   width: calc(100% - 2 * var(--m));
   height: calc(100% - 2 * var(--m));
-  color: #111;
+  color: #00bbff; /* schematic line work in the title-slide cyan */
   /* On step 1 it shrinks toward the upper-middle, freeing the lower area so the
      equation reads higher on the page. */
   transform-origin: 50% 34%;
@@ -1604,7 +1769,7 @@
   font-size: clamp(18px, 2.6vw, 48px);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: #111;
+  color: #3B3B3B;
 }
 
 /* The beam-gap bridge — invisible until the "12 ft" label clears on step 1. */
@@ -1613,9 +1778,19 @@
   transition: opacity 0.4s ease;
 }
 
-/* Step 1 — hide the in-diagram labels, shrink the schematic, raise the equation. */
+/* Step 1 — hide the in-diagram labels, shrink the schematic, raise the equation.
+   The timer shrinks an extra 1/3 here; the horse counter-scales (hp-horse-scale)
+   to keep its size, so it reads larger within the smaller dial. */
 .gin-stage[data-step='1'] .hp-diagram {
-  transform: scale(0.62);
+  transform: scale(0.41);
+}
+.hp-horse-scale {
+  transform-box: view-box;
+  transform-origin: 150px 62px;
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.gin-stage[data-step='1'] .hp-horse-scale {
+  transform: scale(1.5);
 }
 .gin-stage[data-step='1'] .hp-tag-text {
   opacity: 0;
@@ -1625,7 +1800,7 @@
 }
 .gin-stage[data-step='1'] .hp-eq-text {
   opacity: 1;
-  bottom: 24%;
+  bottom: 37%;
 }
 
 /* The arm + horse + label orbit the post while the diagram slide is active. The
@@ -1650,34 +1825,16 @@
 }
 .hp-horse {
   transform-box: view-box;
-  transform-origin: 150px 42px;
+  transform-origin: 150px 62px;
 }
 .deck-slide[data-active='true'] .hp-horse {
   animation: hp-spin-rev 7s linear infinite;
 }
 .hp-armlabel {
   transform-box: view-box;
-  transform-origin: 150px 79px;
+  transform-origin: 150px 100px;
 }
 .deck-slide[data-active='true'] .hp-armlabel {
-  animation: hp-spin-rev 7s linear infinite;
-}
-/* "180 lbf" rides a concentric orbit about the post (same as the horse) but with
-   a larger radius (rest centre 150,12 → r100), so it sits OUTSIDE the dotted
-   track (r70) at every angle and never dips inside it. Counter-rotates so it
-   stays upright while orbiting in sync with the horse. */
-.hp-forceorbit {
-  transform-box: view-box;
-  transform-origin: 150px 112px;
-}
-.deck-slide[data-active='true'] .hp-forceorbit {
-  animation: hp-spin 7s linear infinite;
-}
-.hp-forcelabel {
-  transform-box: view-box;
-  transform-origin: 150px 12px;
-}
-.deck-slide[data-active='true'] .hp-forcelabel {
   animation: hp-spin-rev 7s linear infinite;
 }
 /* Flip the horse horizontally on the bottom half of the orbit (25%–75% = the
@@ -1705,7 +1862,7 @@
 }
 .hp-horse-face {
   transform-box: view-box;
-  transform-origin: 150px 42px;
+  transform-origin: 150px 62px;
 }
 .deck-slide[data-active='true'] .hp-horse-face {
   animation: hp-horse-face 7s linear infinite;
@@ -1714,9 +1871,9 @@
   /* Outline strokes (no fill); the ground-filled backing disc masks the arm. */
   fill: none;
   stroke: currentColor;
-  /* The glyph sits in a scale(1.2) group, so 1.6 / 1.2 renders at the same
-     1.6 viewBox weight as the arm and the rest of the diagram lines. */
-  stroke-width: 1.333;
+  /* The glyph sits in a scale(1.2) group, so this / 1.2 matches the arm + rest of
+     the diagram lines (thinned to the title maze's monoweight). */
+  stroke-width: 0.667;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -1730,22 +1887,14 @@
 /* In-diagram labels — free text in the slide-13 caption style (uppercase,
    Archivo 600, wide tracking; see .vstat-cap). */
 .hp-tag-text {
-  font-family: var(--font-archivo), 'Archivo', sans-serif;
-  font-weight: 600;
-  /* viewBox units; the diagram scales ~2.7x on a 1280 canvas, so ~8 here renders
-     close to .vstat-cap's slide-13 size (clamp(11px,1.667vw,32px)). */
-  font-size: 8px;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  fill: #111;
+  /* Handwritten script measurements (viewBox units). */
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-size: 6.5px;
+  letter-spacing: -0.022em;
+  fill: #3B3B3B;
   text-anchor: middle;
   dominant-baseline: middle;
   transition: opacity 0.4s ease;
-}
-/* Curved rate label sits with its baseline on the bottom arc, glyphs just inside
-   the dotted track (clear of the dashes). */
-.hp-rate-text {
-  dominant-baseline: auto;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1759,9 +1908,7 @@
   .deck-slide[data-active='true'] .hp-spin,
   .deck-slide[data-active='true'] .hp-horse,
   .deck-slide[data-active='true'] .hp-horse-face,
-  .deck-slide[data-active='true'] .hp-armlabel,
-  .deck-slide[data-active='true'] .hp-forceorbit,
-  .deck-slide[data-active='true'] .hp-forcelabel {
+  .deck-slide[data-active='true'] .hp-armlabel {
     animation: none;
   }
 }
@@ -1797,10 +1944,10 @@
   line-height: 1.1;
 }
 .mp-eq-lhs {
-  color: #111;
+  color: #3B3B3B;
 }
 .mp-eq-rel {
-  color: #111;
+  color: #3B3B3B;
   margin: 0 0.1em;
 }
 
@@ -1810,7 +1957,7 @@
   display: inline-flex;
   align-items: baseline;
   gap: 0.4em;
-  color: #111;
+  color: #3B3B3B;
   transition: opacity 0.4s ease;
 }
 .mp-eq-naive::after {
@@ -1862,7 +2009,7 @@
   font-weight: 600;
   font-size: clamp(13px, 1.3vw, 24px);
   letter-spacing: -0.01em;
-  color: #111;
+  color: #3B3B3B;
   padding: 0.3em 0.7em;
   border: 1px solid rgba(17, 17, 17, 0.16);
   border-radius: 999px;
@@ -1895,6 +2042,15 @@
   height: 100%;
   box-sizing: border-box;
   overflow: hidden;
+  /* Same cyan dot-grid as the title slide, for visual continuity. */
+  background-color: #f5f5f5;
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 187, 255, 0.26) 1px,
+    transparent 1.4px
+  );
+  background-size: calc(min(74vw, 940px) * 0.01134) calc(min(74vw, 940px) * 0.01134);
+  background-position: center;
 }
 /* The measurement field sits behind the equation; it never eats pointer events
    (tracking is on window) so it never intercepts the cursor. */
@@ -1906,10 +2062,10 @@
 /* Every ray shares one flowing-dot stroke — no special-cased corners; dashes
    drift outward (dashoffset) so they read as receding into space. */
 .mpm-line {
-  stroke: #111;
-  stroke-width: 1;
-  stroke-dasharray: 2 9;
-  opacity: 0.5;
+  stroke: #00bbff;
+  stroke-width: 2.6;
+  stroke-dasharray: 3 8;
+  opacity: 0.95;
 }
 .deck-slide[data-active='true'] .mpm-line {
   animation: mpm-drift 1.2s linear infinite;
@@ -1921,13 +2077,13 @@
 }
 .mpm-probe-ring {
   fill: none;
-  stroke: #111;
-  stroke-width: 1.25;
+  stroke: #00bbff;
+  stroke-width: 2.6;
 }
 .mpm-probe-cross {
-  stroke: #111;
-  stroke-width: 1;
-  opacity: 0.55;
+  stroke: #00bbff;
+  stroke-width: 2;
+  opacity: 0.7;
 }
 /* Diagram labels — same uppercase Archivo treatment as the gin's .hp-tag-text.
    Tabular figures keep the digits from shimmering as the readouts change. */
@@ -1937,7 +2093,7 @@
   font-size: clamp(10px, 0.83vw, 14px);
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  fill: #111;
+  fill: #3B3B3B;
   text-anchor: middle;
   dominant-baseline: middle;
   font-variant-numeric: tabular-nums;
@@ -1961,7 +2117,7 @@
   font-size: clamp(20px, 3vw, 56px);
   line-height: 1.1;
   letter-spacing: -0.02em;
-  color: #111;
+  color: #3B3B3B;
   background: radial-gradient(
     ellipse 60% 70% at 50% 50%,
     rgba(245, 245, 245, 0.92) 0%,
@@ -2257,9 +2413,251 @@
   font-weight: 600;
   font-size: 23px; /* viewBox units; Figma 32px on a 1920 canvas */
   letter-spacing: 1.6px;
-  fill: #111;
+  fill: #3B3B3B;
   text-anchor: middle;
   dominant-baseline: middle;
+}
+/* Activity-ring labels — same tracked all-caps as .dl-label, sized for the rings'
+   240-unit viewBox and right-aligned to each ring's top edge. */
+.ar-label {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: 7px;
+  letter-spacing: 0.5px;
+  fill: #3B3B3B;
+  text-anchor: end;
+  dominant-baseline: middle;
+}
+
+/* Spend-vs-tokens combo-chart slide (mousepower/SpendVsTokens.tsx): a white card
+   on the ground holding a stacked-bar + line chart, with a source line below. */
+.svt-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(10px, 1.4vh, 22px);
+  padding: clamp(24px, 4vw, 80px);
+  box-sizing: border-box;
+}
+.svt-card {
+  width: min(86vw, 1500px);
+  box-sizing: border-box;
+  background: #fff;
+  border-radius: clamp(16px, 1.6vw, 28px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.1), 0 6px 16px rgba(0, 0, 0, 0.06);
+  padding: clamp(20px, 2.4vw, 40px) clamp(24px, 3vw, 52px);
+}
+.svt-title {
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: clamp(18px, 1.7vw, 32px);
+  letter-spacing: -0.01em;
+  color: #3B3B3B;
+}
+.svt-sub {
+  margin: clamp(6px, 0.6vw, 12px) 0 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 500;
+  font-size: clamp(11px, 0.95vw, 18px);
+  color: #9a9a9a;
+}
+.svt-chart {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: clamp(8px, 1vw, 18px);
+}
+.svt-axis {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 13px;
+  fill: #9a9a9a;
+  text-anchor: middle;
+}
+.svt-source {
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: clamp(10px, 0.85vw, 15px);
+  color: #aaa;
+}
+
+/* Closing entropy slide (mousepower/EntropyPaper.tsx): bold thesis up top, the
+   Shannon paper anchored flush to the bottom and bleeding off it. The page stack,
+   shadow, and corners are baked into the asset — render it flat, no added chrome. */
+.ent-stage {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  --paper-h: 64vh; /* shared by the paper band + the headline's centring region */
+}
+/* Centred in the space between the top of the viewport and the graphic below. */
+.ent-headline {
+  position: absolute;
+  top: calc((100vh - var(--paper-h)) / 2 + 40px);
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(92vw, 1400px);
+  padding: 0 clamp(24px, 4vw, 60px);
+  box-sizing: border-box;
+  margin: 0;
+  text-align: center;
+  text-wrap: balance; /* split evenly across the two lines */
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: clamp(24px, 3.2vw, 60px);
+  line-height: 1.16;
+  letter-spacing: -0.015em;
+  color: #3B3B3B;
+}
+/* Pinned to the bottom edge and bled off it: a fixed-height band anchored at the
+   bottom, with the asset object-fit:cover'd from the top so the bottom always runs
+   off the slide regardless of viewport height. */
+.ent-paper-wrap {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(92vw, 1500px);
+  height: var(--paper-h);
+}
+.ent-paper {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Interactive agent-entropy sliders (mousepower/EntropySliders.tsx). Light deck
+   palette, cyan-filled tracks; the verdict box tints by severity. */
+.es-stage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(28px, 4vw, 80px);
+  box-sizing: border-box;
+}
+.es-panel {
+  width: min(92vw, 1100px);
+}
+/* Three dials in a row (mousepower/EntropySliders.tsx), Dieter-Rams dial from
+   exp/003 restyled in the deck's cyan. */
+.es-dials {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(20px, 3vw, 64px);
+  flex-wrap: wrap;
+  margin-bottom: clamp(22px, 3.2vh, 48px);
+}
+.es-dial-cell {
+  width: clamp(150px, 16vw, 240px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(10px, 1.2vw, 20px);
+}
+.es-dial-label {
+  text-align: center;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 500;
+  font-size: clamp(13px, 1.15vw, 22px);
+  line-height: 1.3;
+  color: #3B3B3B;
+}
+.es-dial {
+  position: relative;
+  width: clamp(140px, 14vw, 220px);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  touch-action: none;
+}
+/* Progress ring: SVG track + fill arcs with round caps. Centre is just the ground
+   (no white disc) — only the knob is white. */
+.es-dial-ring {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.es-dial-track,
+.es-dial-fill {
+  fill: none;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.es-dial-track {
+  stroke: #dcdcda;
+}
+.es-dial-fill {
+  stroke: #00bbff;
+}
+/* The knob: white disc with a soft drop shadow + an accent dot at its top. */
+.es-dial-knob {
+  position: relative;
+  z-index: 2;
+  width: 62%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: inset -1px -1px 5px rgba(0, 0, 0, 0.05),
+    2px 2px 12px rgba(0, 0, 0, 0.1), 4px 4px 24px rgba(0, 0, 0, 0.12);
+}
+.es-dial-knob::before {
+  content: '';
+  position: absolute;
+  top: 7%;
+  left: 50%;
+  width: 7%;
+  aspect-ratio: 1;
+  transform: translate(-50%, 0);
+  border-radius: 50%;
+  background: #00bbff;
+  box-shadow: 1px 1px 4px rgba(0, 187, 255, 0.35);
+}
+.es-verdict {
+  margin-top: clamp(8px, 1vh, 16px);
+  padding: clamp(14px, 1.4vw, 26px) clamp(16px, 1.6vw, 30px);
+  border: 1px solid var(--border, #dcdcda);
+  border-radius: clamp(10px, 0.8vw, 16px);
+  min-height: 3.6em;
+  display: flex;
+  align-items: center;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.es-verdict-text {
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: clamp(15px, 1.5vw, 28px);
+  line-height: 1.5;
+  color: #3B3B3B;
+}
+.es-success {
+  background: #e7f5ec;
+  border-color: #1d9e75;
+}
+.es-danger {
+  background: #fce9e9;
+  border-color: #a32d2d;
+}
+.es-warn {
+  background: #fbf3e2;
+  border-color: #ba7517;
+}
+.es-neutral {
+  background: #fff;
+  border-color: #dcdcda;
 }
 .dl-emoji {
   font-size: 46px;
@@ -2272,7 +2670,7 @@
   font-weight: 700;
   font-size: 46px; /* viewBox units; Figma 70px on a 1920 canvas */
   letter-spacing: -1px;
-  fill: #111;
+  fill: #3B3B3B;
   text-anchor: middle;
   dominant-baseline: middle;
 }
