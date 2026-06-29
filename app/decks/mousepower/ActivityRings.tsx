@@ -1,17 +1,41 @@
 'use client';
 
-// Apple-Watch-style activity rings. The arcs draw on when `on` flips true.
-type Ring = { id: string; r: number; pct: number; from: string; to: string };
+// AARRR pirate-metric rings: five concentric arcs in distinguishable cyan/teal
+// variants (harmonised with the deck's #00bbff), broken open across the top-left
+// quadrant so the circles don't close on themselves. The opened wedge holds a
+// right-aligned, all-caps label per ring (matching the deck's diagram labels),
+// each aligned to its ring's top edge. Arcs draw on (clockwise) when `on` flips.
+type Ring = { id: string; label: string; r: number; pct: number; from: string; to: string };
 
-const W = 9; // stroke width, viewBox units
 const SIZE = 240;
 const C = SIZE / 2;
+const W = 5; // stroke width, viewBox units (thin)
+const SWEEP = 270; // degrees of track drawn; the remaining 90° (top-left) is the gap
 
+// Outer → inner. Funnel-shaped fills; hue drifts azure → cyan → teal so adjacent
+// rings read apart. Radii sit in an outer band, leaving a large centre hole that
+// clears the orbiting token icons around the parked coin.
 const RINGS: Ring[] = [
-  { id: 'move', r: 110, pct: 0.82, from: '#FF0A36', to: '#FF4E7E' },
-  { id: 'exercise', r: 96, pct: 0.67, from: '#16C93B', to: '#A8FF12' },
-  { id: 'stand', r: 82, pct: 0.93, from: '#00BEDB', to: '#28F2E6' },
+  { id: 'acq', label: 'ACQUISITION', r: 112, pct: 0.9, from: '#0A84D6', to: '#5CC2F5' },
+  { id: 'act', label: 'ACTIVATION', r: 101, pct: 0.72, from: '#00A0E0', to: '#5FCDFA' },
+  { id: 'ret', label: 'RETENTION', r: 90, pct: 0.55, from: '#00BBFF', to: '#7FD9FF' },
+  { id: 'rev', label: 'REVENUE', r: 79, pct: 0.38, from: '#19C6E6', to: '#74E2F0' },
+  { id: 'ref', label: 'REFERRAL', r: 68, pct: 0.24, from: '#2BD0CF', to: '#88ECDF' },
 ];
+
+// Clock angle θ (deg, 0 = top, clockwise) → point on a circle of radius r.
+const pt = (r: number, deg: number) => {
+  const a = (deg * Math.PI) / 180;
+  return [C + r * Math.sin(a), C - r * Math.cos(a)] as const;
+};
+
+// Arc path from θ1 to θ2 (clockwise).
+const arc = (r: number, t1: number, t2: number) => {
+  const [x1, y1] = pt(r, t1);
+  const [x2, y2] = pt(r, t2);
+  const large = t2 - t1 > 180 ? 1 : 0;
+  return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
+};
 
 export function ActivityRings({ on }: { on: boolean }) {
   return (
@@ -19,7 +43,7 @@ export function ActivityRings({ on }: { on: boolean }) {
       className="activity-rings"
       viewBox={`0 0 ${SIZE} ${SIZE}`}
       role="img"
-      aria-label="activity rings"
+      aria-label="acquisition, activation, retention, revenue, referral"
     >
       <defs>
         {RINGS.map((ring) => (
@@ -29,41 +53,55 @@ export function ActivityRings({ on }: { on: boolean }) {
           </linearGradient>
         ))}
       </defs>
+
+      {/* Tracks — the full 270° sweep at low opacity. */}
       {RINGS.map((ring) => (
-        <circle
+        <path
           key={`track-${ring.id}`}
-          cx={C}
-          cy={C}
-          r={ring.r}
+          d={arc(ring.r, 0, SWEEP)}
           fill="none"
           stroke={ring.from}
-          strokeOpacity={0.15}
+          strokeOpacity={0.16}
           strokeWidth={W}
+          strokeLinecap="round"
         />
       ))}
-      {RINGS.map((ring, i) => {
-        const circ = 2 * Math.PI * ring.r;
-        const filled = circ * (1 - ring.pct);
-        return (
-          <circle
-            key={`arc-${ring.id}`}
-            cx={C}
-            cy={C}
-            r={ring.r}
-            fill="none"
-            stroke={`url(#ring-${ring.id})`}
-            strokeWidth={W}
-            strokeLinecap="round"
-            strokeDasharray={circ}
-            strokeDashoffset={on ? filled : circ}
-            transform={`rotate(-90 ${C} ${C})`}
-            style={{
-              transition: 'stroke-dashoffset 1.15s cubic-bezier(0.2, 0.7, 0.2, 1)',
-              transitionDelay: `${i * 0.09}s`,
-            }}
-          />
-        );
-      })}
+
+      {/* Value arcs — draw on clockwise from the top when `on`. */}
+      {RINGS.map((ring, i) => (
+        <path
+          key={`arc-${ring.id}`}
+          d={arc(ring.r, 0, SWEEP * ring.pct)}
+          fill="none"
+          stroke={`url(#ring-${ring.id})`}
+          strokeWidth={W}
+          strokeLinecap="round"
+          pathLength={1}
+          strokeDasharray={1}
+          strokeDashoffset={on ? 0 : 1}
+          style={{
+            transition: 'stroke-dashoffset 1.15s cubic-bezier(0.2, 0.7, 0.2, 1)',
+            transitionDelay: `${i * 0.09}s`,
+          }}
+        />
+      ))}
+
+      {/* Labels in the opened top-left wedge: right-aligned, each at its ring's top. */}
+      {RINGS.map((ring, i) => (
+        <text
+          key={`label-${ring.id}`}
+          className="ar-label"
+          x={C - 7}
+          y={C - ring.r}
+          style={{
+            opacity: on ? 1 : 0,
+            transition: 'opacity 0.45s ease',
+            transitionDelay: `${0.3 + i * 0.09}s`,
+          }}
+        >
+          {ring.label}
+        </text>
+      ))}
     </svg>
   );
 }

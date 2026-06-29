@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useId, useMemo, useRef } from 'react';
+import { useEffect, useId, useMemo, useRef, type ReactNode } from 'react';
 import { useAnimationFrame, useReducedMotion } from 'framer-motion';
 import { Mouse } from 'lucide-react';
 
@@ -108,6 +108,7 @@ export function MazeTitle3D({
   recallRef,
   animate = true,
   mouseHidden = false,
+  children,
 }: {
   // When set, exposes a recall(done) that glides the mouse to floor-centre
   // (upright) and calls done on arrival — used to hand off to the centered agent
@@ -120,6 +121,9 @@ export function MazeTitle3D({
   // transition). Only sets inline opacity when true, so CSS can otherwise control
   // it (the windowed preview fades its mouse in after the window settles).
   mouseHidden?: boolean;
+  // Rendered inside the (position:relative) .maze-title wrapper, so an overlay
+  // tracks the maze's transform — e.g. the agent's selection box in the window.
+  children?: ReactNode;
 } = {}) {
   const mouseRef = useRef<SVGGElement>(null);
   const reduced = useReducedMotion();
@@ -373,6 +377,7 @@ export function MazeTitle3D({
           </g>
         ))}
       </svg>
+      {children}
     </div>
   );
 }
