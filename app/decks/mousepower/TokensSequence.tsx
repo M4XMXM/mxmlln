@@ -4,8 +4,11 @@
 // share a SINGLE persistent Coin3D (the 3D canvas never remounts, so it morphs
 // seamlessly between states instead of relying on slide cuts):
 //   step 0 — "TOKENS" wordmark, the coin as the "O"
-//   step 1 — letters fade, coin slides to centre, the task orbit pops in
-//   step 2 — coin shrinks, activity rings draw on
+//   step 1 — letters fade, coin slides to centre AND shrinks to an "o", the task
+//            orbit pops in, and the coin reads as the middle "o" of "outcomes"
+//            (halves flank it; the orbit circles the word)
+//   step 2 — the task icons give way to the activity rings; "outcomes" fades out,
+//            leaving the small coin parked at the rings' centre
 // Advancement uses the same capture-phase key listener as the other build slides.
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useDeck, useSlideIndex } from '../Deck';
@@ -109,11 +112,34 @@ export function TokensSequence() {
       <div
         className={`tokens-wordmark${step >= 1 ? ' is-morphing' : ''}`}
         role="img"
-        aria-label="TOKENS"
+        aria-label="tokens are an output"
       >
-        <span aria-hidden="true">T</span>
+        <span aria-hidden="true">t</span>
         <Coin3D overlay={<TokensOrbit active={orbitOn} />} />
-        <span aria-hidden="true">KENS</span>
+        <span aria-hidden="true">kens</span>
+      </div>
+      {/* Second statement line, same size/ink as the wordmark — a sibling, NOT a
+          child: the wordmark's letters are color:transparent + background-clip:text,
+          and an extra child would also steal the :first/:last-child gold-gradient
+          from T / KENS. Absolutely placed below the centred wordmark so it never
+          nudges the coin off the viewport centre the rings rely on. Present at
+          step 0; fades out with the letters once the morph begins, leaving steps
+          1–2 untouched. */}
+      <div className="tokens-subline" aria-hidden="true">
+        are an
+        <br />
+        output
+      </div>
+      {/* Step 1 (icons) — reads "measure / outcomes / instead". The persistent
+          full-size coin (parked at centre with the task icons orbiting it) is the
+          middle "o" of "outcomes": the two halves flank it, with "measure" above
+          and "instead" below. Same gold ink; fades out at step 2 as the icons
+          give way to the rings. */}
+      <div className="oc-wordmark" aria-hidden="true">
+        <span className="oc-measure">measure</span>
+        <span className="oc-half oc-pre">outc</span>
+        <span className="oc-half oc-post">mes</span>
+        <span className="oc-instead">instead</span>
       </div>
     </div>
   );

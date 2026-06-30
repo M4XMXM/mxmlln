@@ -49,7 +49,7 @@ export function TokensOrbit({
             {/* counter-rotates the ring's spin to keep the icon upright */}
             <span className="orbit-counter">
               <span className="orbit-icon" style={{ transitionDelay: `${i * 55}ms` }}>
-                <Icon strokeWidth={1.75} />
+                <Icon strokeWidth={2.25} />
               </span>
             </span>
           </span>
