@@ -711,6 +711,14 @@
       "createdAt": "2026-06-18T12:00:00.000Z",
       "metadata": {},
       "read": false
+    },
+    {
+      "id": "1781352000006",
+      "url": "https://arxiv.org/pdf/2602.07488",
+      "title": "Deriving Neural Scaling Laws from the Statistics of Natural Language",
+      "createdAt": "2026-06-29T12:00:00.000Z",
+      "metadata": {},
+      "read": false
     }
   ]
 }
