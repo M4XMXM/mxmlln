@@ -15,12 +15,14 @@ const SWEEP = 270; // degrees of track drawn; the remaining 90° (top-left) is t
 // Outer → inner. Funnel-shaped fills; hue drifts azure → cyan → teal so adjacent
 // rings read apart. Radii sit in an outer band, leaving a large centre hole that
 // clears the orbiting token icons around the parked coin.
+// Gold ramp, harmonised with the coin: the innermost ring (ref) is the richest
+// gold, lightening to pale champagne at the outer ring (acq).
 const RINGS: Ring[] = [
-  { id: 'acq', label: 'ACQUISITION', r: 112, pct: 0.9, from: '#0A84D6', to: '#5CC2F5' },
-  { id: 'act', label: 'ACTIVATION', r: 101, pct: 0.72, from: '#00A0E0', to: '#5FCDFA' },
-  { id: 'ret', label: 'RETENTION', r: 90, pct: 0.55, from: '#00BBFF', to: '#7FD9FF' },
-  { id: 'rev', label: 'REVENUE', r: 79, pct: 0.38, from: '#19C6E6', to: '#74E2F0' },
-  { id: 'ref', label: 'REFERRAL', r: 68, pct: 0.24, from: '#2BD0CF', to: '#88ECDF' },
+  { id: 'acq', label: 'ACQUISITION', r: 112, pct: 0.9, from: '#d0a850', to: '#e4c87e' },
+  { id: 'act', label: 'ACTIVATION', r: 101, pct: 0.72, from: '#c49a42', to: '#dcba66' },
+  { id: 'ret', label: 'RETENTION', r: 90, pct: 0.55, from: '#b68930', to: '#d2ab50' },
+  { id: 'rev', label: 'REVENUE', r: 79, pct: 0.38, from: '#a8791a', to: '#c69a34' },
+  { id: 'ref', label: 'REFERRAL', r: 68, pct: 0.24, from: '#9a6c10', to: '#b88c24' },
 ];
 
 // Clock angle θ (deg, 0 = top, clockwise) → point on a circle of radius r.

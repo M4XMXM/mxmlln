@@ -1147,6 +1147,17 @@
   color: #3B3B3B;
   position: relative;
   isolation: isolate;
+  /* Step 0 reads as a vertically-centred three-line statement (TOKENS / ARE AN /
+     OUTPUT), so the wordmark — the top line — sits one line above centre. On the
+     morph it returns to 0, dropping the coin to the true viewport centre the rings
+     need; the coin thus glides down-and-in to centre as the lines fade. The
+     shift is one line of the statement's spacing (--tokens-lh). */
+  transform: translateY(calc(var(--tokens-lh, 1) * -1em));
+  transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.tokens-wordmark.is-morphing,
+.tokens-wordmark.is-centered {
+  transform: translateY(0);
 }
 
 /* Letters fade, coin slides by --coin-shift (set in JS). .is-centered is the
@@ -1171,7 +1182,139 @@
   transition: none; /* slide 5 starts already at centre — no entrance motion */
 }
 
+/* "ARE AN / OUTPUT" — lines 2 and 3 of the statement, same size/ink as the
+   wordmark. A sibling of the wordmark, absolutely placed so the whole TOKENS /
+   ARE AN / OUTPUT block centres on the viewport: "ARE AN" sits on the centre line
+   (top = 50% − half a line), "OUTPUT" one line below. The wordmark's matching
+   upward 1em shift puts TOKENS on the line above. Same heaviest Archivo with the
+   gold→ink gradient clipped to the glyphs. */
+.tokens-subline {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - var(--tokens-lh, 1) * 0.5em);
+  transform: translateX(-50%);
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: clamp(64px, 15vw, 300px);
+  line-height: var(--tokens-lh, 1);
+  letter-spacing: -0.045em;
+  text-align: center;
+  white-space: nowrap;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, #161616 0%, #5c5026 50%, #161616 100%);
+  /* Matches the letters' fade so it leaves in sync as the morph begins. */
+  transition: opacity 0.42s ease;
+}
+/* Visible only at step 0; gone once the coin starts its slide to centre. */
+.tokens-seq:not([data-step='0']) .tokens-subline {
+  opacity: 0;
+}
 @media (prefers-reduced-motion: reduce) {
+  .tokens-subline {
+    transition: none;
+  }
+}
+
+/* "outcomes" at the icons step — the persistent (full-size) coin, parked at the
+   viewport centre with the task icons orbiting it, doubles as the middle "o".
+   Two halves flank it at the SAME size as the tokens wordmark, in the same gold
+   ink (gold strongest by the coin); the big word overlaps the orbiting icons by
+   design. Shown at step 1; fades out at step 2 as the rings draw on. Tune via
+   --oc-size (glyph size), --oc-gap (clearance from centre) and --oc-shift-y. */
+.oc-wordmark {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.42s ease;
+  --oc-size: clamp(64px, 15vw, 300px);
+  --oc-gap: 6.5vw;
+  /* Negative nudges the word up so its x-height band centres on the coin (the
+     line box otherwise parks the x-height slightly below the coin's centre). */
+  --oc-shift-y: -0.09em;
+  /* Positive shifts the whole "outcomes" word left, to sit better against the
+     coin's visible centre. */
+  --oc-shift-x: 0.5vw;
+  /* Vertical gap (in wordmark em) from "outcomes" to the line above ("measure")
+     and the line below ("instead") — kept equal so the block stays balanced. */
+  --oc-line-gap: 0.92em;
+}
+.tokens-seq[data-step='1'] .oc-wordmark {
+  opacity: 1;
+  /* Hold the fade-in until the coin has slid in (~0.65s), so it never overlaps
+     the flanking letters mid-morph. Leaving step 1 reverts to the base (no-delay)
+     transition, so it fades out promptly. */
+  transition: opacity 0.42s ease 0.5s;
+}
+.oc-half {
+  position: absolute;
+  top: calc(50% + var(--oc-shift-y));
+  transform: translateY(-50%);
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: var(--oc-size);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.oc-pre {
+  right: calc(50% + var(--oc-gap) + var(--oc-shift-x));
+  background-image: linear-gradient(to right, #161616 10%, #5c5026 100%);
+}
+.oc-post {
+  left: calc(50% + var(--oc-gap) - var(--oc-shift-x));
+  background-image: linear-gradient(to right, #5c5026 0%, #161616 90%);
+  /* background-clip:text otherwise crops the final s's right ink overhang. */
+  padding-right: 0.08em;
+}
+/* "measure" / "instead" — the lines above and below "outcomes" (reads
+   "measure / outcomes / instead"). Centred on the viewport, equidistant from the
+   word; same size/ink, gold peaking at centre over the coin's gold column. */
+.oc-measure,
+.oc-instead {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 800;
+  font-size: var(--oc-size);
+  line-height: 1;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+  /* Symmetric padding so background-clip:text doesn't crop the trailing glyph's
+     ink overhang (e.g. the "e" of measure); centred, so it stays centred. */
+  padding: 0 0.1em;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, #161616, #5c5026 50%, #161616);
+}
+.oc-measure {
+  top: calc(50% + var(--oc-shift-y) - var(--oc-line-gap));
+}
+.oc-instead {
+  top: calc(50% + var(--oc-shift-y) + var(--oc-line-gap));
+}
+/* Step 1 — float the orbiting task icons in front of the "outcomes" word. The
+   icons live inside .tokens-wordmark (its own stacking context), so lifting the
+   whole wordmark above .oc-wordmark (z-index 3) is what brings them forward. */
+.tokens-seq[data-step='1'] .tokens-wordmark {
+  z-index: 4;
+}
+@media (prefers-reduced-motion: reduce) {
+  .oc-wordmark {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tokens-wordmark,
   .tokens-wordmark > span:not(.tokens-coin),
   .tokens-wordmark .tokens-coin {
     transition: none;
@@ -1186,8 +1329,10 @@
   pointer-events: none;
   --orbit-r: 1.16em; /* distance from coin centre to each icon — pulled in so the
      token → icons → rings gaps read roughly equidistant in the rings step */
-  --orbit-icon: 0.26em; /* icon size */
-  --orbit-gold: #9a7b1e; /* muted gold, harmonised with the coin */
+  --orbit-icon: 0.26em; /* glyph size inside the chip */
+  --orbit-chip: 0.5em; /* diameter of the glass chip behind each glyph */
+  /* Gold glyph, harmonised with the coin, sitting on the frosted glass chip. */
+  --orbit-gold: #a07900;
   animation: orbit-rotate 54s linear infinite;
 }
 .orbit-slot {
@@ -1200,14 +1345,46 @@
   display: block;
   animation: orbit-rotate-rev 54s linear infinite; /* cancels the ring's spin */
 }
+/* Each task sits on its own liquid-glass chip — a frosted translucent disc with a
+   bright specular edge and top sheen — so it pops off the faint type while staying
+   in the deck's glassmorphism family. */
 .orbit-icon {
-  display: block;
+  display: grid;
+  place-items: center;
+  width: var(--orbit-chip);
+  height: var(--orbit-chip);
+  border-radius: 50%;
+  /* Fill is the page background colour at 25% transparency (75% opaque): it washes
+     the type behind toward the page tone (frost) and melts into the background over
+     empty areas, leaving the glass rim + gold glyph. The orbit's transforms make
+     each chip its own backdrop root, so backdrop-filter can't blur the page — it's
+     kept only for the rare coin overlap. */
+  background: rgba(245, 245, 245, 0.9);
+  -webkit-backdrop-filter: blur(14px) saturate(1.5);
+  backdrop-filter: blur(14px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  box-shadow:
+    0 0.03em 0.08em rgba(30, 25, 10, 0.2),
+    inset 0 0.03em 0.04em rgba(255, 255, 255, 0.9),
+    inset 0 -0.03em 0.06em rgba(0, 0, 0, 0.1);
   color: var(--orbit-gold);
   opacity: 0;
   transform: scale(0.3);
   transition:
     opacity 0.45s ease,
-    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1),
+    background-color 0.42s ease,
+    border-color 0.42s ease,
+    box-shadow 0.42s ease;
+}
+/* Rings step (step 2) — drop the glass chip (fill, rim, shadow) but keep the gold
+   glyph, which parks small inside the rings. */
+.tokens-seq[data-step='2'] .orbit-icon {
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 .tokens-orbit[data-on='true'] .orbit-icon {
   opacity: 1;
@@ -1307,6 +1484,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Line spacing of the tokens / are an / output statement, in wordmark em.
+     Drives the wordmark's upward shift and the subline's line-height + offset
+     together so the three-line block stays evenly spaced and centred. */
+  --tokens-lh: 0.82;
 }
 .tokens-seq-rings {
   position: absolute;
@@ -1323,8 +1504,10 @@
 .tokens-seq .coin-visual {
   transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Step 2 — shrink the cluster (0.46) with an extra coin-only shrink (0.45),
-   matching the old activity slide; the rings then draw on. */
+/* Step 2 (rings) — shrink the cluster (0.46) with an extra coin-only shrink
+   (0.45); the icons park small inside the rings, which then draw on. The coin
+   stays full size through the icons step (step 1), where it's the "o" of the
+   full-size "outcomes" wordmark. */
 .tokens-seq[data-step='2'] .tokens-wordmark .tokens-coin {
   transform: translateX(var(--coin-shift)) scale(0.46);
 }
@@ -1344,7 +1527,9 @@
   flex: 0 0 auto;
   width: 1.1em;
   height: 1.1em;
-  margin: 0 -0.06em;
+  /* Negative margin pulls the flanking letters toward the coin "o" so the
+     coin's 1.1em box doesn't leave a gap wider than the letter spacing. */
+  margin: 0 -0.14em;
   top: -0.02em;
   left: 0.02em;
 }
