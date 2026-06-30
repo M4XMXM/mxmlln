@@ -11,12 +11,13 @@
 // (TokensSequence); the step-0 → step-1 hand-off first fades the maze cursor so
 // the zoom-out reads clean, and the final forward runs the rack-focus exit.
 import { useEffect, useRef, useState } from 'react';
-import { Mouse, MousePointer2, Zap } from 'lucide-react';
+import { Mouse, MousePointer2 } from 'lucide-react';
 import { useDeck, useSlideIndex } from '../Deck';
 import { MazeTitle3D } from './MazeTitle3D';
 import { TitleHero } from './TitleHero';
 import { AgentChat } from './AgentChat';
 import { GwChat } from './GwChat';
+import { GinSchematic } from './GinSchematic';
 
 const STEPS = 3;
 const FADE_MS = 380; // maze cursor fade before the step-0 → step-1 zoom-out
@@ -27,17 +28,47 @@ const BACK = new Set(['ArrowLeft', 'ArrowUp', 'Backspace']);
 // Row-major 3×3; the centrepiece is index 4 (true centre) — the zoom pivots there.
 // Its prompt matches step 1 exactly so the copy is continuous through the cut.
 // `label` is the object-detection-style tag drawn on each canvas's selection box.
+// The off-centre tiles preview graphics that recur later in the deck (tokens,
+// the horsepower/mousepower schematics, the horse→engine sequence, the dials).
 const TILES = [
+  { v: 'tokens', prompt: 'make it about tokens', label: 'tokens', conf: '0.93' },
+  { v: 'gin', prompt: 'diagram one horsepower', label: 'horsepower', conf: '0.95' },
+  { v: 'mpm', prompt: 'measure the cursor', label: 'mousepower', conf: '0.92' },
   { v: 'mice', prompt: 'what if it’s a swarm', label: 'swarm', conf: '0.91' },
-  { v: 'cursor', prompt: 'lead with the cursor', label: 'cursor', conf: '0.97' },
-  { v: 'bolt', prompt: 'lean into the power', label: 'power', conf: '0.88' },
-  { v: 'mono', prompt: 'just a monogram', label: 'monogram', conf: '0.94' },
   { v: 'center', prompt: 'build the title slide for the mousepower deck', label: 'wordmark', conf: '0.99' },
   { v: 'ascii', prompt: 'try ascii art', label: 'ascii-art', conf: '0.83' },
   { v: 'cursors', prompt: 'a flock of pointers', label: 'pointers', conf: '0.90' },
-  { v: 'mouse', prompt: 'one bold mouse', label: 'mouse', conf: '0.96' },
-  { v: 'bolts', prompt: 'charge it up', label: 'energy', conf: '0.85' },
+  { v: 'hpseq', prompt: 'from horse to engine', label: 'steam-engine', conf: '0.88' },
+  { v: 'dials', prompt: 'tune the uncertainty', label: 'entropy', conf: '0.86' },
 ];
+
+// Mini-dial geometry for the 'dials' tile — the EntropySliders dial in miniature
+// (−140°→+140° sweep, 80° gap at the bottom). Mirrors EntropySliders' arc math.
+const DIAL_A0 = -140;
+const DIAL_SPAN = 280;
+const DIAL_RR = 40;
+const dialPt = (deg: number) => {
+  const a = (deg * Math.PI) / 180;
+  return [50 + DIAL_RR * Math.sin(a), 50 - DIAL_RR * Math.cos(a)] as const;
+};
+const dialArc = (t1: number, t2: number) => {
+  const [x1, y1] = dialPt(t1);
+  const [x2, y2] = dialPt(t2);
+  const large = Math.abs(t2 - t1) > 180 ? 1 : 0;
+  return `M ${x1} ${y1} A ${DIAL_RR} ${DIAL_RR} 0 ${large} 1 ${x2} ${y2}`;
+};
+function MiniDial({ value }: { value: number }) {
+  const angle = DIAL_A0 + (value / 100) * DIAL_SPAN;
+  return (
+    <div className="gw-dial">
+      <svg className="gw-dial-ring" viewBox="0 0 100 100" aria-hidden>
+        <path className="gw-dial-track" d={dialArc(DIAL_A0, -DIAL_A0)} />
+        <path className="gw-dial-fill" d={dialArc(DIAL_A0, angle)} />
+      </svg>
+      <div className="gw-dial-knob" style={{ transform: `rotate(${angle}deg)` }} />
+    </div>
+  );
+}
 
 // "MOUSE" over "POWER" in ANSI Shadow block art (the terminal exploration).
 const ASCII = `███╗   ███╗ ██████╗ ██╗   ██╗███████╗███████╗
@@ -88,12 +119,6 @@ function Preview({ v }: { v: string }) {
           ))}
         </div>
       );
-    case 'cursor':
-      return <MousePointer2 className="gw-glyph gw-glyph--cursor" aria-hidden />;
-    case 'bolt':
-      return <Zap className="gw-glyph gw-glyph--bolt" aria-hidden />;
-    case 'mouse':
-      return <Mouse className="gw-glyph gw-glyph--bolt" aria-hidden />;
     case 'cursors':
       return (
         <div className="gw-mice" aria-hidden>
@@ -102,22 +127,75 @@ function Preview({ v }: { v: string }) {
           ))}
         </div>
       );
-    case 'bolts':
-      return (
-        <div className="gw-mice" aria-hidden>
-          {Array.from({ length: 9 }).map((_, i) => (
-            <Zap key={i} />
-          ))}
-        </div>
-      );
-    case 'mono':
-      return (
-        <div className="gw-mono" aria-hidden>
-          M<span>P</span>
-        </div>
-      );
     case 'ascii':
       return <pre className="gw-ascii">{ASCII}</pre>;
+    // The "TOKENS" wordmark with the coin as its "O" (the tokens slide).
+    case 'tokens':
+      return (
+        <div className="gw-tokens" aria-hidden>
+          <span>T</span>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="gw-tokens-coin" src="/decks/mousepower/coin.svg" alt="" />
+          <span>KENS</span>
+        </div>
+      );
+    // The horse-gin stopwatch schematic (the horsepower slide).
+    case 'gin':
+      return <GinSchematic className="gw-gin" />;
+    // The mousepower measurement rig — a probe reticle with a fan of edge rays.
+    case 'mpm': {
+      const W = 200;
+      const H = 130;
+      const cx = W / 2;
+      const cy = H / 2;
+      const HOLE = 13;
+      const rays = Array.from({ length: 16 }, (_, i) => {
+        const a = (i / 16) * Math.PI * 2;
+        const dx = Math.cos(a);
+        const dy = Math.sin(a);
+        let t = Infinity;
+        if (dx > 1e-6) t = Math.min(t, (W - cx) / dx);
+        else if (dx < -1e-6) t = Math.min(t, -cx / dx);
+        if (dy > 1e-6) t = Math.min(t, (H - cy) / dy);
+        else if (dy < -1e-6) t = Math.min(t, -cy / dy);
+        return { sx: cx + dx * HOLE, sy: cy + dy * HOLE, ex: cx + dx * t, ey: cy + dy * t };
+      });
+      return (
+        <svg className="gw-mpm" viewBox={`0 0 ${W} ${H}`} aria-hidden>
+          {rays.map((r, i) => (
+            <line key={i} className="gw-mpm-line" x1={r.sx} y1={r.sy} x2={r.ex} y2={r.ey} />
+          ))}
+          <circle className="gw-mpm-ring" cx={cx} cy={cy} r="11" />
+          <line className="gw-mpm-cross" x1={cx - 18} y1={cy} x2={cx - 8} y2={cy} />
+          <line className="gw-mpm-cross" x1={cx + 8} y1={cy} x2={cx + 18} y2={cy} />
+          <line className="gw-mpm-cross" x1={cx} y1={cy - 18} x2={cx} y2={cy - 8} />
+          <line className="gw-mpm-cross" x1={cx} y1={cy + 8} x2={cx} y2={cy + 18} />
+        </svg>
+      );
+    }
+    // The horse-gin → steam-engine sequence (two diagrams + a cyan arrow).
+    case 'hpseq':
+      return (
+        <div className="gw-hpseq" aria-hidden>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/decks/mousepower/diagram-gin.png" alt="" />
+          <svg className="gw-hpseq-arrow" viewBox="0 0 40 20" aria-hidden>
+            <line x1="2" y1="10" x2="34" y2="10" />
+            <polyline points="27,3 35,10 27,17" />
+          </svg>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/decks/mousepower/diagram-steam-engine.png" alt="" />
+        </div>
+      );
+    // The agent-entropy model as three dials (the closing interactive).
+    case 'dials':
+      return (
+        <div className="gw-dials" aria-hidden>
+          <MiniDial value={26} />
+          <MiniDial value={62} />
+          <MiniDial value={88} />
+        </div>
+      );
     default:
       return null;
   }
