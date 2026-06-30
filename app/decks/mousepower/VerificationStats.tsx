@@ -1,15 +1,5 @@
 const STATS = [
   {
-    num: '20%',
-    cap: (
-      <>
-        engineering time
-        <br />
-        spent coding
-      </>
-    ),
-  },
-  {
     num: '+91%',
     cap: (
       <>
@@ -19,13 +9,25 @@ const STATS = [
       </>
     ),
   },
+  {
+    num: '20%',
+    cap: (
+      <>
+        engineering time
+        <br />
+        spent coding
+      </>
+    ),
+  },
 ];
 
 export function VerificationStats() {
   return (
     <div className="vstat-slide rack-in">
       <h2 className="vstat-headline">
-        As execution gets cheap, bottleneck shifts to verification:
+        As execution gets cheap,
+        <br />
+        bottleneck shifts to verification:
       </h2>
 
       <div className="vstat-row">

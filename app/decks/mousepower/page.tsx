@@ -44,12 +44,6 @@ export default function MousepowerDeck() {
         <TokenEvidence />
       </div>
 
-      {/* Slides 7–9 merged: TOKENS wordmark → centred coin + orbit → shrink +
-          activity rings, advanced as three steps within one slide. */}
-      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
-        <TokensSequence />
-      </div>
-
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
         <DoomLoop />
       </div>
@@ -58,6 +52,12 @@ export default function MousepowerDeck() {
           made concrete with data. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
         <SpendVsTokens />
+      </div>
+
+      {/* Slides 7–9 merged: TOKENS wordmark → centred coin + orbit → shrink +
+          activity rings, advanced as three steps within one slide. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
+        <TokensSequence />
       </div>
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>

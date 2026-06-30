@@ -29,16 +29,16 @@ export function DoomLoop() {
         </text>
 
         {/* Nodes — emoji + label at each edge midpoint. */}
-        <text className="dl-emoji" x="640" y="110">😎</text>
-        <text className="dl-label" x="640" y="170">TOKENMAXXING</text>
+        <text className="dl-emoji" x="640" y="114">😎</text>
+        <text className="dl-label" x="640" y="166">TOKENMAXXING</text>
 
-        <text className="dl-emoji" x="1130" y="330">😭</text>
+        <text className="dl-emoji" x="1130" y="338">😭</text>
         <text className="dl-label" x="1130" y="388">GET BILL</text>
 
-        <text className="dl-label" x="640" y="548">AUSTERITY</text>
+        <text className="dl-label" x="640" y="556">AUSTERITY</text>
         <text className="dl-emoji" x="640" y="608">🫣</text>
 
-        <text className="dl-emoji" x="150" y="330">😰</text>
+        <text className="dl-emoji" x="150" y="338">😰</text>
         <text className="dl-label" x="150" y="388">FOMO</text>
       </svg>
     </div>

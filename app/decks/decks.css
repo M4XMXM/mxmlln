@@ -358,7 +358,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: 44px 40px;
+  padding: 24px;
 }
 /* The screen — a full-viewport clone of the title slide (the live preview). */
 .os-screen {
@@ -762,7 +762,7 @@
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  padding: calc(44px * var(--f)) calc(40px * var(--f));
+  padding: calc(24px * var(--f));
   background: #fff;
   border-right: calc(1px * var(--f)) solid #e0e0e0;
   overflow: hidden;
@@ -849,7 +849,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: calc(clamp(32px, 6vw, 96px) * var(--f));
+  padding: calc(clamp(12px, 2.2vw, 40px) * var(--f));
+  /* Clip to the preview pane so oversized graphics crop at its edges rather than
+     bleeding over the chat sidebar. */
+  overflow: hidden;
 }
 /* The canvas the agent is editing — sizes to its content so the selection ring
    hugs it; the edit loop animates this element. */
@@ -919,41 +922,149 @@
 .gw-ascii {
   margin: 0;
   font-family: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: calc(min(74vw, 940px) * var(--f) / 26.4);
+  font-size: calc(min(74vw, 940px) * var(--f) / 19);
   line-height: 1;
   white-space: pre;
   color: #00bbff;
 }
-/* A swarm of mice — many agents at once. */
+/* A swarm of mice — many agents at once. Sized to spill past the preview edges so
+   the outer ranks crop, reading as a denser swarm. */
 .gw-mice {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: calc(min(74vw, 940px) * var(--f) / 9);
+  gap: calc(min(74vw, 940px) * var(--f) / 13);
   color: #00bbff;
 }
 .gw-mice svg {
-  width: calc(min(74vw, 940px) * var(--f) / 4.4);
+  width: calc(min(74vw, 940px) * var(--f) / 3.2);
   height: auto;
   display: block;
 }
-/* A single hero glyph — the cursor, or the "power". */
-.gw-glyph {
-  width: calc(min(74vw, 940px) * var(--f) / 1.7);
-  height: auto;
-  display: block;
-}
-.gw-glyph--cursor { color: #3B3B3B; }
-.gw-glyph--bolt { color: #00bbff; }
-/* A monogram. */
-.gw-mono {
-  font-family: var(--font-archivo), sans-serif;
+/* The "TOKENS" wordmark with the coin as its "O" (the tokens slide). */
+.gw-tokens {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.02em;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-weight: 800;
-  font-size: calc(min(74vw, 940px) * var(--f) / 1.6);
-  letter-spacing: -0.04em;
+  font-size: calc(min(74vw, 940px) * var(--f) / 3.1);
+  letter-spacing: -0.045em;
   line-height: 1;
   color: #3B3B3B;
+  white-space: nowrap;
 }
-.gw-mono span { color: #00bbff; }
+.gw-tokens-coin {
+  width: 0.9em;
+  height: 0.9em;
+  display: block;
+}
+/* The horse-gin stopwatch schematic (the horsepower slide), in cyan line work.
+   The dial only fills ~half the SVG box, so it's sized up generously to balance
+   its neighbours' fuller graphics. */
+.gw-gin {
+  width: calc(min(74vw, 940px) * var(--f) / 0.82);
+  height: auto;
+  display: block;
+  color: #00bbff;
+}
+/* The mousepower measurement rig — drifting edge rays + a probe reticle. Sized
+   past the pane so the rays bleed off the edges, like the live slide. */
+.gw-mpm {
+  width: calc(min(74vw, 940px) * var(--f) / 0.78);
+  height: auto;
+  display: block;
+}
+.gw-mpm-line {
+  stroke: #00bbff;
+  stroke-width: 2.6;
+  stroke-dasharray: 3 8;
+  opacity: 0.95;
+}
+.deck-slide[data-active='true'] .gw-mpm-line {
+  animation: mpm-drift 1.2s linear infinite;
+}
+.gw-mpm-ring {
+  fill: none;
+  stroke: #00bbff;
+  stroke-width: 2.6;
+}
+.gw-mpm-cross {
+  stroke: #00bbff;
+  stroke-width: 2;
+  opacity: 0.7;
+}
+/* The horse-gin → steam-engine sequence: two diagrams joined by a cyan arrow. */
+.gw-hpseq {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(min(74vw, 940px) * var(--f) / 48);
+}
+.gw-hpseq img {
+  height: calc(min(74vw, 940px) * var(--f) / 2.9);
+  width: auto;
+  display: block;
+}
+.gw-hpseq-arrow {
+  flex: 0 0 auto;
+  width: calc(min(74vw, 940px) * var(--f) / 11);
+  height: auto;
+  fill: none;
+  stroke: #00bbff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* The agent-entropy model as three mini dials (the closing interactive). */
+.gw-dials {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(min(74vw, 940px) * var(--f) / 26);
+}
+.gw-dial {
+  position: relative;
+  width: calc(min(74vw, 940px) * var(--f) / 3.7);
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.gw-dial-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.gw-dial-track,
+.gw-dial-fill {
+  fill: none;
+  stroke-width: 6;
+  stroke-linecap: round;
+}
+.gw-dial-track { stroke: #dcdcda; }
+.gw-dial-fill { stroke: #00bbff; }
+.gw-dial-knob {
+  position: relative;
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.12);
+}
+.gw-dial-knob::before {
+  content: '';
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  width: 9%;
+  aspect-ratio: 1;
+  transform: translate(-50%, 0);
+  border-radius: 50%;
+  background: #00bbff;
+}
 
 /* Zoom out from the centre; the surrounding eight fade in (the centre persists,
    smoothly resizing from the slide-2 placement into its grid cell). */
@@ -980,15 +1091,15 @@
    the cut); the others use negative delays to start mid-cycle for instant variety. */
 /* Per-tile phase offset, shared by the canvas edit loop and its selection
    overlay so the ring, handles, and label all appear together. */
+.gw--tokens { --d: -2.3s; }
+.gw--gin { --d: -3.6s; }
+.gw--mpm { --d: -0.5s; }
 .gw--mice { --d: -1s; }
 .gw--center { --d: 1.4s; }
-.gw--cursor { --d: -2.3s; }
-.gw--bolt { --d: -3.6s; }
-.gw--mono { --d: -0.5s; }
 .gw--ascii { --d: -4.4s; }
 .gw--cursors { --d: -1.8s; }
-.gw--mouse { --d: -3s; }
-.gw--bolts { --d: -4.9s; }
+.gw--hpseq { --d: -3s; }
+.gw--dials { --d: -4.9s; }
 .deck-slide[data-active='true'] .gw-canvas {
   animation: gw-edit 5.5s ease-in-out var(--d, 0s) infinite;
 }
@@ -1540,7 +1651,9 @@
      none), so pin its viewBox ratio or it stretches to fill. */
   aspect-ratio: 214.27 / 66.31;
   height: auto;
-  margin-bottom: clamp(2px, 0.4vw, 8px);
+  /* Bottom-aligned to the caption (flex-end); lift it ~half a line so the stem
+     origin meets the caption's vertical centre rather than its baseline. */
+  margin-bottom: clamp(14px, 1.5vw, 30px);
 }
 .measure-photo {
   flex: 0 0 50vw;
@@ -2139,20 +2252,20 @@
 }
 
 /* Quote slide (CodeReviewQuote). */
+/* Centered Anthropic pull-quote (CodeReviewQuote) — big Archivo quote, the
+   Anthropic wordmark as attribution, source pinned bottom-centre. */
 .quote-slide {
-  --m: 40px;
   position: relative;
   width: 100%;
   height: 100%;
   box-sizing: border-box;
   display: flex;
+  flex-direction: column;
   align-items: center;
-}
-.quote-main {
-  flex: 1 1 auto;
-  min-width: 0;
-  padding-left: clamp(var(--m), 6vw, 120px);
-  padding-right: clamp(32px, 4vw, 64px);
+  justify-content: center;
+  text-align: center;
+  /* Figma: 169px side margins on a 1920 canvas. */
+  padding: 0 clamp(32px, 8.8vw, 169px);
 }
 .quote-text {
   margin: 0;
@@ -2160,42 +2273,31 @@
   font-weight: 400;
   /* Figma 56px on a 1920 canvas → ~2.92vw. */
   font-size: clamp(22px, 2.92vw, 56px);
-  line-height: 1.1;
-  max-width: 14em;
+  line-height: 1.3;
+  max-width: 27em;
+  text-wrap: balance;
 }
 .quote-text p {
   margin: 0;
 }
 .quote-text strong {
-  font-weight: 600;
+  font-weight: 700;
 }
+/* Anthropic wordmark attribution — the official logo (height-sized to ~the cap
+   height of the old text lockup). */
 .quote-cite {
-  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
-  font-size: clamp(18px, 1.875vw, 40px);
-  line-height: 1.5;
-  margin: clamp(20px, 2.4vw, 48px) 0 0;
-}
-.quote-figure {
-  flex: 0 0 50vw;
-  width: 50vw;
-  height: calc(100dvh - var(--m) * 2);
-  margin: var(--m) var(--m) var(--m) 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.quote-figure img {
-  max-width: 100%;
-  max-height: 100%;
+  display: block;
   width: auto;
-  height: auto;
-  object-fit: contain;
+  height: clamp(18px, 1.6vw, 30px);
+  margin: clamp(24px, 3vw, 60px) 0 0;
 }
 .quote-source {
   position: absolute;
-  left: clamp(20px, 2.5vw, 40px);
+  left: 50%;
+  transform: translateX(-50%);
   bottom: calc(var(--deck-progress-band) + clamp(16px, 1.8vw, 28px));
   margin: 0;
+  text-align: center;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-size: clamp(11px, 0.93vw, 14px);
   letter-spacing: -0.02em;
@@ -2205,25 +2307,6 @@
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 2px;
-}
-
-@media (max-aspect-ratio: 1/1) {
-  .quote-slide {
-    flex-direction: column;
-    justify-content: center;
-    gap: clamp(20px, 4vw, 48px);
-  }
-  .quote-main {
-    flex: 0 0 auto;
-    padding: 0 clamp(var(--m), 6vw, 120px);
-  }
-  .quote-figure {
-    flex: 0 0 auto;
-    width: calc(100vw - var(--m) * 2);
-    height: auto;
-    max-height: 46dvh;
-    margin: 0 var(--m);
-  }
 }
 
 /* Centered pull-quote slide (PullRequestQuote) — big Archivo quote, handwritten
@@ -2335,12 +2418,12 @@
   letter-spacing: -0.022em;
 }
 .vstat-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: start;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   width: 100%;
   max-width: 1460px;
-  column-gap: clamp(24px, 4.2vw, 80px);
+  gap: clamp(24px, 4.2vw, 80px);
 }
 .vstat-num {
   font-family: var(--font-archivo), 'Archivo', sans-serif;
