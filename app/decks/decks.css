@@ -1274,7 +1274,9 @@
 /* Letters fade, coin slides by --coin-shift (set in JS). .is-centered is the
    morph end-state; it must match what .is-morphing animates to (the deck cuts). */
 .tokens-wordmark > span:not(.tokens-coin) {
-  transition: opacity 0.42s ease;
+  transition:
+    opacity 0.42s ease,
+    filter 0.42s ease;
 }
 .tokens-wordmark .tokens-coin {
   transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
@@ -1282,6 +1284,7 @@
 .tokens-wordmark.is-morphing > span:not(.tokens-coin),
 .tokens-wordmark.is-centered > span:not(.tokens-coin) {
   opacity: 0;
+  filter: blur(0.06em);
 }
 .tokens-wordmark.is-morphing .tokens-coin,
 .tokens-wordmark.is-centered .tokens-coin {
@@ -1315,12 +1318,15 @@
   background-clip: text;
   color: transparent;
   background-image: linear-gradient(to right, #161616 0%, #5c5026 50%, #161616 100%);
-  /* Matches the letters' fade so it leaves in sync as the morph begins. */
-  transition: opacity 0.42s ease;
+  /* Matches the letters' fade + blur so it leaves in sync as the morph begins. */
+  transition:
+    opacity 0.42s ease,
+    filter 0.42s ease;
 }
 /* Visible only at step 0; gone once the coin starts its slide to centre. */
 .tokens-seq:not([data-step='0']) .tokens-subline {
   opacity: 0;
+  filter: blur(0.06em);
 }
 @media (prefers-reduced-motion: reduce) {
   .tokens-subline {
@@ -1328,11 +1334,12 @@
   }
 }
 
-/* "outcomes" at the icons step — the persistent (full-size) coin, parked at the
-   viewport centre with the task icons orbiting it, doubles as the middle "o".
+/* "outcomes" at the icons step — the task-icon ring, parked at the viewport
+   centre with a shrunk coin nested at its centre, composes the middle "o".
    Two halves flank it at the SAME size as the tokens wordmark, in the same gold
-   ink (gold strongest by the coin); the big word overlaps the orbiting icons by
-   design. Shown at step 1; fades out at step 2 as the rings draw on. Tune via
+   ink (gold strongest by the coin), spaced out (--oc-gap) so they clear the ring
+   rather than overlap it. Shown at step 1; fades out at step 2 as the rings draw
+   on. Tune via
    --oc-size (glyph size), --oc-gap (clearance from centre) and --oc-shift-y. */
 .oc-wordmark {
   position: absolute;
@@ -1340,8 +1347,16 @@
   z-index: 3;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.42s ease;
+  /* Blurred when hidden; sharpens as it fades in (and re-blurs out at step 2).
+     Blur keyed off --oc-size to stay proportional with the wordmark/subline. */
+  filter: blur(calc(var(--oc-size) * 0.06));
+  transition:
+    opacity 0.42s ease,
+    filter 0.42s ease;
   --oc-size: clamp(64px, 15vw, 300px);
+  /* Clearance from centre to each flanking half. The icon ring is sized to the
+     coin's old "o" footprint (see step-1 --orbit-r), so the halves flank it just
+     as they flanked the coin. */
   --oc-gap: 6.5vw;
   /* Negative nudges the word up so its x-height band centres on the coin (the
      line box otherwise parks the x-height slightly below the coin's centre). */
@@ -1355,10 +1370,13 @@
 }
 .tokens-seq[data-step='1'] .oc-wordmark {
   opacity: 1;
+  filter: blur(0);
   /* Hold the fade-in until the coin has slid in (~0.65s), so it never overlaps
      the flanking letters mid-morph. Leaving step 1 reverts to the base (no-delay)
      transition, so it fades out promptly. */
-  transition: opacity 0.42s ease 0.5s;
+  transition:
+    opacity 0.42s ease 0.5s,
+    filter 0.42s ease 0.5s;
 }
 .oc-half {
   position: absolute;
@@ -1418,6 +1436,19 @@
 .tokens-seq[data-step='1'] .tokens-wordmark {
   z-index: 4;
 }
+/* The middle "o" of "outcomes" is composed primarily of the icon RING, with a
+   small coin nested at its centre — not the coin overlaid by the ring. As the
+   coin slides to centre it also shrinks (coin-only, via .coin-visual; the orbit
+   box .tokens-coin stays full size so the ring holds its radius). The flanking
+   halves are pushed out (--oc-gap) so they clear the ring instead of sitting on
+   top of it, letting the ring read as the letterform. At step 2 (where .tokens-coin
+   is also unscaled) the coin eases a touch smaller alongside the icons. */
+.tokens-seq[data-step='1'] .coin-visual {
+  transform: scale(0.38);
+}
+.tokens-seq[data-step='2'] .coin-visual {
+  transform: scale(0.27);
+}
 @media (prefers-reduced-motion: reduce) {
   .oc-wordmark {
     transition: none;
@@ -1445,6 +1476,19 @@
   /* Gold glyph, harmonised with the coin, sitting on the frosted glass chip. */
   --orbit-gold: #a07900;
   animation: orbit-rotate 54s linear infinite;
+}
+/* Steps 1 & 2 — pull the ring in so the bare icons (chips dropped above) pack
+   into a tight "o" that fills the coin's old footprint, with the shrunk coin at
+   centre. Same radius across both steps so the icons hold their position; at
+   step 2 the glyphs ease a touch smaller so the cluster reads as a compact core
+   inside the activity rings. */
+.tokens-seq[data-step='1'] .tokens-orbit {
+  --orbit-r: 0.46em;
+  --orbit-icon: 0.22em;
+}
+.tokens-seq[data-step='2'] .tokens-orbit {
+  --orbit-r: 0.46em;
+  --orbit-icon: 0.15em;
 }
 .orbit-slot {
   position: absolute;
@@ -1488,8 +1532,10 @@
     border-color 0.42s ease,
     box-shadow 0.42s ease;
 }
-/* Rings step (step 2) — drop the glass chip (fill, rim, shadow) but keep the gold
-   glyph, which parks small inside the rings. */
+/* Step 1 (icon-ring "o") and step 2 (rings) — drop the glass chip (fill, rim,
+   shadow) and keep just the gold glyph. At step 1 this lets the bare icons pack
+   into a tight ring that fills the coin's old "o" footprint. */
+.tokens-seq[data-step='1'] .orbit-icon,
 .tokens-seq[data-step='2'] .orbit-icon {
   background-color: transparent;
   border-color: transparent;
@@ -1509,6 +1555,10 @@
   display: block;
   width: var(--orbit-icon);
   height: var(--orbit-icon);
+  /* Eases the step-2 glyph shrink in step with the coin's transition. */
+  transition:
+    width 0.65s cubic-bezier(0.4, 0, 0.2, 1),
+    height 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
 @keyframes orbit-rotate {
   to {
@@ -1525,7 +1575,8 @@
   .orbit-counter {
     animation: none;
   }
-  .orbit-icon {
+  .orbit-icon,
+  .orbit-icon svg {
     transition: none;
   }
 }
@@ -1615,16 +1666,9 @@
 .tokens-seq .coin-visual {
   transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Step 2 (rings) — shrink the cluster (0.46) with an extra coin-only shrink
-   (0.45); the icons park small inside the rings, which then draw on. The coin
-   stays full size through the icons step (step 1), where it's the "o" of the
-   full-size "outcomes" wordmark. */
-.tokens-seq[data-step='2'] .tokens-wordmark .tokens-coin {
-  transform: translateX(var(--coin-shift)) scale(0.46);
-}
-.tokens-seq[data-step='2'] .coin-visual {
-  transform: scale(0.45);
-}
+/* Step 2 (rings) — the coin + icon ring hold their position from step 1 (eased a
+   touch smaller via the per-step rules above) as the activity rings draw on around
+   them, so .tokens-coin keeps the is-morphing translateX with no scale. */
 @media (prefers-reduced-motion: reduce) {
   .tokens-seq .coin-visual {
     transition: none;
