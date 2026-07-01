@@ -7,10 +7,17 @@
 //             (chat sidebar streaming, the agent editing the canvas)
 //   step 2 — the window multiplies into a 3×3 grid of agents, each exploring a
 //             different creative direction in parallel
-//   step 3 — the agents go to work: each window's content cross-fades to a live
+//   step 3 — the bill comes due: the grid blurs and a past-due invoice from
+//             Anthropic drops in on top (a paper document mirroring the closing
+//             information-theory slide), the little deck's spend run up into the
+//             billions.
+//   step 4 — the agents go to work: each window's content cross-fades to a live
 //             browser-session recording (looping, muted) while the window chrome
 //             stays put. The grid stays mounted from step 2 so the zoom never
 //             replays and the swap reads as the canvases turning into browsers.
+//   step 5 — zoom back in on the centre window (now playing its video) until it
+//             fills the frame at the single-window scale of step 1 — the reverse
+//             of the step 1→2 zoom-out, landing back on the step-1 layout.
 // Advancement uses the same capture-phase key listener as the other build slides
 // (TokensSequence); the step-0 → step-1 hand-off first fades the maze cursor so
 // the zoom-out reads clean, and the final forward runs the rack-focus exit.
@@ -22,8 +29,9 @@ import { TitleHero } from './TitleHero';
 import { AgentChat } from './AgentChat';
 import { GwChat } from './GwChat';
 import { GinSchematic } from './GinSchematic';
+import { AnthropicBill } from './AnthropicBill';
 
-const STEPS = 4;
+const STEPS = 6;
 const FADE_MS = 380; // maze cursor fade before the step-0 → step-1 zoom-out
 const EXIT_MS = 620; // rack-focus exit on the final forward (mirrors .is-exiting)
 const FWD = new Set(['ArrowRight', 'ArrowDown', ' ']);
@@ -417,6 +425,8 @@ export function MousepowerOpening() {
           </div>
         </div>
       )}
+
+      {step === 3 && <AnthropicBill />}
     </div>
   );
 }

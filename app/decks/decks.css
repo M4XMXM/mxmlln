@@ -710,6 +710,11 @@
   justify-content: center;
   overflow: hidden;
   background: #e8e8e8;
+  /* Zoom pivot for the step-5 re-zoom onto the centre tile (viewport-centred). The
+     transform lives here — not on .explore-grid, whose explore-zoom animation fill
+     would otherwise clobber it. */
+  transform-origin: 50% 50%;
+  transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .explore-grid {
   --rest: 0.56; /* slide-2 window scale (matches AutonomousWindow --rest) */
@@ -780,11 +785,210 @@
   transition: opacity 0.5s ease;
   pointer-events: none;
 }
-/* Step 3: the canvases turn into live browser sessions. */
-.mp-opening[data-step='3'] .gw-build { opacity: 0; }
-.mp-opening[data-step='3'] .gw-video { opacity: 1; }
-.mp-opening[data-step='3'] .gw-canvas,
-.mp-opening[data-step='3'] .gw-sel { animation: none; }
+/* Step 3: the bill comes due — the grid recedes behind a blur so the past-due
+   invoice reads on top (see .bill-overlay). */
+.mp-opening[data-step='3'] .explore-grid {
+  filter: blur(7px) brightness(0.94);
+}
+.explore-grid { transition: filter 0.4s ease; }
+/* Steps 4–5: the canvases turn into live browser sessions (and stay that way as
+   step 5 zooms back in on the centre one). */
+.mp-opening:is([data-step='4'], [data-step='5']) .gw-build { opacity: 0; }
+.mp-opening:is([data-step='4'], [data-step='5']) .gw-video { opacity: 1; }
+.mp-opening:is([data-step='4'], [data-step='5']) .gw-canvas,
+.mp-opening:is([data-step='4'], [data-step='5']) .gw-sel { animation: none; }
+/* Step 5: re-zoom onto the centre window until it fills the frame at the
+   single-window (step-1) scale — scale matches .explore-grid --z. The other eight
+   windows fade away so only the centre browser remains. */
+.mp-opening[data-step='5'] .explore-desktop { transform: scale(2.4); }
+/* .explore-grid in the selector outranks the base explore-fade rule so the fade
+   actually applies (equal-specificity rules lose on source order otherwise). */
+.mp-opening[data-step='5'] .explore-grid .gw:not(.gw--center) {
+  animation: none;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+/* Step-3 past-due invoice (mousepower/AnthropicBill.tsx). A paper document that
+   drops in over the blurred grid, styled to echo the closing information-theory
+   sheet: white page, page stack, soft shadow. */
+.bill-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 20, 22, 0.3);
+  animation: bill-scrim 360ms ease both;
+}
+@keyframes bill-scrim {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.bill-paper {
+  position: relative;
+  z-index: 0;
+  box-sizing: border-box;
+  aspect-ratio: 8.5 / 11;
+  height: min(76vh, 700px);
+  /* em (not %) — % padding resolves against the overlay's viewport width, which
+     dwarfs the sheet; em keeps the margin tied to the content and symmetric. */
+  padding: 2.4em 2.6em;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  color: #3b3b3b;
+  border-radius: 16px;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: min(1.62vh, 14px);
+  line-height: 1.4;
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.32), 0 10px 24px rgba(0, 0, 0, 0.2);
+  /* Sits flat (no tilt) so the margins read evenly on all sides. */
+  transform: translateY(-2.5%);
+  animation: bill-drop 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes bill-drop {
+  from { opacity: 0; transform: translateY(-42px) rotate(2.5deg) scale(1.04); }
+  to { opacity: 1; transform: translateY(-2.5%) rotate(0) scale(1); }
+}
+
+/* "PAST DUE" rubber stamp, slapped across the header. */
+.bill-stamp {
+  position: absolute;
+  top: 34%;
+  left: 5%;
+  padding: 0.28em 0.6em;
+  font-weight: 800;
+  font-size: 2.5em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(199, 42, 42, 0.82);
+  border: 0.16em solid rgba(199, 42, 42, 0.82);
+  border-radius: 0.14em;
+  transform: rotate(-13deg);
+  opacity: 0.9;
+  mix-blend-mode: multiply;
+}
+
+.bill-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding-bottom: 1.2em;
+  border-bottom: 2px solid #3b3b3b;
+}
+.bill-logo {
+  display: block;
+  width: 44%;
+  height: auto;
+  margin-top: 0.4em;
+}
+.bill-meta { text-align: right; }
+.bill-doc {
+  font-weight: 700;
+  font-size: 1.5em;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.3em;
+}
+.bill-meta dl {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 0.7em;
+  row-gap: 0.15em;
+  justify-content: end;
+  margin: 0;
+  font-size: 0.92em;
+}
+.bill-meta dt { color: #9a9a9a; text-align: right; }
+.bill-meta dd { margin: 0; font-variant-numeric: tabular-nums; }
+
+.bill-billto {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15em;
+  padding: 1em 0;
+}
+.bill-billto-label {
+  font-size: 0.82em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+}
+.bill-billto-name { font-weight: 600; }
+
+.bill-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.84em;
+}
+.bill-table th {
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #9a9a9a;
+  padding-bottom: 0.6em;
+  border-bottom: 1px solid #dcdcdc;
+}
+.bill-table td {
+  padding: 0.5em 0;
+  border-bottom: 1px solid #eee;
+  vertical-align: top;
+}
+/* Fixed, unequal column widths so the long token counts and dollar figures never
+   run into each other (quantity is the widest — up to 15 digits). */
+.bill-table th:nth-child(1),
+.bill-table td:nth-child(1) { width: 24%; }
+.bill-table th:nth-child(2),
+.bill-table td:nth-child(2) { width: 32%; padding-right: 0.9em; }
+.bill-table th:nth-child(3),
+.bill-table td:nth-child(3) { width: 16%; padding-right: 0.5em; }
+.bill-table th:nth-child(4),
+.bill-table td:nth-child(4) { width: 28%; }
+.bill-num {
+  padding-left: 0.8em;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+/* The generic `.bill-table th` left-align outranks `.bill-num`; re-assert right for
+   the numeric headers so each title sits above its right-aligned column. */
+.bill-table th.bill-num { text-align: right; }
+
+/* Pinned bottom-right and wide enough that the (much longer) amount-due figure
+   never overflows — every figure right-aligns to the same edge as the table's
+   amount column, and the block sinks to the sheet's foot like a real invoice. */
+.bill-totals {
+  margin-top: auto;
+  margin-left: auto;
+  width: 78%;
+}
+.bill-total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 0.42em 0;
+  font-size: 0.94em;
+}
+.bill-total-row span:first-child { color: #6a6a6a; white-space: nowrap; }
+.bill-total-row--due {
+  margin-top: 0.3em;
+  padding-top: 0.7em;
+  border-top: 2px solid #3b3b3b;
+  font-weight: 800;
+  font-size: 1.32em;
+}
+.bill-total-row--due span:first-child { color: #3b3b3b; }
+.bill-total-row--due .bill-num { color: rgba(199, 42, 42, 0.95); }
+
+@media (prefers-reduced-motion: reduce) {
+  .bill-overlay,
+  .bill-paper { animation: none; }
+  .explore-grid { transition: none; }
+}
 .gw-sidebar {
   flex: none;
   width: 21.9%;
