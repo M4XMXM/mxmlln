@@ -2843,133 +2843,261 @@
   object-position: center top;
 }
 
-/* Interactive agent-entropy sliders (mousepower/EntropySliders.tsx). Light deck
-   palette, cyan-filled tracks; the verdict box tints by severity. */
+/* Closing 2×2 uncertainty matrix (mousepower/EntropySliders.tsx). */
 .es-stage {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(28px, 4vw, 80px);
+  padding: 80px;
+  /* The right axis-end "high" tick hangs past the plot; pad extra on the right so
+     it still clears ~80px from the edge (the left is defined by the y-title). */
+  padding-right: clamp(104px, 9vw, 124px);
   box-sizing: border-box;
+  /* Same cyan dot-grid as the horse-gin schematic, for visual continuity. */
+  background-color: #f5f5f5;
+  background-image: radial-gradient(
+    circle,
+    rgba(0, 187, 255, 0.26) 1px,
+    transparent 1.4px
+  );
+  background-size: calc(min(74vw, 940px) * 0.01134) calc(min(74vw, 940px) * 0.01134);
+  background-position: center;
 }
 .es-panel {
-  width: min(92vw, 1100px);
-}
-/* Three dials in a row (mousepower/EntropySliders.tsx), Dieter-Rams dial from
-   exp/003 restyled in the deck's cyan. */
-.es-dials {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-start;
-  gap: clamp(20px, 3vw, 64px);
-  flex-wrap: wrap;
-  margin-bottom: clamp(22px, 3.2vh, 48px);
-}
-.es-dial-cell {
-  width: clamp(150px, 16vw, 240px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: clamp(10px, 1.2vw, 20px);
-}
-.es-dial-label {
-  text-align: center;
-  font-family: var(--font-archivo), 'Archivo', sans-serif;
-  font-weight: 500;
-  font-size: clamp(13px, 1.15vw, 22px);
-  line-height: 1.3;
-  color: #3B3B3B;
-}
-.es-dial {
-  position: relative;
-  width: clamp(140px, 14vw, 220px);
-  aspect-ratio: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  touch-action: none;
-}
-/* Progress ring: SVG track + fill arcs with round caps. Centre is just the ground
-   (no white disc) — only the knob is white. */
-.es-dial-ring {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
   width: 100%;
   height: 100%;
-  overflow: visible;
 }
-.es-dial-track,
-.es-dial-fill {
-  fill: none;
-  stroke-width: 5;
-  stroke-linecap: round;
+.es-matrix {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr;
+  /* Seats the x-axis "low" tick between the y-title and plot, with clear space. */
+  column-gap: clamp(48px, 5vw, 76px);
+  /* Extra top gap holds the side bands' labels above the plot. */
+  row-gap: clamp(58px, 7vh, 100px);
+  /* Reserve room for the acceptance "high" tick + arrow that hang below the plot
+     so the bottom margin matches the top. */
+  padding-bottom: clamp(28px, 4vh, 48px);
+  box-sizing: border-box;
 }
-.es-dial-track {
-  stroke: #dcdcda;
+.es-axis {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  letter-spacing: 0;
+  font-size: clamp(20px, 2.4vw, 44px);
+  line-height: 1.1;
+  color: #161616;
+  text-align: center;
 }
-.es-dial-fill {
-  stroke: #00bbff;
+.es-axis-x {
+  grid-column: 2;
+  grid-row: 1;
 }
-/* The knob: white disc with a soft drop shadow + an accent dot at its top. */
-.es-dial-knob {
+.es-axis-y {
+  grid-column: 1;
+  grid-row: 2;
+  align-self: center;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+}
+/* The crossbar is drawn by the ::before (vertical) / ::after (horizontal) rules. */
+.es-plot {
+  grid-column: 2;
+  grid-row: 2;
   position: relative;
-  z-index: 2;
-  width: 62%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: inset -1px -1px 5px rgba(0, 0, 0, 0.05),
-    2px 2px 12px rgba(0, 0, 0, 0.1), 4px 4px 24px rgba(0, 0, 0, 0.12);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
 }
-.es-dial-knob::before {
+.es-plot::before,
+.es-plot::after {
   content: '';
   position: absolute;
-  top: 7%;
+  background: #161616;
+}
+.es-plot::before {
+  top: 0;
+  bottom: 0;
   left: 50%;
-  width: 7%;
+  width: 2px;
+  transform: translateX(-50%);
+}
+.es-plot::after {
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+}
+/* Dots mark each axis's low/origin end; arrowheads (below) mark the high end. */
+.es-dot {
+  position: absolute;
+  width: clamp(9px, 0.85vw, 15px);
   aspect-ratio: 1;
-  transform: translate(-50%, 0);
   border-radius: 50%;
-  background: #00bbff;
-  box-shadow: 1px 1px 4px rgba(0, 187, 255, 0.35);
+  background: #161616;
 }
-.es-verdict {
-  margin-top: clamp(8px, 1vh, 16px);
-  padding: clamp(14px, 1.4vw, 26px) clamp(16px, 1.6vw, 30px);
-  border: 1px solid var(--border, #dcdcda);
-  border-radius: clamp(10px, 0.8vw, 16px);
-  min-height: 3.6em;
-  display: flex;
-  align-items: center;
-  transition: background 0.25s ease, border-color 0.25s ease;
+.es-dot-top {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
-.es-verdict-text {
-  margin: 0;
+.es-dot-left {
+  left: 0;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.es-arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+.es-arrow-x {
+  top: 50%;
+  right: 0;
+  transform: translate(60%, -50%);
+  border-top: 8px solid transparent;
+  border-bottom: 8px solid transparent;
+  border-left: 13px solid #161616;
+}
+.es-arrow-y {
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, 60%);
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 13px solid #161616;
+}
+.es-tick {
+  position: absolute;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
-  font-size: clamp(15px, 1.5vw, 28px);
-  line-height: 1.5;
-  color: #3B3B3B;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-size: clamp(11px, 1vw, 18px);
+  color: #6b6b6b;
+  white-space: nowrap;
 }
-.es-success {
-  background: #e7f5ec;
-  border-color: #1d9e75;
+/* x-axis (Task Steps) low/high read vertically — rotated 90° ccw. */
+.es-tick-xlow {
+  top: 50%;
+  left: 0;
+  transform: translate(calc(-100% - 14px), -50%) rotate(-90deg);
 }
-.es-danger {
-  background: #fce9e9;
-  border-color: #a32d2d;
+.es-tick-xhigh {
+  top: 50%;
+  right: 0;
+  transform: translate(calc(100% + 18px), -50%) rotate(-90deg);
 }
-.es-warn {
-  background: #fbf3e2;
-  border-color: #ba7517;
+.es-tick-ylow {
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, calc(-100% - 14px));
 }
-.es-neutral {
-  background: #fff;
-  border-color: #dcdcda;
+.es-tick-yhigh {
+  left: 50%;
+  bottom: 0;
+  transform: translate(-50%, calc(100% + 18px));
+}
+.es-hatch {
+  position: absolute;
+  pointer-events: none;
+  /* Bands reveal one per forward step; hidden until .es-shown is set (in JS). */
+  opacity: 0;
+  transition: opacity 0.55s ease;
+}
+.es-hatch.es-shown {
+  opacity: 1;
+}
+.es-hatch-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: clamp(14px, 1.3vw, 24px);
+  line-height: 1.3;
+  text-align: center;
+  white-space: nowrap;
+  color: #c0392b;
+  background: #f5f5f5;
+  padding: clamp(4px, 0.5vw, 10px) clamp(10px, 1vw, 18px);
+  border-radius: 6px;
+}
+.es-hatch-script {
+  left: 0;
+  width: 25%;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(232, 152, 18, 0.62) 0,
+    rgba(232, 152, 18, 0.62) 2px,
+    transparent 2px,
+    transparent 11px
+  );
+}
+.es-hatch-ood {
+  right: 0;
+  width: 25%;
+  top: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(192, 57, 43, 0.55) 0,
+    rgba(192, 57, 43, 0.55) 2px,
+    transparent 2px,
+    transparent 11px
+  );
+}
+/* Opposite diagonal (\) to the side bands (/) so the overlaps crosshatch. */
+.es-hatch-verif {
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 25%;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(192, 57, 43, 0.55) 0,
+    rgba(192, 57, 43, 0.55) 2px,
+    transparent 2px,
+    transparent 11px
+  );
+}
+.es-hatch-np {
+  left: 25%;
+  width: 50%;
+  top: 0;
+  height: 75%;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(0, 187, 255, 0.55) 0,
+    rgba(0, 187, 255, 0.55) 2px,
+    transparent 2px,
+    transparent 11px
+  );
+}
+.es-hatch-np .es-hatch-label {
+  color: #0e7490;
+}
+/* Side-band labels sit above the band (no chip) rather than centred. */
+.es-hatch-script .es-hatch-label,
+.es-hatch-ood .es-hatch-label {
+  top: auto;
+  bottom: 100%;
+  transform: translate(-50%, 0);
+  margin-bottom: clamp(10px, 1.2vh, 18px);
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+.es-hatch-script .es-hatch-label {
+  color: #a3690c;
 }
 .dl-emoji {
   font-size: 46px;
