@@ -259,7 +259,11 @@
   font-size: clamp(18px, 1.875vw, 40px);
   line-height: 1.5;
   letter-spacing: -0.022em;
-  margin: 0 0 clamp(8px, 1vw, 20px);
+  /* Single line at every scale (full title / windowed preview / grid tile), so
+     the maze sits at the same relative position across the opening's steps —
+     minimising layout shift. */
+  white-space: nowrap;
+  margin: 0 auto clamp(8px, 1vw, 20px);
 }
 
 .slide-section-title {
@@ -286,6 +290,12 @@
   /* Slightly more than the eyebrow's bottom margin: the headline has no
      descenders, so an equal margin reads optically tighter below than above. */
   margin: clamp(14px, 1.6vw, 32px) 0 0;
+}
+/* Closing bookend: the URL reads as clean Archivo, not the handwritten byline. */
+.slide-footnote--url {
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
 }
 
 /* Autonomous-window slide (mousepower/AutonomousWindow.tsx): the title revealed
@@ -958,6 +968,45 @@
   width: calc(min(74vw, 940px) * var(--f) / 3.2);
   height: auto;
   display: block;
+}
+/* Cursor tornado — a swarm of pointers on independent rotating orbits (varied
+   radius / speed / direction / size / colour). --u is the canvas draw scale. */
+.gw-swarm {
+  position: relative;
+  --u: calc(min(74vw, 940px) * var(--f));
+  width: calc(var(--u) * 0.9);
+  height: calc(var(--u) * 0.6);
+}
+.gw-swarm-orbit {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  animation-name: gw-swirl;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+.gw-swarm-cursor {
+  position: absolute;
+  top: calc(var(--u) * -0.09);
+  left: calc(var(--u) * -0.09);
+  width: calc(var(--u) * 0.18);
+  height: auto;
+  color: #3b3b3b;
+}
+.gw-swarm-cursor--cyan {
+  color: #00bbff;
+}
+@keyframes gw-swirl {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .gw-swarm-orbit {
+    animation: none;
+  }
 }
 /* The "TOKENS" wordmark with the coin as its "O" (the tokens slide). */
 .gw-tokens {
@@ -2115,34 +2164,34 @@
   transform-origin: 50% 34%;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-/* Equation caption — hidden on step 0, rises into the freed space on step 1. */
-.hp-eq-text {
+/* Caption below the shrunk schematic — the equation (step 1) then the ROI thesis
+   (step 2). Shares the morph-statement slide's thin, large type; each caption
+   emerges character-by-character on mount (see .morph-char). Anchored from the
+   top, just below the diagram, so a two-line caption grows downward rather than
+   up into the schematic. */
+.hp-caption {
   position: absolute;
   left: var(--m);
   right: var(--m);
-  bottom: clamp(14px, 3vh, 36px);
-  margin: 0;
+  top: 60%;
+  margin: 0 auto;
+  /* Wide enough that the one-line equation never wraps mid-formula; the ROI
+     caption breaks only at its explicit newline. */
+  max-width: 20em;
   text-align: center;
-  opacity: 0;
-  transition: opacity 0.5s ease, bottom 0.6s cubic-bezier(0.4, 0, 0.2, 1);
   font-family: var(--font-archivo), 'Archivo', sans-serif;
-  font-weight: 600;
-  font-size: clamp(18px, 2.6vw, 48px);
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-weight: 100;
+  font-size: clamp(24px, 3.4vw, 66px);
+  line-height: 1.18;
+  letter-spacing: 0;
   color: #3B3B3B;
 }
 
-/* The beam-gap bridge — invisible until the "12 ft" label clears on step 1. */
-.hp-arm-fill {
-  opacity: 0;
-  transition: opacity 0.4s ease;
-}
-
-/* Step 1 — hide the in-diagram labels, shrink the schematic, raise the equation.
-   The timer shrinks an extra 1/3 here; the horse counter-scales (hp-horse-scale)
-   to keep its size, so it reads larger within the smaller dial. */
-.gin-stage[data-step='1'] .hp-diagram {
+/* Steps 1–2 — hide the in-diagram labels, shrink the schematic, raise the
+   caption. The timer shrinks an extra 1/3 here; the horse counter-scales
+   (hp-horse-scale) to keep its size, so it reads larger within the smaller dial.
+   These persist on step 2 so the schematic stays put while the caption swaps. */
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-diagram {
   transform: scale(0.41);
 }
 .hp-horse-scale {
@@ -2150,18 +2199,32 @@
   transform-origin: 150px 62px;
   transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.gin-stage[data-step='1'] .hp-horse-scale {
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-horse-scale {
   transform: scale(1.5);
 }
-.gin-stage[data-step='1'] .hp-tag-text {
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-tag-text {
   opacity: 0;
 }
-.gin-stage[data-step='1'] .hp-arm-fill {
-  opacity: 1;
+/* Keep the dial's stroke weight visually consistent when the schematic shrinks:
+   bump stroke-width by the same 1.5× the horse counter-scales, so the stopwatch
+   lines follow the horse instead of thinning out. */
+.hp-rim,
+.hp-crown,
+.hp-beam,
+.hp-tick-major,
+.hp-tick-minor {
+  transition: stroke-width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.gin-stage[data-step='1'] .hp-eq-text {
-  opacity: 1;
-  bottom: 37%;
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-rim,
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-crown,
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-beam {
+  stroke-width: 1.5;
+}
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-tick-major {
+  stroke-width: 1.8;
+}
+.gin-stage:is([data-step='1'], [data-step='2']) .hp-tick-minor {
+  stroke-width: 1.35;
 }
 
 /* The arm + horse + label orbit the post while the diagram slide is active. The
@@ -2193,7 +2256,7 @@
 }
 .hp-armlabel {
   transform-box: view-box;
-  transform-origin: 150px 100px;
+  transform-origin: 150px 127px;
 }
 .deck-slide[data-active='true'] .hp-armlabel {
   animation: hp-spin-rev 7s linear infinite;
@@ -2234,7 +2297,7 @@
   stroke: currentColor;
   /* The glyph sits in a scale(1.2) group, so this / 1.2 matches the arm + rest of
      the diagram lines (thinned to the title maze's monoweight). */
-  stroke-width: 0.667;
+  stroke-width: 0.833;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
@@ -2261,9 +2324,12 @@
 @media (prefers-reduced-motion: reduce) {
   .hp-card,
   .hp-diagram,
-  .hp-eq-text,
   .hp-tag-text,
-  .hp-arm-fill {
+  .hp-rim,
+  .hp-crown,
+  .hp-beam,
+  .hp-tick-major,
+  .hp-tick-minor {
     transition: none;
   }
   .deck-slide[data-active='true'] .hp-spin,
@@ -2559,6 +2625,46 @@
 
 /* Centered pull-quote slide (PullRequestQuote) — big Archivo quote, handwritten
    attribution, source pinned bottom-centre. */
+/* Upton Sinclair quote slide (SalaryQuote) — piggy-bank icon (pink accent) over
+   a bold quote, closed by a handwritten cite. */
+.squote-slide {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 clamp(32px, 8vw, 160px);
+}
+.squote-icon {
+  width: clamp(40px, 3.6vw, 68px);
+  height: auto;
+  color: #3b3b3b;
+  margin-bottom: clamp(16px, 1.8vw, 34px);
+}
+.squote-text {
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 700;
+  font-size: clamp(30px, 4.2vw, 80px);
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+  max-width: 15em;
+  text-wrap: balance;
+}
+.squote-text p {
+  margin: 0;
+}
+.squote-cite {
+  font-family: var(--font-homemade-apple), 'Homemade Apple', cursive;
+  font-size: clamp(18px, 2vw, 40px);
+  line-height: 1.5;
+  letter-spacing: -0.022em;
+  margin: clamp(24px, 3vw, 56px) 0 0;
+}
+
 .pquote-slide {
   position: relative;
   width: 100%;
@@ -2610,6 +2716,187 @@
   text-underline-offset: 2px;
 }
 
+/* Statement slide (RoiStatement) — a single centred assertion, no citation.
+   Same Archivo SemiBold lockup as the section titles, sized between the section
+   title and the pull quote. */
+.statement-slide {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 clamp(32px, 8.8vw, 169px);
+}
+.statement-text {
+  margin: 0;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-weight: 600;
+  font-size: clamp(34px, 5.2vw, 100px);
+  line-height: 1.1;
+  letter-spacing: 0;
+  max-width: 16em;
+  text-wrap: balance;
+}
+
+/* Morph-statement slide (ComputeStatement) — a centred three-line stack: the
+   changing first word on its own line, the tail broken across the two lines
+   below. It's two swappable slots (word / tail); each emerges character-by-
+   character (the blur-in-up "emergence" effect, /static/001) only when its own
+   text changes, so the constant lines hold perfectly still. Every step is three
+   lines, so the word never shifts.
+     step 0 — Execution   / at the speed / of compute.
+     step 1 — Measurement / at the speed / of compute.       (word morphs)
+     step 2 — Measurement / fits customer's / mental model.  (tail morphs) */
+.morph-slide {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 clamp(40px, 6vw, 140px);
+}
+.morph-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(6px, 1.2vh, 18px);
+  /* Optical centring — sit the lockup slightly above true centre. */
+  margin-bottom: 40px;
+}
+/* Icon row above the text: one revealed per step, cumulatively. Hidden slots
+   collapse to zero width (max-width) so the row stays centred and the earlier
+   icons slide over as each new one fades / blurs in. Inherits the text ink. */
+.morph-icons {
+  --icon: clamp(48px, 5vw, 100px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.morph-icon {
+  /* The slot's width collapses to 0 (hidden) → var(--icon) (shown) so the row
+     re-centres and neighbours slide over. The icon itself is absolutely centred
+     with overflow visible, so the blur halo is never clipped. */
+  position: relative;
+  flex: none;
+  height: var(--icon);
+  width: 0;
+  margin: 0;
+  opacity: 0;
+  filter: blur(12px);
+  transform: translateY(8px) scale(0.9);
+  transition: width 0.55s cubic-bezier(0.4, 0, 0.2, 1),
+    margin 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease,
+    filter 0.5s ease, transform 0.5s ease;
+}
+.morph-icon svg {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--icon);
+  height: var(--icon);
+  display: block;
+}
+.morph-icons[data-step='0'] .morph-icon--exec,
+.morph-icons[data-step='1'] .morph-icon--exec,
+.morph-icons[data-step='1'] .morph-icon--measure,
+.morph-icons[data-step='2'] .morph-icon--exec,
+.morph-icons[data-step='2'] .morph-icon--measure,
+.morph-icons[data-step='2'] .morph-icon--model {
+  width: var(--icon);
+  margin: 0 clamp(12px, 1.4vw, 26px);
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+.morph-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  /* Large + thin: the 100 (Thin) weight keeps the big type feeling airy. */
+  font-weight: 100;
+  font-size: clamp(42px, 7vw, 148px);
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+}
+.morph-tline {
+  display: block;
+}
+.morph-word {
+  display: inline-block;
+  white-space: nowrap;
+}
+/* Text-swap slot (EmergeSwap): the incoming copy is in flow (sizes the box) and
+   emerges per-letter; the outgoing copy overlays it, absolutely positioned, and
+   blurs / fades out — so swapping never shifts layout. */
+.emerge-swap {
+  display: block;
+}
+.emerge-in {
+  display: block;
+}
+.emerge-out {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  animation: morph-out 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes morph-out {
+  from {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(0.22em);
+    transform: translateY(-0.25em);
+  }
+}
+/* ComputeStatement slots need to contain their own absolute outgoing copy. */
+.morph-word-line,
+.morph-tail {
+  position: relative;
+}
+.morph-char {
+  display: inline-block;
+  animation: morph-emerge 0.6s cubic-bezier(0.4, 0, 0.2, 1) var(--d, 0ms) both;
+}
+@keyframes morph-emerge {
+  from {
+    opacity: 0;
+    filter: blur(0.2em);
+    transform: translateY(0.45em);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .morph-char {
+    animation: none;
+  }
+  .emerge-out {
+    animation: none;
+    opacity: 0;
+  }
+  .morph-icon {
+    transition: width 0.3s ease, margin 0.3s ease, opacity 0.3s ease;
+    filter: none;
+    transform: none;
+  }
+}
+
 /* Tweet-screenshot slide (DevloperTweet) — a single rounded, shadowed card
    centred on the ground. Rounding + shadow live here (the PNG is the raw fill). */
 .tweet-slide {
@@ -2637,10 +2924,9 @@
     0 1.7vw 5.3vw rgba(0, 0, 0, 0.1);
 }
 
-/* Three-stat verification slide (VerificationStats) — bold headline, a row of
-   three light big-number stats with uppercase captions, a bold aside, and a
-   source line. The numbers are Archivo 400 (the self-hosted variable font's
-   lightest weight; Figma's Thin 100 isn't available offline). */
+/* Verification slide (VerificationStats) — bold headline, a row of thin
+   big-number stats with uppercase captions, a bold aside, and a source line.
+   The numbers are Archivo Thin 100, matching the morph-statement slide. */
 .vstat-slide {
   position: relative;
   width: 100%;
@@ -2665,6 +2951,10 @@
   line-height: 1.1;
   letter-spacing: -0.022em;
 }
+/* Optical centring — lift the lockup above true centre (source is pinned low). */
+.vstat-amdahl {
+  margin-bottom: 40px;
+}
 .vstat-row {
   display: flex;
   justify-content: center;
@@ -2675,10 +2965,10 @@
 }
 .vstat-num {
   font-family: var(--font-archivo), 'Archivo', sans-serif;
-  font-weight: 400;
-  /* Figma ~125px on a 1920 canvas → 6.51vw. */
-  font-size: clamp(48px, 6.51vw, 125px);
-  line-height: 1.1;
+  /* Thin + large, matching the morph-statement slide ("execution at the speed…"). */
+  font-weight: 100;
+  font-size: clamp(48px, 7vw, 140px);
+  line-height: 1.08;
   letter-spacing: -0.01em;
 }
 .vstat-cap {
