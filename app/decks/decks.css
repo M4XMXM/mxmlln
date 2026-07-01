@@ -755,7 +755,26 @@
   border-radius: 50%;
   background: #d4d4d4;
 }
-.gw-body { flex: 1; display: flex; min-height: 0; }
+.gw-body { position: relative; flex: 1; min-height: 0; }
+/* Build content (sidebar + canvas) and the step-3 browser video overlap inside
+   the body and cross-fade; the window chrome (titlebar) stays put across both. */
+.gw-build { position: absolute; inset: 0; display: flex; min-height: 0; transition: opacity 0.5s ease; }
+.gw-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top left;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+/* Step 3: the canvases turn into live browser sessions. */
+.mp-opening[data-step='3'] .gw-build { opacity: 0; }
+.mp-opening[data-step='3'] .gw-video { opacity: 1; }
+.mp-opening[data-step='3'] .gw-canvas,
+.mp-opening[data-step='3'] .gw-sel { animation: none; }
 .gw-sidebar {
   flex: none;
   width: 21.9%;
