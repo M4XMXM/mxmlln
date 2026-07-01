@@ -39,10 +39,6 @@ function renderLines(text: string, animate: boolean) {
   ));
 }
 
-export function emergeChars(text: string) {
-  return renderLines(text, true);
-}
-
 /**
  * A text slot that swaps its content with a cross-blur: the incoming text emerges
  * character-by-character while the outgoing text (overlaid) blurs + fades out.

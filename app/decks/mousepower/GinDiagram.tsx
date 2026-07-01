@@ -1,6 +1,6 @@
 'use client';
 
-// Two forward-advanced build steps (same mechanism as HorsepowerSequence): a
+// Three forward-advanced build steps (same mechanism as HorsepowerSequence): a
 // capture-phase key listener advances the build on → / ← before the Deck would
 // change slides; at a boundary the event falls through to the Deck.
 //   step 0 — the gin drawn as a stopwatch: the circle is the watch face, the
