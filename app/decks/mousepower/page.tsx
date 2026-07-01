@@ -114,7 +114,7 @@ export default function MousepowerDeck() {
         <EntropyPaper />
       </div>
 
-      {/* Interactive: the agent-entropy model as three sliders + live verdict. */}
+      {/* Closing 2×2 uncertainty matrix with stepped band reveals. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
         <EntropySliders />
       </div>

@@ -2531,8 +2531,7 @@
   object-position: center top;
 }
 
-/* Interactive agent-entropy sliders (mousepower/EntropySliders.tsx). Light deck
-   palette, cyan-filled tracks; the verdict box tints by severity. */
+/* Closing 2×2 uncertainty matrix (mousepower/EntropySliders.tsx). */
 .es-stage {
   position: absolute;
   inset: 0;
@@ -2555,14 +2554,9 @@
   background-position: center;
 }
 .es-panel {
-  /* Fill the stage inside its 80px margin. */
   width: 100%;
   height: 100%;
 }
-/* Closing 2×2 matrix (mousepower/EntropySliders.tsx): task-step uncertainty ×
-   acceptance-criteria uncertainty, low vs high. The four quadrant readings sit
-   around a single cyan crossbar — no boxes. Outer grid: y-title | row-heads |
-   plot across columns, x-title | col-heads | plot down rows. */
 .es-matrix {
   width: 100%;
   height: 100%;
@@ -2578,7 +2572,6 @@
   padding-bottom: clamp(28px, 4vh, 48px);
   box-sizing: border-box;
 }
-/* Axis titles in the deck's headline treatment (Archivo SemiBold, Title Case). */
 .es-axis {
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-weight: 600;
@@ -2599,9 +2592,7 @@
   writing-mode: vertical-rl;
   transform: rotate(180deg);
 }
-/* The plot: a 2×2 field with a centred black crossbar drawn by pseudo-elements.
-   The axes carry arrowheads (→ increasing uncertainty); low/high are anchored
-   once on the diagonal rather than ticked twice per axis. */
+/* The crossbar is drawn by the ::before (vertical) / ::after (horizontal) rules. */
 .es-plot {
   grid-column: 2;
   grid-row: 2;
@@ -2630,8 +2621,7 @@
   height: 2px;
   transform: translateY(-50%);
 }
-/* Dot anchors mark the low/origin ends (top, left); arrowheads mark the high
-   ends (right, bottom) so each axis points toward more uncertainty. */
+/* Dots mark each axis's low/origin end; arrowheads (below) mark the high end. */
 .es-dot {
   position: absolute;
   width: clamp(9px, 0.85vw, 15px);
@@ -2670,8 +2660,6 @@
   border-right: 8px solid transparent;
   border-top: 13px solid #161616;
 }
-/* Low/high scale labels at each axis end (low at the dot origins, high at the
-   arrowheads) so both axes read unambiguously. */
 .es-tick {
   position: absolute;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
@@ -2703,13 +2691,10 @@
   bottom: 0;
   transform: translate(-50%, calc(100% + 18px));
 }
-/* Diagonal-hatched bands: each takeaway shades off the section it owns. The label
-   sits centred in the band on a solid chip (a cutout of the hatch). Overlapping
-   bands read as crossing hatch, never muddy. */
 .es-hatch {
   position: absolute;
   pointer-events: none;
-  /* Bands reveal one per forward step; hidden until their .es-shown is set. */
+  /* Bands reveal one per forward step; hidden until .es-shown is set (in JS). */
   opacity: 0;
   transition: opacity 0.55s ease;
 }
@@ -2732,8 +2717,6 @@
   padding: clamp(4px, 0.5vw, 10px) clamp(10px, 1vw, 18px);
   border-radius: 6px;
 }
-/* Lowest task-step uncertainty = the left-most quarter, full height. Amber/orange
-   (wasteful, not outright bad) to set it apart from the red danger bands. */
 .es-hatch-script {
   left: 0;
   width: 25%;
@@ -2747,8 +2730,6 @@
     transparent 11px
   );
 }
-/* Highest task-step uncertainty = the right-most quarter, full height. Opposite
-   overlap partner for the bottom band. */
 .es-hatch-ood {
   right: 0;
   width: 25%;
@@ -2762,8 +2743,7 @@
     transparent 11px
   );
 }
-/* Highest acceptance-criteria uncertainty = the bottom fourth, full width.
-   Opposite diagonal (\) so overlaps with the side bands (/) crosshatch. */
+/* Opposite diagonal (\) to the side bands (/) so the overlaps crosshatch. */
 .es-hatch-verif {
   left: 0;
   right: 0;
@@ -2777,8 +2757,6 @@
     transparent 11px
   );
 }
-/* The good zone: central region left unshaded by the red bands. Same diagonal
-   hatch style as the red bands, in cyan. */
 .es-hatch-np {
   left: 25%;
   width: 50%;
@@ -2795,8 +2773,7 @@
 .es-hatch-np .es-hatch-label {
   color: #0e7490;
 }
-/* The two side bands keep their labels outside (no chip), at the top of the
-   shaded area rather than centred. */
+/* Side-band labels sit above the band (no chip) rather than centred. */
 .es-hatch-script .es-hatch-label,
 .es-hatch-ood .es-hatch-label {
   top: auto;

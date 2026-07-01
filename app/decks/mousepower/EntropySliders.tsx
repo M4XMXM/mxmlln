@@ -1,10 +1,8 @@
 'use client';
 
-// 2×2 takeaway map. Axes: Uncertainty in Acceptance Criteria (x, low→high
-// left→right) × Uncertainty in Task Steps (y, low→high top→bottom). Each takeaway
-// owns a diagonal-hatched band; overlapping bands crosshatch rather than muddy.
-// The bands reveal one per forward step (bare chart → script → OOD → verification
-// → NP), using the same capture-phase key interception as the other build slides.
+// The takeaway bands reveal one per forward step (bare chart → script → OOD →
+// verification → NP). Forward/back keys are intercepted in the capture phase so
+// the deck only changes slides at the first/last step (as in the other builds).
 import { useEffect, useState } from 'react';
 import { useDeck, useSlideIndex } from '../Deck';
 
@@ -18,7 +16,6 @@ export function EntropySliders() {
   const active = activeIndex === index;
   const [step, setStep] = useState(0);
 
-  // Reset to the bare chart whenever the slide (re)enters.
   useEffect(() => {
     if (active) setStep(0);
   }, [active]);
@@ -59,26 +56,20 @@ export function EntropySliders() {
             <span className="es-tick es-tick-ylow">low</span>
             <span className="es-tick es-tick-yhigh">high</span>
 
-            {/* Lowest task-step uncertainty = the left-most quarter, full height. */}
             <div className={`es-hatch es-hatch-script${shown(1)}`}>
               <span className="es-hatch-label">Write a script, save tokens</span>
             </div>
-            {/* Highest task-step uncertainty = the right-most quarter. */}
             <div className={`es-hatch es-hatch-ood${shown(2)}`}>
               <span className="es-hatch-label">
                 Data risk of OOD in pretraining /<br />
                 sparse rewards for RL
               </span>
             </div>
-            {/* Highest acceptance-criteria uncertainty = the bottom fourth, full
-                width. Opposite diagonal so its overlaps with the side bands read
-                as crosshatch. */}
             <div className={`es-hatch es-hatch-verif${shown(3)}`}>
               <span className="es-hatch-label">
                 Verification is indistinguishable from execution
               </span>
             </div>
-            {/* The good zone: the central region left unshaded by the red bands. */}
             <div className={`es-hatch es-hatch-np${shown(4)}`}>
               <span className="es-hatch-label">
                 {'Verification ~< execution'}
