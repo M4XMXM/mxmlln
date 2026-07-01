@@ -130,13 +130,13 @@ export function TokensSequence() {
         <br />
         output
       </div>
-      {/* Step 1 (icons) — reads "measure / outcomes / instead". The persistent
+      {/* Step 1 (icons) — reads "we want / outcomes / instead". The persistent
           full-size coin (parked at centre with the task icons orbiting it) is the
-          middle "o" of "outcomes": the two halves flank it, with "measure" above
+          middle "o" of "outcomes": the two halves flank it, with "we want" above
           and "instead" below. Same gold ink; fades out at step 2 as the icons
           give way to the rings. */}
       <div className="oc-wordmark" aria-hidden="true">
-        <span className="oc-measure">measure</span>
+        <span className="oc-want">we want</span>
         <span className="oc-half oc-pre">outc</span>
         <span className="oc-half oc-post">mes</span>
         <span className="oc-instead">instead</span>
