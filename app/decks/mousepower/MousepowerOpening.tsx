@@ -1,12 +1,16 @@
 'use client';
 
-// The opening of the deck, unified into ONE slide with three forward-advanced
+// The opening of the deck, unified into ONE slide with four forward-advanced
 // build steps (the title living inside the agent app that built it):
 //   step 0 — full-bleed maze title, the cursor-agent threading the corridors
 //   step 1 — zoom out: the title is the live preview of a v0-style agent app
 //             (chat sidebar streaming, the agent editing the canvas)
 //   step 2 — the window multiplies into a 3×3 grid of agents, each exploring a
 //             different creative direction in parallel
+//   step 3 — the agents go to work: each window's content cross-fades to a live
+//             browser-session recording (looping, muted) while the window chrome
+//             stays put. The grid stays mounted from step 2 so the zoom never
+//             replays and the swap reads as the canvases turning into browsers.
 // Advancement uses the same capture-phase key listener as the other build slides
 // (TokensSequence); the step-0 → step-1 hand-off first fades the maze cursor so
 // the zoom-out reads clean, and the final forward runs the rack-focus exit.
@@ -19,7 +23,7 @@ import { AgentChat } from './AgentChat';
 import { GwChat } from './GwChat';
 import { GinSchematic } from './GinSchematic';
 
-const STEPS = 3;
+const STEPS = 4;
 const FADE_MS = 380; // maze cursor fade before the step-0 → step-1 zoom-out
 const EXIT_MS = 620; // rack-focus exit on the final forward (mirrors .is-exiting)
 const FWD = new Set(['ArrowRight', 'ArrowDown', ' ']);
@@ -30,16 +34,18 @@ const BACK = new Set(['ArrowLeft', 'ArrowUp', 'Backspace']);
 // `label` is the object-detection-style tag drawn on each canvas's selection box.
 // The off-centre tiles preview graphics that recur later in the deck (tokens,
 // the horsepower/mousepower schematics, the horse→engine sequence, the dials).
+// `video` is the step-3 browser-session recording the canvas cross-fades to — one
+// unique clip per tile.
 const TILES = [
-  { v: 'tokens', prompt: 'make it about tokens', label: 'tokens', conf: '0.93' },
-  { v: 'gin', prompt: 'diagram one horsepower', label: 'horsepower', conf: '0.95' },
-  { v: 'mpm', prompt: 'measure the cursor', label: 'mousepower', conf: '0.92' },
-  { v: 'mice', prompt: 'what if it’s a swarm', label: 'swarm', conf: '0.91' },
-  { v: 'center', prompt: 'build the title slide for the mousepower deck', label: 'wordmark', conf: '0.99' },
-  { v: 'ascii', prompt: 'try ascii art', label: 'ascii-art', conf: '0.83' },
-  { v: 'cursors', prompt: 'a flock of pointers', label: 'pointers', conf: '0.90' },
-  { v: 'hpseq', prompt: 'from horse to engine', label: 'steam-engine', conf: '0.88' },
-  { v: 'dials', prompt: 'tune the uncertainty', label: 'entropy', conf: '0.86' },
+  { v: 'tokens', prompt: 'make it about tokens', label: 'tokens', conf: '0.93', video: 'form' },
+  { v: 'gin', prompt: 'diagram one horsepower', label: 'horsepower', conf: '0.95', video: 'ebay' },
+  { v: 'mpm', prompt: 'measure the cursor', label: 'mousepower', conf: '0.92', video: 'irs' },
+  { v: 'mice', prompt: 'what if it’s a swarm', label: 'swarm', conf: '0.91', video: 'swaglabs' },
+  { v: 'center', prompt: 'build the title slide for the mousepower deck', label: 'wordmark', conf: '0.99', video: 'yutori' },
+  { v: 'ascii', prompt: 'try ascii art', label: 'ascii-art', conf: '0.83', video: 'clintrials' },
+  { v: 'cursors', prompt: 'a flock of pointers', label: 'pointers', conf: '0.90', video: 'browser-research' },
+  { v: 'hpseq', prompt: 'from horse to engine', label: 'steam-engine', conf: '0.88', video: 'sec' },
+  { v: 'dials', prompt: 'tune the uncertainty', label: 'entropy', conf: '0.86', video: 'yc' },
 ];
 
 // Mini-dial geometry for the 'dials' tile — the EntropySliders dial in miniature
@@ -207,12 +213,14 @@ function AgentWindow({
   label,
   conf,
   delay,
+  video,
 }: {
   v: string;
   prompt: string;
   label: string;
   conf: string;
   delay: number;
+  video: string;
 }) {
   return (
     <div className={`gw gw--${v}`}>
@@ -222,17 +230,33 @@ function AgentWindow({
         <span />
       </div>
       <div className="gw-body">
-        <div className="gw-sidebar">
-          <GwChat prompt={prompt} delay={delay} />
-        </div>
-        <div className="gw-preview">
-          {/* The canvas the agent is editing (periodic select-ring + nudge). */}
-          <div className="gw-canvas">
-            <Preview v={v} />
-            {/* Selection overlay, faded in/out in sync with the select-ring. */}
-            <SelBox cls="gw" label={label} conf={conf} />
+        {/* The build content (sidebar + edited canvas). In step 3 this cross-fades
+            out as the browser-session video fades in beneath it. */}
+        <div className="gw-build">
+          <div className="gw-sidebar">
+            <GwChat prompt={prompt} delay={delay} />
+          </div>
+          <div className="gw-preview">
+            {/* The canvas the agent is editing (periodic select-ring + nudge). */}
+            <div className="gw-canvas">
+              <Preview v={v} />
+              {/* Selection overlay, faded in/out in sync with the select-ring. */}
+              <SelBox cls="gw" label={label} conf={conf} />
+            </div>
           </div>
         </div>
+        {/* Step-3 browser session: a looping, muted recording filling the body.
+            Mounted with the grid (step ≥ 2) so it's playing before the cross-fade. */}
+        <video
+          className="gw-video"
+          src={`/decks/mousepower/${video}.webm`}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden
+        />
       </div>
     </div>
   );
@@ -347,7 +371,7 @@ export function MousepowerOpening() {
         </div>
       )}
 
-      {step === 2 && (
+      {step >= 2 && (
         <div className="explore-desktop">
           <div className="explore-grid">
             {TILES.map((t, i) => (
@@ -358,6 +382,7 @@ export function MousepowerOpening() {
                 label={t.label}
                 conf={t.conf}
                 delay={i * 260}
+                video={t.video}
               />
             ))}
           </div>
