@@ -8,12 +8,16 @@ import { MazeTitle3D } from './MazeTitle3D';
 
 export function TitleHero({
   mouseHidden = false,
-  eyebrow = 'on measuring agents',
+  eyebrow = 'measuring agents through mental models',
   footnote = 'by Maximillian Piras',
+  footnoteUrl = false,
 }: {
   mouseHidden?: boolean;
   eyebrow?: string | null;
   footnote?: string;
+  // Render the footnote as a URL in Archivo (the closing bookend) rather than the
+  // default handwritten byline.
+  footnoteUrl?: boolean;
 }) {
   return (
     <div
@@ -29,10 +33,17 @@ export function TitleHero({
         color: '#3B3B3B',
       }}
     >
-      <div className="slide-content" style={{ background: 'none' }}>
+      {/* Closing bookend gets the standard rack-in entrance; the opening embeds
+          this in its own stepped intro, so it stays un-racked there. */}
+      <div
+        className={`slide-content${footnoteUrl ? ' rack-in' : ''}`}
+        style={{ background: 'none' }}
+      >
         {eyebrow && <p className="slide-eyebrow">{eyebrow}</p>}
         <MazeTitle3D mouseHidden={mouseHidden} />
-        <p className="slide-footnote">{footnote}</p>
+        <p className={`slide-footnote${footnoteUrl ? ' slide-footnote--url' : ''}`}>
+          {footnote}
+        </p>
       </div>
     </div>
   );

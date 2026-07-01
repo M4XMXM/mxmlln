@@ -3,6 +3,7 @@
 // slide (className="hp-diagram") and the opening-grid preview tile. Spin/flip are
 // driven by CSS gated on .deck-slide[data-active='true'], so the same markup is
 // inert or animated depending on where it's mounted.
+import { useId } from 'react';
 
 // Watch-dial ticks around the rim (major at the quarters).
 const TICKS = Array.from({ length: 12 }, (_, i) => {
@@ -17,55 +18,55 @@ const TICKS = Array.from({ length: 12 }, (_, i) => {
     y1: +(112 - inner * c).toFixed(2),
     x2: +(150 + outer * s).toFixed(2),
     y2: +(112 - outer * c).toFixed(2),
-    w: major ? 1 : 0.7,
+    major,
   };
 });
 
 export function GinSchematic({ className }: { className?: string }) {
+  // Unique per-instance gradient id (the schematic renders on the diagram slide
+  // AND in the opening grid, so a shared id would collide).
+  const uid = useId();
+  const faceId = `hp-face-${uid}`;
   return (
     <svg className={className} viewBox="0 0 300 216" fill="none" aria-hidden>
-      {/* Stopwatch face — the solid rim (title-page monoline weight). */}
-      <circle cx="150" cy="112" r="70" stroke="currentColor" strokeWidth="0.8" opacity="0.8" />
+      <defs>
+        {/* Light-cyan radial face fill (title-slide maze palette), 33% opacity. */}
+        <radialGradient id={faceId} cx="150" cy="112" r="70" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="rgba(213, 243, 253, 0.33)" />
+          <stop offset="1" stopColor="rgba(168, 226, 250, 0.33)" />
+        </radialGradient>
+      </defs>
+      {/* Stopwatch face — light-cyan fill + solid rim (title-page monoline weight). */}
+      <circle className="hp-rim" cx="150" cy="112" r="70" fill={`url(#${faceId})`} stroke="currentColor" strokeWidth="1" strokeOpacity="0.8" />
       {/* Crown / top button — stem runs up into the cap so they connect. */}
-      <line x1="150" y1="42" x2="150" y2="34" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
+      <line className="hp-crown" x1="150" y1="42" x2="150" y2="34" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
       <rect x="145.5" y="30" width="9" height="4.6" rx="1.6" fill="currentColor" />
       {/* Dial ticks. */}
       <g>
         {TICKS.map((t, i) => (
           <line
             key={i}
+            className={t.major ? 'hp-tick-major' : 'hp-tick-minor'}
             x1={t.x1}
             y1={t.y1}
             x2={t.x2}
             y2={t.y2}
             stroke="currentColor"
-            strokeWidth="0.8"
+            strokeWidth={t.major ? 1.2 : 0.9}
             strokeLinecap="round"
           />
         ))}
       </g>
 
       {/* The sweeping hand: rotary arm with the horse (inside the dial) at its
-          tip. Shortened so the horse sits within the rim, not on it. */}
+          tip. Shortened so it stops just short of the horse, not overlapping it. */}
       <g className="hp-spin">
-        {/* Beam split into two segments to leave a gap (near the pivot) for the
-            "12 ft" label, well clear of "180 lbf" at the horse end. */}
-        <line x1="150" y1="112" x2="150" y2="105" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
-        <line x1="150" y1="95" x2="150" y2="73" stroke="currentColor" strokeWidth="0.8" strokeLinecap="round" />
-        {/* Bridges the beam gap once the "12 ft" label clears (step 1). */}
-        <line
-          className="hp-arm-fill"
-          x1="150"
-          y1="105"
-          x2="150"
-          y2="95"
-          stroke="currentColor"
-          strokeWidth="0.8"
-          strokeLinecap="round"
-        />
-        {/* "12 ft" rides the beam gap; counter-rotates (hp-armlabel) upright. */}
+        {/* One unbroken beam from the pivot up toward the horse. */}
+        <line className="hp-beam" x1="150" y1="112" x2="150" y2="78" stroke="currentColor" strokeWidth="1" strokeLinecap="round" />
+        {/* "12 ft" sits across the pivot from the arm (opposite the horse) and
+            orbits with it; counter-rotates (hp-armlabel) to stay upright. */}
         <g className="hp-armlabel">
-          <text className="hp-tag-text" x="150" y="100">12 ft</text>
+          <text className="hp-tag-text" x="150" y="127">12 ft</text>
         </g>
         <g className="hp-horse">
           {/* hp-horse-scale counter-scales the horse on step 1 so it keeps its

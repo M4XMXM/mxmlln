@@ -5,10 +5,10 @@ import './decks.css';
 // Self-hosted (not next/font/google) so decks build AND render with zero network
 // access — the offline-presentation guarantee. Files live in ./fonts and are
 // committed to the repo. System-font fallbacks keep text readable even if a
-// face fails to load. Archivo is a variable woff2 spanning weights 400–800.
+// face fails to load. Archivo is a variable woff2 spanning weights 100–900.
 const archivo = localFont({
   src: './fonts/Archivo-Variable-latin.woff2',
-  weight: '400 800',
+  weight: '100 900',
   display: 'swap',
   variable: '--font-archivo',
   fallback: ['system-ui', 'sans-serif'],

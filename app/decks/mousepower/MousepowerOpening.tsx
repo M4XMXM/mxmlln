@@ -43,7 +43,7 @@ const TILES = [
   { v: 'mice', prompt: 'what if it’s a swarm', label: 'swarm', conf: '0.91', video: 'swaglabs' },
   { v: 'center', prompt: 'build the title slide for the mousepower deck', label: 'wordmark', conf: '0.99', video: 'yutori' },
   { v: 'ascii', prompt: 'try ascii art', label: 'ascii-art', conf: '0.83', video: 'clintrials' },
-  { v: 'cursors', prompt: 'a flock of pointers', label: 'pointers', conf: '0.90', video: 'browser-research' },
+  { v: 'cursors', prompt: 'a cursor tornado', label: 'tornado', conf: '0.73', video: 'browser-research' },
   { v: 'hpseq', prompt: 'from horse to engine', label: 'steam-engine', conf: '0.88', video: 'sec' },
   { v: 'dials', prompt: 'tune the uncertainty', label: 'entropy', conf: '0.86', video: 'yc' },
 ];
@@ -112,7 +112,9 @@ function Preview({ v }: { v: string }) {
     case 'center':
       return (
         <>
-          <p className="slide-eyebrow">on measuring agents</p>
+          <p className="slide-eyebrow">
+            measuring agents through mental models
+          </p>
           <MazeTitle3D animate={false} />
           <p className="slide-footnote">by Maximillian Piras</p>
         </>
@@ -125,14 +127,41 @@ function Preview({ v }: { v: string }) {
           ))}
         </div>
       );
-    case 'cursors':
+    // A cursor tornado — a swarm of pointers orbiting the centre at wildly varied
+    // radii, speeds, directions, sizes and colours (the agent going off the rails).
+    case 'cursors': {
+      const N = 12;
       return (
-        <div className="gw-mice" aria-hidden>
-          {Array.from({ length: 9 }).map((_, i) => (
-            <MousePointer2 key={i} />
-          ))}
+        <div className="gw-swarm" aria-hidden>
+          {Array.from({ length: N }).map((_, i) => {
+            const frac = 0.05 + ((i * 17) % 40) / 100; // orbit radius (of --u)
+            const dur = 2.2 + ((i * 11) % 50) / 10; // 2.2–7.1s
+            const rev = i % 2 === 1;
+            const delay = -((i * 211) % 900) / 100;
+            const scale = 0.55 + ((i * 23) % 80) / 100; // 0.55–1.34×
+            const face = (i * 151) % 360;
+            return (
+              <span
+                key={i}
+                className="gw-swarm-orbit"
+                style={{
+                  animationDuration: `${dur}s`,
+                  animationDirection: rev ? 'reverse' : 'normal',
+                  animationDelay: `${delay}s`,
+                }}
+              >
+                <MousePointer2
+                  className={`gw-swarm-cursor${i % 3 === 0 ? ' gw-swarm-cursor--cyan' : ''}`}
+                  style={{
+                    transform: `translateX(calc(var(--u) * ${frac})) rotate(${face}deg) scale(${scale})`,
+                  }}
+                />
+              </span>
+            );
+          })}
         </div>
       );
+    }
     case 'ascii':
       return <pre className="gw-ascii">{ASCII}</pre>;
     // The "TOKENS" wordmark with the coin as its "O" (the tokens slide).
@@ -353,7 +382,7 @@ export function MousepowerOpening() {
                       handles + an object-detection label), faded in with its
                       edit-loop ring (see .os-sel). */}
                   <p className="slide-eyebrow">
-                    on measuring agents
+                    measuring agents through mental models
                     <SelBox cls="os" label="subtitle" conf="0.95" />
                   </p>
                   {/* Static maze — no cursor in the windowed preview. */}

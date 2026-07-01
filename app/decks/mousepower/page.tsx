@@ -1,11 +1,13 @@
 import { Deck } from '../Deck';
 import { MousepowerOpening } from './MousepowerOpening';
 import { MeasurementProblem } from './MeasurementProblem';
+import { SalaryQuote } from './SalaryQuote';
 import { TokenEvidence } from './TokenEvidence';
 import { TokensSequence } from './TokensSequence';
 import { DoomLoop } from './DoomLoop';
 import { SpendVsTokens } from './SpendVsTokens';
 import { HorsepowerSequence } from './HorsepowerSequence';
+import { ComputeStatement } from './ComputeStatement';
 import { GinDiagram } from './GinDiagram';
 import { MousepowerMeasure } from './MousepowerMeasure';
 import { CodeReviewQuote } from './CodeReviewQuote';
@@ -29,6 +31,11 @@ export default function MousepowerDeck() {
         <MeasurementProblem />
       </div>
 
+      {/* Upton Sinclair quote — incentives against measurement. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
+        <SalaryQuote />
+      </div>
+
       {/* Section divider opening the next part. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
         <div className="slide-content rack-in">
@@ -38,6 +45,15 @@ export default function MousepowerDeck() {
           </h1>
           <p className="slide-footnote">the age old problem of new technology</p>
         </div>
+      </div>
+
+      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
+        <HorsepowerSequence />
+      </div>
+
+      {/* Horsepower schematic; step 2 folds in the ROI thesis under the diagram. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
+        <GinDiagram />
       </div>
 
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
@@ -58,21 +74,6 @@ export default function MousepowerDeck() {
           activity rings, advanced as three steps within one slide. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
         <TokensSequence />
-      </div>
-
-      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
-        <HorsepowerSequence />
-      </div>
-
-      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
-        <GinDiagram />
-      </div>
-
-      {/* The mousepower answer: an interactive measurement rig. Rays track the
-          cursor to every corner and drift into depth, feeding an equation whose
-          number never settles — measurement is too high-dimensional to reduce. */}
-      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
-        <MousepowerMeasure />
       </div>
 
       {/* Section divider opening the next part. */}
@@ -100,13 +101,26 @@ export default function MousepowerDeck() {
         <PullRequestQuote />
       </div>
 
+      {/* Execution (motion-blurred) vs. measurement (object-detection box);
+          step 2 folds in the metrics-thesis statement. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
+        <ComputeStatement />
+      </div>
+
       {/* Section divider opening the final part. */}
       <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
         <div className="slide-content rack-in">
           <p className="slide-eyebrow">part 3 of 3</p>
-          <h1 className="slide-section-title">A Theory of Agent Entropy</h1>
+          <h1 className="slide-section-title">Measuring Mousepower</h1>
           <p className="slide-footnote">using uncertainty as a guide</p>
         </div>
+      </div>
+
+      {/* The mousepower answer: an interactive measurement rig. Rays track the
+          cursor to every corner and drift into depth, feeding an equation whose
+          number never settles — measurement is too high-dimensional to reduce. */}
+      <div className="slide" style={{ background: '#f5f5f5', color: '#3B3B3B' }}>
+        <MousepowerMeasure />
       </div>
 
       {/* Closing thesis: entropy as the measure of uncertainty, over Shannon. */}
@@ -120,7 +134,7 @@ export default function MousepowerDeck() {
       </div>
 
       {/* Closing bookend: the title hero, no eyebrow, URL in place of the byline. */}
-      <TitleHero eyebrow={null} footnote="www.mvxmxm.com" />
+      <TitleHero eyebrow={null} footnote="www.MVXMXM.com" footnoteUrl />
     </Deck>
   );
 }
