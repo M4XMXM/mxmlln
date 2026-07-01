@@ -2924,9 +2924,9 @@
     0 1.7vw 5.3vw rgba(0, 0, 0, 0.1);
 }
 
-/* Verification slide (VerificationStats) — bold headline, a row of thin
-   big-number stats with uppercase captions, a bold aside, and a source line.
-   The numbers are Archivo Thin 100, matching the morph-statement slide. */
+/* Verification slide (VerificationStats) — bold headline, two labelled progress
+   bars (thin Archivo 100 numbers that count up as the fill sweeps in), a bold
+   aside, and a source line. */
 .vstat-slide {
   position: relative;
   width: 100%;
@@ -2937,9 +2937,8 @@
   align-items: center;
   justify-content: center;
   text-align: center;
-  /* Figma vertical rhythm: ~140px gaps between the three blocks. */
-  gap: clamp(40px, 7.3vw, 140px);
-  padding: clamp(40px, 6vw, 120px) clamp(24px, 3.6vw, 69px);
+  gap: clamp(18px, 2.8vw, 44px);
+  padding: clamp(24px, 3.4vw, 60px) clamp(24px, 3.6vw, 69px);
 }
 .vstat-headline,
 .vstat-amdahl {
@@ -2951,35 +2950,80 @@
   line-height: 1.1;
   letter-spacing: -0.022em;
 }
+/* Headline runs on a single line at the usual headline size. */
+.vstat-headline {
+  white-space: nowrap;
+}
 /* Optical centring — lift the lockup above true centre (source is pinned low). */
 .vstat-amdahl {
-  margin-bottom: 40px;
+  margin-bottom: 24px;
 }
-.vstat-row {
+/* Labelled progress bars comparing two same-basis figures (both are "% increase
+   under high AI adoption", same Faros study). A full-width transparent track
+   shows the 0–100% extent edge to edge; the cyan fill runs to each value (+91%
+   nearly full, +21% ~a fifth). Number and caption sit together inside the fill —
+   the fill never clips them (min-content), so the short bar grows just enough to
+   hold its label. */
+.vstat-bars {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;
+  /* Fill the full content width — the slide's own side padding is the margin. */
   width: 100%;
-  max-width: 1460px;
-  gap: clamp(24px, 4.2vw, 80px);
+  gap: clamp(20px, 2.6vw, 48px);
+}
+.vstat-track {
+  width: 100%;
+  height: clamp(120px, 15.5vw, 252px);
+  border-radius: clamp(10px, 1.2vw, 24px);
+  background: rgba(0, 187, 255, 0.12);
+  box-sizing: border-box;
+}
+.vstat-fill {
+  height: 100%;
+  min-width: min-content;
+  max-width: 100%;
+  display: flex;
+  align-items: center;
+  gap: clamp(16px, 1.6vw, 32px);
+  padding: 0 clamp(24px, 2.6vw, 52px);
+  box-sizing: border-box;
+  /* Rounded left (nested in the track), square right — reads as a cut fill. */
+  border-radius: clamp(10px, 1.2vw, 24px) 0 0 clamp(10px, 1.2vw, 24px);
+  background: #00bbff;
 }
 .vstat-num {
+  position: relative;
+  display: inline-block;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
-  /* Thin + large, matching the morph-statement slide ("execution at the speed…"). */
+  /* Thinnest weight — matches the deck's other big numbers (morph-statement slide). */
   font-weight: 100;
-  font-size: clamp(48px, 7vw, 140px);
-  line-height: 1.08;
-  letter-spacing: -0.01em;
+  color: #ffffff;
+  font-size: clamp(40px, 5.6vw, 108px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  /* Even digit advance so the count-up never shifts the layout. */
+  font-variant-numeric: tabular-nums;
+}
+/* Ghost reserves the final number's width; the live count is overlaid on top. */
+.vstat-num-ghost {
+  visibility: hidden;
+}
+.vstat-num-live {
+  position: absolute;
+  inset: 0;
 }
 .vstat-cap {
-  margin-top: clamp(2px, 0.5vw, 10px);
+  text-align: left;
+  color: #ffffff;
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-weight: 600;
   /* Figma 32px on a 1920 canvas → 1.667vw. */
   font-size: clamp(11px, 1.667vw, 32px);
-  line-height: 1.5;
+  line-height: 1.25;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 .vstat-source {
   position: absolute;

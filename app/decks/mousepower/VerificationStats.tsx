@@ -1,40 +1,92 @@
+'use client';
+
+// Intro animation on becoming the active slide: each cyan fill sweeps in from
+// the left while its number counts up 0 → value. A hidden "ghost" of the final
+// number reserves a stable width so the fill (and its label) don't jiggle as the
+// live count changes digit width.
+import { useEffect, useRef, useState } from 'react';
+import { useDeck, useSlideIndex } from '../Deck';
+
 const STATS = [
   {
-    num: '+91%',
+    value: 91,
     cap: (
       <>
-        time reviewing
+        more time
         <br />
-        code each day
+        reviewing code
       </>
     ),
   },
   {
-    num: '20%',
+    value: 21,
     cap: (
       <>
-        engineering time
+        more tasks
         <br />
-        spent coding
+        completed
       </>
     ),
   },
 ];
 
+const DURATION = 1200;
+const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+
 export function VerificationStats() {
+  const { activeIndex } = useDeck();
+  const index = useSlideIndex();
+  const active = activeIndex === index;
+  const [p, setP] = useState(0);
+  const raf = useRef(0);
+
+  useEffect(() => {
+    if (!active) {
+      setP(0);
+      return;
+    }
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) {
+      setP(1);
+      return;
+    }
+    let start = 0;
+    const tick = (now: number) => {
+      if (!start) start = now;
+      const t = Math.min((now - start) / DURATION, 1);
+      setP(easeOutCubic(t));
+      if (t < 1) raf.current = requestAnimationFrame(tick);
+    };
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
+  }, [active]);
+
   return (
     <div className="vstat-slide rack-in">
       <h2 className="vstat-headline">
-        As execution gets cheap,
-        <br />
-        bottleneck shifts to verification:
+        As execution gets cheap, bottleneck shifts to verification.
       </h2>
 
-      <div className="vstat-row">
+      <div className="vstat-bars">
         {STATS.map((s) => (
-          <div className="vstat-item" key={s.num}>
-            <div className="vstat-num">{s.num}</div>
-            <div className="vstat-cap">{s.cap}</div>
+          <div className="vstat-track" key={s.value}>
+            <div
+              className="vstat-fill"
+              style={{
+                width: `${s.value}%`,
+                clipPath: `inset(0 ${(1 - p) * 100}% 0 0)`,
+              }}
+            >
+              <span className="vstat-num">
+                <span className="vstat-num-ghost" aria-hidden>
+                  +{s.value}%
+                </span>
+                <span className="vstat-num-live">
+                  +{Math.round(s.value * p)}%
+                </span>
+              </span>
+              <span className="vstat-cap">{s.cap}</span>
+            </div>
           </div>
         ))}
       </div>
@@ -42,21 +94,13 @@ export function VerificationStats() {
       <p className="vstat-amdahl">(Amdahl’s law)</p>
 
       <p className="vstat-source">
-        Sources: (1){' '}
+        Source:{' '}
         <a
           href="https://www.faros.ai/blog/ai-software-engineering"
           target="_blank"
           rel="noreferrer"
         >
           faros.ai/blog/ai-software-engineering
-        </a>{' '}
-        (2){' '}
-        <a
-          href="https://cognition.ai/blog/devin-annual-performance-review-2025"
-          target="_blank"
-          rel="noreferrer"
-        >
-          cognition.ai/blog/devin-annual-performance-review-2025
         </a>
       </p>
     </div>
