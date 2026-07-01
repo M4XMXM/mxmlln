@@ -1,18 +1,23 @@
 import type { Metadata } from "next";
-import { Archivo, Homemade_Apple } from "next/font/google";
+import localFont from "next/font/local";
 import { BlogLogo } from "./BlogLogo";
 import "./blog.css";
 
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
+// Self-hosted so the app builds/renders with zero network (see app/layout.tsx).
+const archivo = localFont({
+  src: "../decks/fonts/Archivo-Variable-latin.woff2",
+  weight: "100 900",
   variable: "--font-archivo",
+  display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 
-const homemadeApple = Homemade_Apple({
-  subsets: ["latin"],
-  weight: ["400"],
+const homemadeApple = localFont({
+  src: "../decks/fonts/HomemadeApple-Regular-latin.woff2",
+  weight: "400",
   variable: "--font-homemade-apple",
+  display: "swap",
+  fallback: ["cursive"],
 });
 
 export const metadata: Metadata = {

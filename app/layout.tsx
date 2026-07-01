@@ -1,19 +1,24 @@
 import type { Metadata } from "next";
-import { Archivo, Homemade_Apple } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+// Self-hosted (not next/font/google) so the whole app builds and renders with
+// zero network access. Reuses the committed woff2 already used by the decks
+// (app/decks/fonts). Archivo is a variable face spanning weights 100–900.
+const archivo = localFont({
+  src: "./decks/fonts/Archivo-Variable-latin.woff2",
+  weight: "100 900",
   variable: "--font-archivo",
   display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 
-const homemadeApple = Homemade_Apple({
-  subsets: ["latin"],
+const homemadeApple = localFont({
+  src: "./decks/fonts/HomemadeApple-Regular-latin.woff2",
   weight: "400",
   variable: "--font-homemade-apple",
   display: "swap",
+  fallback: ["cursive"],
 });
 
 export const metadata: Metadata = {
