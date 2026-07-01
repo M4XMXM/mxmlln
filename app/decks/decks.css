@@ -1425,7 +1425,7 @@
   /* Clearance from centre to each flanking half. The icon ring is sized to the
      coin's old "o" footprint (see step-1 --orbit-r), so the halves flank it just
      as they flanked the coin. */
-  --oc-gap: 6.5vw;
+  --oc-gap: 5.7vw;
   /* Negative nudges the word up so its x-height band centres on the coin (the
      line box otherwise parks the x-height slightly below the coin's centre). */
   --oc-shift-y: -0.09em;
@@ -1470,10 +1470,10 @@
   /* background-clip:text otherwise crops the final s's right ink overhang. */
   padding-right: 0.08em;
 }
-/* "measure" / "instead" — the lines above and below "outcomes" (reads
-   "measure / outcomes / instead"). Centred on the viewport, equidistant from the
+/* "we want" / "instead" — the lines above and below "outcomes" (reads
+   "we want / outcomes / instead"). Centred on the viewport, equidistant from the
    word; same size/ink, gold peaking at centre over the coin's gold column. */
-.oc-measure,
+.oc-want,
 .oc-instead {
   position: absolute;
   left: 50%;
@@ -1485,14 +1485,14 @@
   letter-spacing: -0.045em;
   white-space: nowrap;
   /* Symmetric padding so background-clip:text doesn't crop the trailing glyph's
-     ink overhang (e.g. the "e" of measure); centred, so it stays centred. */
+     ink overhang (e.g. the "t" of want); centred, so it stays centred. */
   padding: 0 0.1em;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   background-image: linear-gradient(to right, #161616, #5c5026 50%, #161616);
 }
-.oc-measure {
+.oc-want {
   top: calc(50% + var(--oc-shift-y) - var(--oc-line-gap));
 }
 .oc-instead {
@@ -1551,11 +1551,11 @@
    step 2 the glyphs ease a touch smaller so the cluster reads as a compact core
    inside the activity rings. */
 .tokens-seq[data-step='1'] .tokens-orbit {
-  --orbit-r: 0.46em;
+  --orbit-r: 0.4em;
   --orbit-icon: 0.22em;
 }
 .tokens-seq[data-step='2'] .tokens-orbit {
-  --orbit-r: 0.46em;
+  --orbit-r: 0.4em;
   --orbit-icon: 0.15em;
 }
 .orbit-slot {
