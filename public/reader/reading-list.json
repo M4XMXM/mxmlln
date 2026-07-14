@@ -767,6 +767,14 @@
       "createdAt": "2026-07-13T12:00:00.000Z",
       "metadata": {},
       "read": false
+    },
+    {
+      "id": "1781352000013",
+      "url": "https://kellerjordan.github.io/posts/muon/",
+      "title": "Muon: An optimizer for hidden layers in neural networks",
+      "createdAt": "2026-07-14T12:00:00.000Z",
+      "metadata": {},
+      "read": false
     }
   ]
 }
