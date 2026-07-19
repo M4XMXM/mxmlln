@@ -42,7 +42,6 @@ export default function SebNav() {
   const activeLabel =
     items.find((i) => isActive(pathname, i.href))?.label ?? "Menu";
 
-  // Close the mobile menu on navigation and on Escape.
   useEffect(() => setOpen(false), [pathname]);
   useEffect(() => {
     if (!open) return;
@@ -53,7 +52,7 @@ export default function SebNav() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  // Hide the nav entirely while a gallery lightbox is open.
+  // seb-lightbox is dispatched by Gallery so the nav can clear the overlay.
   useEffect(() => {
     const onLightbox = (e: Event) =>
       setHidden((e as CustomEvent<boolean>).detail === true);

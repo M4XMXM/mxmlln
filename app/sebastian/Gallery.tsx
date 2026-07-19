@@ -24,6 +24,7 @@ export default function Gallery({ photos }: { photos: Photo[] }) {
     };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    // Consumed by SebNav so the top nav hides behind the overlay.
     window.dispatchEvent(new CustomEvent("seb-lightbox", { detail: true }));
     return () => {
       window.removeEventListener("keydown", onKey);
