@@ -12,6 +12,7 @@ import {
   Type,
 } from './components/TokenSwatch';
 import { ComponentPreview } from './components/ComponentPreview';
+import { AnchorHeading } from './components/AnchorHeading';
 import { LogoDemo, NavDemo, MenuDemo } from './components/ChromeDemos';
 import { ButtonDemo, InputDemo } from './components/FormDemos';
 import { CardDemo } from './components/CardDemos';
@@ -25,27 +26,11 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-function slugify(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\w\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .replace(/-+/g, '-')
-    .trim();
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function HeadingWithId(Tag: 'h2' | 'h3') {
-  return function Heading(props: any) {
-    const text =
-      typeof props.children === 'string' ? props.children : String(props.children);
-    return <Tag id={slugify(text)} {...props} />;
-  };
-}
-
 const mdxComponents: MDXComponents = {
-  h2: HeadingWithId('h2'),
-  h3: HeadingWithId('h3'),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  h2: (props: any) => <AnchorHeading as="h2">{props.children}</AnchorHeading>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  h3: (props: any) => <AnchorHeading as="h3">{props.children}</AnchorHeading>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   a: ({ href, children, ...rest }: any) => {
     const isExternal = (href || '').startsWith('http') || (href || '').startsWith('//');
