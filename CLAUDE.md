@@ -47,7 +47,7 @@ Explain **why**, never **what**. No narration, no restating the code, no comment
 ### Pull requests
 
 - **Title**: imperative mood, ≤72 chars, no trailing period (e.g. `Reader: add Muon optimizer link`).
-- **Description**: brief *what + why* — a sentence or a few bullets. Link related issues. Don't narrate the diff step-by-step; the diff shows the how.
+- **Description**: one sentence if possible, focused on *why* the change was made — not the low-level details, which the code & diff already explain. Less, but better; expand only when the change genuinely needs it. Link related issues.
 
 ## Environment & deployment
 
