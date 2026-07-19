@@ -11,8 +11,15 @@ export default function ContactPage() {
       </h2>
       <p className="text-[15px] leading-relaxed text-neutral-700">
         {contact.intro}
+        <a
+          href={`mailto:${contact.email}`}
+          className="underline underline-offset-4 hover:text-black"
+        >
+          {contact.email}
+        </a>
+        .
       </p>
-      <p className="mt-4 text-[15px] leading-relaxed text-neutral-700">
+      <p className="mt-10 text-[15px] leading-relaxed text-neutral-700">
         {contact.redux.prefix}
         <a
           href={contact.redux.url}
@@ -24,17 +31,6 @@ export default function ContactPage() {
         </a>
         .
       </p>
-      <div className="mt-10 space-y-2 text-[15px]">
-        <p>
-          <a
-            href={`mailto:${contact.email}`}
-            className="underline underline-offset-4 hover:text-black"
-          >
-            {contact.email}
-          </a>
-        </p>
-        <p className="text-neutral-700">{contact.phone}</p>
-      </div>
     </div>
   );
 }
