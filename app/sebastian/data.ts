@@ -185,10 +185,9 @@ export const site = {
 };
 
 export const contact = {
-  email: "Sebastian@Sebastianpiras.com",
-  phone: "+1 646 361 9579",
+  email: "Sebastian@SebastianPiras.com",
   intro:
-    "Sebastian Piras' limited edition prints can be purchased through this website. For editorial and commercial assignments or general inquiries please contact via email or phone.",
+    "For editorial and commercial assignments or general inquiries please contact ",
   redux: {
     prefix: "Additional editorial images also available at ",
     linkText: "reduxpictures.com",

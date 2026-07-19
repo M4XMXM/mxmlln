@@ -24,9 +24,11 @@ export default function Gallery({ photos }: { photos: Photo[] }) {
     };
     window.addEventListener("keydown", onKey);
     document.body.style.overflow = "hidden";
+    window.dispatchEvent(new CustomEvent("seb-lightbox", { detail: true }));
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = "";
+      window.dispatchEvent(new CustomEvent("seb-lightbox", { detail: false }));
     };
   }, [openIndex, close, step]);
 
@@ -59,7 +61,7 @@ export default function Gallery({ photos }: { photos: Photo[] }) {
 
       {openIndex !== null && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-white/95 p-6"
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-white/95 p-6"
           onClick={close}
         >
           <img
