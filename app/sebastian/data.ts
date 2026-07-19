@@ -25,6 +25,13 @@ export function wixThumb(uri: string, w: number, h: number): string {
   return `https://static.wixstatic.com/media/${uri}/v1/fill/w_${w},h_${h},al_c,q_85/image.jpg`;
 }
 
+// Logos are transparent PNGs; request PNG output so transparency is preserved.
+// The JPEG output used by wixImage() flattens transparency onto black, which
+// turns black-on-transparent marks (Gucci, CBS, NBC) into solid dark boxes.
+export function wixLogo(uri: string, width = 400): string {
+  return `https://static.wixstatic.com/media/${uri}/v1/fit/w_${width},h_${width},q_90/image.png`;
+}
+
 export const sections: Section[] = [
   {
     slug: "artists",
