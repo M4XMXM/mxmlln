@@ -28,7 +28,7 @@ export function wixThumb(uri: string, w: number, h: number): string {
 export const sections: Section[] = [
   {
     slug: "artists",
-    title: "Artists Portraits",
+    title: "Artist Portraits",
     originalPath: "/artists-portraits-series",
     thumb: "ebe9bb_d4fa2476ad724c42bded6cbb683a1740.jpg",
     photos: [
@@ -183,7 +183,8 @@ export const contact = {
   intro:
     "Sebastian Piras' limited edition prints can be purchased through this website. For editorial and commercial assignments or general inquiries please contact via email or phone.",
   redux: {
-    label: "Additional editorial images also available at reduxpictures.com",
+    prefix: "Additional editorial images also available at ",
+    linkText: "reduxpictures.com",
     url: "https://www.reduxpictures.com",
   },
 };
