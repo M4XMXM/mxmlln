@@ -2,8 +2,8 @@
 
 .system-layout {
   min-height: 100vh;
-  background: #fff;
-  color: #1a1a1a;
+  background: var(--background);
+  color: var(--foreground);
   font-family: var(--font-archivo), 'Archivo', sans-serif;
 }
 
@@ -227,6 +227,98 @@
   line-height: 1.4;
 }
 
+/* ─── Color scale (Tailwind-docs style ramp) ─────────────── */
+.scale {
+  margin: 8px 0 28px;
+}
+/* 7 columns so the 13 swatches land in two even-ish rows. */
+.scale-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+}
+.scale-swatch {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.scale-chip {
+  display: block;
+  width: 100%;
+  height: 88px;
+  border-radius: 10px;
+  border: 1px solid rgba(15, 23, 43, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.scale-swatch:hover .scale-chip {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(15, 23, 43, 0.12);
+}
+.scale-swatch:active .scale-chip {
+  transform: translateY(0) scale(0.97);
+}
+.scale-swatch:focus-visible {
+  outline: none;
+}
+.scale-swatch:focus-visible .scale-chip {
+  box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--accent);
+}
+
+/* Keep in sync with the minimap reverb label so the two read as one system. */
+.scale-tip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: var(--surface);
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  color: #1a1a1a;
+  font-family: var(--font-archivo), 'Archivo', sans-serif;
+  font-size: 13px;
+  line-height: normal;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-50%) translateY(4px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.scale-swatch:hover .scale-tip,
+.scale-swatch:focus-visible .scale-tip,
+.scale-swatch[data-copied] .scale-tip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.scale-tip-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.scale-tip-inner svg {
+  display: block;
+}
+
+@media (max-width: 640px) {
+  .scale-row {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+}
+
 /* ─── Type specimens ─────────────────────────────────────── */
 .type-specimen {
   padding: 20px 0;
@@ -263,7 +355,7 @@
   padding: 40px 24px;
 }
 .component-preview-canvas--light {
-  background: #fff;
+  background: var(--surface);
 }
 .component-preview-canvas--dark {
   background: #1a1a1a;
@@ -307,7 +399,7 @@
   margin: 24px 0 40px;
   border: 1px solid #e5e7eb;
   border-radius: 16px;
-  background: #fff;
+  background: var(--surface);
 }
 
 /* Logo demo: live Lottie mark with a segmented control to swap faces.
@@ -360,7 +452,7 @@
   color: #1a1a1a;
 }
 .segmented-option--active {
-  background: #fff;
+  background: var(--surface);
   color: #1a1a1a;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
 }
@@ -410,7 +502,7 @@
 }
 /* Secondary — hairline outline on white. */
 .ui-button--secondary {
-  background: #fff;
+  background: var(--surface);
   border-color: #e5e7eb;
   color: #1a1a1a;
 }
@@ -453,7 +545,7 @@
   font-family: var(--font-archivo), 'Archivo', sans-serif;
   font-size: 16px;
   color: #1a1a1a;
-  background: #fff;
+  background: var(--surface);
   border: 2px solid rgba(0, 0, 0, 0.15);
   border-radius: 16px;
   outline: none;
@@ -512,7 +604,7 @@
   max-width: 340px;
   aspect-ratio: 3 / 2;
   padding: 24px;
-  background: #fff;
+  background: var(--surface);
   border-radius: 16px;
   box-shadow:
     0 20px 40px rgba(0, 0, 0, 0.08),
@@ -709,7 +801,7 @@
   top: 0;
   left: 100%;
   margin-left: 8px;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid #e5e5e5;
   border-radius: 8px;
   padding: 8px 0;
@@ -791,7 +883,7 @@
   top: 0;
   margin-left: 12px;
   box-sizing: content-box;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid #e5e5e5;
   border-radius: 8px;
   padding: 6px 12px;

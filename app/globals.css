@@ -1,9 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --background-alt: #f5f5f5;
-  --foreground: #1a1a1a;
+  /* Blue-leaning `slate` so the neutrals echo the accent's cool undertone.
+     Keep in sync with SLATE_SCALE in app/system/components/ColorScale.tsx. */
+  --slate-50: #f8fafc;
+  --slate-100: #f1f5f9;
+  --slate-200: #e2e8f0;
+  --slate-300: #cad5e2;
+  --slate-400: #90a1b9;
+  --slate-500: #62748e;
+  --slate-600: #45556c;
+  --slate-700: #314158;
+  --slate-800: #1d293d;
+  --slate-900: #0f172b;
+  --slate-950: #020618;
+
+  --background: var(--slate-50);
+  --surface: #fcfcfc;
+  --background-alt: var(--slate-100);
+  --hairline: var(--slate-200);
+  --border: var(--slate-300);
+  --subtle: var(--slate-400);
+  --muted: var(--slate-500);
+  --foreground: var(--slate-900);
   --accent: #00BBFF;
   --font-sans: var(--font-archivo), 'Archivo', sans-serif;
   --font-handwritten: var(--font-homemade-apple), 'Homemade Apple', cursive;
@@ -11,7 +30,12 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-background-alt: var(--background-alt);
+  --color-hairline: var(--hairline);
+  --color-border: var(--border);
+  --color-subtle: var(--subtle);
+  --color-muted: var(--muted);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
 }
@@ -99,8 +123,8 @@ body {
 .experiment-card {
   flex: 1 1 100%;
   min-width: 100%;
-  background: #ffffff;
-  border: 1px solid #e5e7eb;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   border-radius: 16px;
   padding: 0;
   text-decoration: none;
@@ -136,13 +160,13 @@ body {
 .experiment-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
-  border-color: #d1d5db;
+  border-color: var(--border);
 }
 
 .experiment-preview {
   width: 400%;
   height: 400%;
-  background: #f9fafb;
+  background: var(--background);
   border: none;
   display: block;
   pointer-events: none;
@@ -164,7 +188,7 @@ body {
   top: 0;
   left: 0;
   overflow: hidden;
-  background: #f9fafb;
+  background: var(--background);
 }
 
 @media (max-width: 768px) {
