@@ -66,7 +66,7 @@ export default function SystemPage() {
 
   return (
     <article className="system-page">
-      <Minimap selector=".system-prose h2[id], .system-prose h3[id]" />
+      <Minimap selector=".system-prose h2[id], .system-prose h3[id]" reverb />
       <header className="system-header">
         <div className="system-header-eyebrow">{data.eyebrow ?? 'Design System'}</div>
         <h1>{data.title ?? 'Design System'}</h1>

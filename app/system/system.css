@@ -669,8 +669,9 @@
 /* ─── Minimap (shared visual language with /blog) ────────── */
 .minimap {
   position: fixed;
-  top: 24px;
-  right: 24px;
+  top: 50%;
+  left: 24px;
+  transform: translateY(-50%);
   z-index: 100;
   display: flex;
   align-items: flex-start;
@@ -679,7 +680,7 @@
 .minimap-notches {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 6px;
   padding: 8px 6px;
   cursor: pointer;
@@ -706,8 +707,8 @@
 .minimap-popover {
   position: absolute;
   top: 0;
-  right: 100%;
-  margin-right: 8px;
+  left: 100%;
+  margin-left: 8px;
   background: #fff;
   border: 1px solid #e5e5e5;
   border-radius: 8px;
@@ -721,8 +722,8 @@
    so the static override wins on source order. */
 .minimap-popover--demo {
   position: static;
-  right: auto;
-  margin-right: 0;
+  left: auto;
+  margin-left: 0;
 }
 /* The demo lives inside .system-prose, whose `a` rule (underline, hover
    opacity) out-specifies .minimap-link. Restore the real link styling. */
@@ -752,6 +753,88 @@
   color: #1a1a1a;
   font-weight: 600;
 }
+
+/* Reverb variant. Notch widths are set inline (see Minimap.tsx); the rules
+   here cover layout, color, and the label card. */
+.minimap--reverb .minimap-notches {
+  position: relative;
+  gap: 2px;
+  padding: 0;
+  align-items: flex-start;
+}
+.minimap-notch-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 34px; /* constant, so the label anchors at a fixed x as bars grow */
+  padding: 3px 0;
+  cursor: pointer;
+  text-decoration: none;
+}
+.minimap--reverb .minimap-notch {
+  display: block;
+}
+/* While hovering the rail, only the hovered notch goes dark — the scroll-active
+   notch drops to grey so there's a single point of emphasis. */
+.minimap--reverb:hover .minimap-notch {
+  background: #ccc;
+}
+.minimap--reverb .minimap-notch-row--hovered .minimap-notch {
+  background: #1a1a1a;
+}
+/* Transitions make moving down the rail read as one label morphing rather
+   than a new card popping in per notch. */
+.minimap-label {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  margin-left: 12px;
+  box-sizing: content-box;
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: #1a1a1a;
+  white-space: nowrap;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+  opacity: 0;
+  transition:
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    width 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.2s ease;
+}
+.minimap-label--visible {
+  opacity: 1;
+}
+.minimap-label-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: minimap-label-in 0.3s ease;
+}
+@keyframes minimap-label-in {
+  from {
+    opacity: 0;
+    filter: blur(4px);
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .minimap-label,
+  .minimap-label-text {
+    transition: opacity 0.2s ease;
+    animation: none;
+  }
+}
+
 @media (max-width: 768px) {
   .minimap {
     display: none;
