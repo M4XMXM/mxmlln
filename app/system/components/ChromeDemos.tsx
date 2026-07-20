@@ -40,7 +40,7 @@ export function LogoDemo() {
   return (
     <>
       <div className="logo-demo-header">
-        <h3 id="logo">Logo</h3>
+        <h2 id="logo">Logo</h2>
         <div className="segmented" role="tablist" aria-label="Logo variant">
           {LOGO_VARIANTS.map((v) => (
             <button
