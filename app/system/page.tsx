@@ -11,6 +11,7 @@ import {
   RadiusBox,
   Type,
 } from './components/TokenSwatch';
+import { Palette } from './components/ColorScale';
 import { ComponentPreview } from './components/ComponentPreview';
 import { AnchorHeading } from './components/AnchorHeading';
 import { LogoDemo, NavDemo, MenuDemo } from './components/ChromeDemos';
@@ -47,6 +48,7 @@ const mdxComponents: MDXComponents = {
   // Doc helpers
   Swatches,
   Swatch,
+  Palette,
   RadiusBox,
   Type,
   ComponentPreview,
