@@ -878,6 +878,7 @@
 /* Transitions make moving down the rail read as one label morphing rather
    than a new card popping in per notch. */
 .minimap-label {
+  --minimap-label-blur: 2px;
   position: absolute;
   left: 100%;
   top: 0;
@@ -902,28 +903,59 @@
 .minimap-label--visible {
   opacity: 1;
 }
+/* Outgoing copy overlays absolutely so it can roll away without widening the
+   content-fit box. */
+.minimap-label-reel {
+  position: relative;
+  display: inline-block;
+}
 .minimap-label-text {
   display: inline-block;
   white-space: nowrap;
-  animation: minimap-label-in 0.3s ease;
 }
-@keyframes minimap-label-in {
-  from {
-    opacity: 0;
-    filter: blur(4px);
-    transform: translateY(3px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: none;
-  }
+.minimap-label-text--out {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+.minimap-label-text--in.is-down {
+  animation: minimap-label-in-down 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.minimap-label-text--in.is-up {
+  animation: minimap-label-in-up 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.minimap-label-text--out.is-down {
+  animation: minimap-label-out-down 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.minimap-label-text--out.is-up {
+  animation: minimap-label-out-up 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+@keyframes minimap-label-in-down {
+  from { opacity: 0; filter: blur(var(--minimap-label-blur)); transform: translateY(70%); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+@keyframes minimap-label-in-up {
+  from { opacity: 0; filter: blur(var(--minimap-label-blur)); transform: translateY(-70%); }
+  to { opacity: 1; filter: blur(0); transform: none; }
+}
+@keyframes minimap-label-out-down {
+  from { opacity: 1; filter: blur(0); transform: none; }
+  to { opacity: 0; filter: blur(var(--minimap-label-blur)); transform: translateY(-70%); }
+}
+@keyframes minimap-label-out-up {
+  from { opacity: 1; filter: blur(0); transform: none; }
+  to { opacity: 0; filter: blur(var(--minimap-label-blur)); transform: translateY(70%); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .minimap-label,
-  .minimap-label-text {
+  .minimap-label {
     transition: opacity 0.2s ease;
+  }
+  .minimap-label-text--in,
+  .minimap-label-text--out {
     animation: none;
+  }
+  .minimap-label-text--out {
+    display: none;
   }
 }
 

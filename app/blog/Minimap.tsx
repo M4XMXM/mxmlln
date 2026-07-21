@@ -38,11 +38,33 @@ export default function Minimap({
   const [labelWidth, setLabelWidth] = useState(0);
   const labelTextRef = useRef<HTMLSpanElement>(null);
 
+  // Roll direction tracks cursor travel through the rail, so successive labels
+  // read as one reel advancing rather than a cross-fade in place.
+  const [prevLabel, setPrevLabel] = useState<string | null>(null);
+  const [dir, setDir] = useState<1 | -1>(1);
+  const curTextRef = useRef('');
+  const prevIndexRef = useRef<number | null>(null);
+  const swapTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
-    if (hoveredIndex !== null && sections[hoveredIndex]) {
-      setLabelText(sections[hoveredIndex].text);
+    if (hoveredIndex === null || !sections[hoveredIndex]) return;
+    const nextText = sections[hoveredIndex].text;
+    const cur = curTextRef.current;
+    if (cur && cur !== nextText) {
+      const pi = prevIndexRef.current;
+      setDir(pi !== null && hoveredIndex < pi ? -1 : 1);
+      setPrevLabel(cur);
+      if (swapTimer.current) clearTimeout(swapTimer.current);
+      swapTimer.current = setTimeout(() => setPrevLabel(null), 320);
     }
+    curTextRef.current = nextText;
+    prevIndexRef.current = hoveredIndex;
+    setLabelText(nextText);
   }, [hoveredIndex, sections]);
+
+  useEffect(() => () => {
+    if (swapTimer.current) clearTimeout(swapTimer.current);
+  }, []);
 
   useEffect(() => {
     if (labelTextRef.current) setLabelWidth(labelTextRef.current.scrollWidth);
@@ -132,8 +154,22 @@ export default function Minimap({
             }}
             aria-hidden="true"
           >
-            <span key={labelText} ref={labelTextRef} className="minimap-label-text">
-              {labelText}
+            <span className="minimap-label-reel">
+              {prevLabel !== null && (
+                <span
+                  key={`out-${prevLabel}`}
+                  className={`minimap-label-text minimap-label-text--out ${dir === 1 ? 'is-down' : 'is-up'}`}
+                >
+                  {prevLabel}
+                </span>
+              )}
+              <span
+                key={`in-${labelText}`}
+                ref={labelTextRef}
+                className={`minimap-label-text minimap-label-text--in ${dir === 1 ? 'is-down' : 'is-up'}`}
+              >
+                {labelText}
+              </span>
             </span>
           </div>
         </div>
