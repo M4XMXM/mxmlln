@@ -775,6 +775,22 @@
       "createdAt": "2026-07-14T12:00:00.000Z",
       "metadata": {},
       "read": false
+    },
+    {
+      "id": "1781352000014",
+      "url": "https://x.com/willccbb/status/2050038277454143918",
+      "title": "Will Brown on SFT, RL, & on-policy distillation",
+      "createdAt": "2026-07-23T12:00:00.000Z",
+      "metadata": {},
+      "read": false
+    },
+    {
+      "id": "1781352000015",
+      "url": "https://nrehiew.github.io/blog/sft_rl_opd/",
+      "title": "SFT, RL, and On-Policy Distillation Through a Distributional Lens",
+      "createdAt": "2026-07-23T12:01:00.000Z",
+      "metadata": {},
+      "read": false
     }
   ]
 }
