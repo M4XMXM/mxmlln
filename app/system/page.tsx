@@ -17,6 +17,7 @@ import { AnchorHeading } from './components/AnchorHeading';
 import { LogoDemo, NavDemo, MenuDemo } from './components/ChromeDemos';
 import { ButtonDemo, InputDemo } from './components/FormDemos';
 import { CardDemo } from './components/CardDemos';
+import { CardStackDemo } from './components/CardStackDemos';
 import { ChatDemo } from './components/ChatDemos';
 import './system.css';
 
@@ -58,6 +59,7 @@ const mdxComponents: MDXComponents = {
   ButtonDemo,
   InputDemo,
   CardDemo,
+  CardStackDemo,
   ChatDemo,
 };
 
