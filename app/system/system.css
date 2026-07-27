@@ -402,6 +402,18 @@
   background: var(--surface);
 }
 
+/* Card stack — the production FolioEngine rendered in an isolated viewport so
+   its fixed gradient layers and full-stack expansion stay inside the specimen. */
+.card-stack-demo-frame {
+  display: block;
+  width: 100%;
+  height: 720px;
+  margin: 24px 0 40px;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: var(--surface);
+}
+
 /* Logo demo: live Lottie mark with a segmented control to swap faces.
    The control sits on the section's title row to keep the preview compact. */
 .logo-demo-header {
@@ -986,5 +998,8 @@
   }
   .system-prose {
     font-size: 15px;
+  }
+  .card-stack-demo-frame {
+    height: 600px;
   }
 }
