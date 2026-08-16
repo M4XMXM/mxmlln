@@ -8,6 +8,10 @@ export interface Experiment {
 
 const NEXTJS_EXPERIMENTS = ['006', '012', '013', '026', '027', '028'];
 
+const NAMED_EXPERIMENTS: Experiment[] = [
+  { id: '030', path: '/experiments/flowers' },
+];
+
 export function getExperiments(): Experiment[] {
   const staticDir = join(process.cwd(), 'public', 'static');
 
@@ -34,7 +38,14 @@ export function getExperiments(): Experiment[] {
       .filter((id) => existsSync(join(appDir, id, 'page.tsx')))
       .map((id) => ({ id, path: `/experiments/${id}` }));
 
-    return [...staticExperiments, ...nextjsOnly].sort((a, b) => a.id.localeCompare(b.id));
+    const named = NAMED_EXPERIMENTS.filter((exp) => {
+      const slug = exp.path.replace(/^\/experiments\//, '');
+      return existsSync(join(appDir, slug, 'page.tsx'));
+    });
+
+    return [...staticExperiments, ...nextjsOnly, ...named].sort((a, b) =>
+      a.id.localeCompare(b.id),
+    );
   } catch (error) {
     console.error('Error reading experiments directory:', error);
     return [];
