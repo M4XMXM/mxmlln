@@ -77,7 +77,7 @@
   position: relative;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.28s ease;
+  transition: opacity 0.2s ease;
 }
 
 .sk-book-scene.is-visible {
@@ -406,6 +406,11 @@
   position: fixed;
   inset: 0;
   cursor: pointer;
+}
+
+.sk-intro-wash {
+  position: absolute;
+  inset: 0;
   background: radial-gradient(75% 65% at 50% 38%, #f0ebe3 0%, #e4ddd3 52%, #d6cfc4 100%);
 }
 

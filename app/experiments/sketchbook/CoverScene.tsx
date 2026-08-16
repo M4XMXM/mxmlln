@@ -13,6 +13,21 @@ const REST_X = -0.46;
 const REST_Z = 0.08;
 const FOLLOW_Y = 0.08;
 const FOLLOW_X = 0.04;
+const CLOSED_SCALE = 0.85;
+
+function easeInOut(t: number) {
+  return t < 0.5 ? 2 * t * t : 1 - (2 - 2 * t) ** 2 / 2;
+}
+
+function measureRightPage(pageW: number) {
+  const el = document.querySelector('.sk-page--right');
+  if (!el) return { x: pageW / 2, y: 0 };
+  const r = el.getBoundingClientRect();
+  return {
+    x: r.left + r.width / 2 - window.innerWidth / 2,
+    y: window.innerHeight / 2 - (r.top + r.height / 2),
+  };
+}
 
 function cssFamily(varName: string, fallback: string) {
   const probe = document.createElement('span');
@@ -272,11 +287,18 @@ function Book({
   const root = useRef<THREE.Group>(null);
   const spin = useRef<THREE.Group>(null);
   const cover = useRef<THREE.Group>(null);
+  const jacket = useRef<THREE.Mesh>(null);
+  const block = useRef<THREE.Mesh>(null);
+  const spine = useRef<THREE.Mesh>(null);
+  const shadows = useRef<THREE.Group>(null);
   const board = pageH * 0.015;
   const pages = pageH * 0.084;
   const radius = pages / 2 + board;
   const coverH = pageH + board * 2.5;
   const coverW = pageW + board * 0.55;
+  const pageWInner = pageW * 0.97;
+  const pageHInner = pageH * 0.968;
+  const pageD = Math.max(pages * 0.9, (radius - board) * 1.85);
   const [coverTex, setCoverTex] = useState<THREE.CanvasTexture | null>(null);
   const [spineTex, setSpineTex] = useState<THREE.CanvasTexture | null>(null);
   const [edgeTex] = useState(makePageEdgeTexture);
@@ -317,23 +339,40 @@ function Book({
 
   useEffect(() => () => edgeTex?.dispose(), [edgeTex]);
 
-  useFrame((_, delta) => {
+  const qClosed = useMemo(
+    () => new THREE.Quaternion().setFromEuler(new THREE.Euler(REST_X, REST_Y, REST_Z, 'YXZ')),
+    [],
+  );
+  const qFlat = useMemo(() => new THREE.Quaternion(), []);
+
+  useFrame(() => {
     if (!root.current || !spin.current || !cover.current) return;
     const p = progress.current;
-    const rest = 1 - p;
-    const rotY = REST_Y * rest + orbit.current.y * rest + pointer.current.x * FOLLOW_Y * rest;
-    const rotX = REST_X * rest + orbit.current.x * rest - pointer.current.y * FOLLOW_X * rest;
-    const rotZ = REST_Z * rest;
-    spin.current.rotation.y = damp(spin.current.rotation.y, rotY, 0.22, delta);
-    spin.current.rotation.x = damp(spin.current.rotation.x, rotX, 0.22, delta);
-    spin.current.rotation.z = damp(spin.current.rotation.z, rotZ, 0.22, delta);
-    cover.current.rotation.y = -Math.PI * 0.96 * THREE.MathUtils.smootherstep(p, 0.08, 0.82);
-    cover.current.visible = p > 0.04;
+    const settle = Math.min(1, p / 0.6);
+    const coverT = easeInOut(Math.min(1, Math.max(0, (p - 0.05) / 0.55)));
+    const s = THREE.MathUtils.lerp(CLOSED_SCALE, 1, settle);
+    const zSquash = THREE.MathUtils.lerp(1, 0.05, THREE.MathUtils.smoothstep(settle, 0.85, 1));
+    const flat = measureRightPage(pageW);
+    const idle = 1 - settle;
+    root.current.position.set(
+      THREE.MathUtils.lerp(0, flat.x, settle),
+      THREE.MathUtils.lerp(0, flat.y, settle),
+      THREE.MathUtils.lerp(0, (-pageD / 2) * zSquash, settle),
+    );
+    root.current.scale.set(s, s, s * zSquash);
+    spin.current.quaternion.slerpQuaternions(qClosed, qFlat, settle);
+    if (idle > 0.001) {
+      spin.current.rotateY(
+        orbit.current.y * idle + pointer.current.x * FOLLOW_Y * idle,
+      );
+      spin.current.rotateX(
+        orbit.current.x * idle - pointer.current.y * FOLLOW_X * idle,
+      );
+    }
+    cover.current.rotation.y = -Math.PI * coverT;
+    if (jacket.current) jacket.current.visible = coverT < 0.04;
+    if (shadows.current) shadows.current.visible = coverT < 0.35;
   });
-
-  const pageWInner = pageW * 0.97;
-  const pageHInner = pageH * 0.968;
-  const pageD = Math.max(pages * 0.9, (radius - board) * 1.85);
   const jacketGeo = useMemo(
     () => makeJacketGeometry(coverW, coverH, radius, board),
     [coverW, coverH, radius, board],
@@ -342,11 +381,12 @@ function Book({
   useEffect(() => () => jacketGeo.dispose(), [jacketGeo]);
 
   return (
-    <group ref={root}>
+    <group ref={root} scale={CLOSED_SCALE}>
       <group ref={spin} rotation={[REST_X, REST_Y, REST_Z]}>
         <group position={[-pageW / 2, 0, 0]}>
-          <mesh geometry={jacketGeo} castShadow>
+          <mesh ref={jacket} geometry={jacketGeo} castShadow>
             <meshPhysicalMaterial
+              key={coverTex?.uuid ?? 'jacket'}
               map={coverTex ?? undefined}
               color={coverTex ? '#ffffff' : '#161513'}
               roughness={0.8}
@@ -360,7 +400,7 @@ function Book({
               side={THREE.DoubleSide}
             />
           </mesh>
-          <mesh position={[pageWInner / 2 + board * 0.8, 0, 0]} castShadow>
+          <mesh ref={block} position={[pageWInner / 2 + board * 0.8, 0, 0]} castShadow>
             <boxGeometry args={[pageWInner, pageHInner, pageD]} />
             <meshStandardMaterial attach="material-0" map={edgeTex ?? undefined} color="#e8e1d4" roughness={0.92} metalness={0} />
             <meshStandardMaterial attach="material-1" color="#d4cdc0" roughness={0.94} metalness={0} />
@@ -369,16 +409,17 @@ function Book({
             <meshStandardMaterial attach="material-4" color={PAPER} roughness={0.64} metalness={0} />
             <meshStandardMaterial attach="material-5" color={PAPER} roughness={0.64} metalness={0} />
           </mesh>
-          <mesh>
+          <mesh ref={spine}>
             <cylinderGeometry
               args={[radius + 0.45, radius + 0.45, coverH * 0.62, 24, 1, true, -Math.PI * 0.68, Math.PI * 0.36]}
             />
             <Cloth map={spineTex} color="#161513" roughness={0.86} side={THREE.DoubleSide} />
           </mesh>
-          <group ref={cover} position={[0, 0, radius]} visible={false}>
+          <group ref={cover} position={[0, 0, radius]}>
             <mesh position={[coverW / 2, 0, 0.2]} castShadow>
               <planeGeometry args={[coverW, coverH]} />
               <meshPhysicalMaterial
+                key={coverTex?.uuid ?? 'cover'}
                 map={coverTex ?? undefined}
                 color={coverTex ? '#ffffff' : '#1b1a18'}
                 roughness={0.78}
@@ -393,18 +434,24 @@ function Book({
                 emissiveIntensity={coverTex ? 0.1 : 0}
               />
             </mesh>
+            <mesh position={[coverW / 2, 0, -0.25]}>
+              <planeGeometry args={[pageWInner, pageHInner]} />
+              <meshBasicMaterial color={PAPER} side={THREE.BackSide} />
+            </mesh>
           </group>
         </group>
       </group>
-      <ContactShadows
-        position={[0, -pageH / 2 - 2, 0]}
-        opacity={0.34}
-        scale={pageW * 2.8}
-        blur={2.8}
-        far={pageH * 0.5}
-        color="#1a1814"
-        frames={Infinity}
-      />
+      <group ref={shadows}>
+        <ContactShadows
+          position={[0, -pageH / 2 - 2, 0]}
+          opacity={0.34}
+          scale={pageW * 2.8}
+          blur={2.8}
+          far={pageH * 0.5}
+          color="#1a1814"
+          frames={Infinity}
+        />
+      </group>
     </group>
   );
 }
@@ -426,24 +473,27 @@ function CoverInner({
   target: number;
   wrap: React.RefObject<HTMLDivElement | null>;
 }) {
-  const { camera, size } = useThree();
+  const { camera, size, gl } = useThree();
 
   useFrame((_, delta) => {
+    gl.setClearColor(0x000000, 0);
+    progress.current = damp(progress.current, target, target >= 1 ? 0.5 : 0.26, delta);
+    const p = progress.current;
     if (camera instanceof THREE.PerspectiveCamera) {
       camera.fov = 20;
       camera.aspect = size.width / Math.max(1, size.height);
-      camera.near = 1;
-      camera.far = 20000;
       const z = size.height / 2 / Math.tan(THREE.MathUtils.degToRad(10));
-      camera.position.set(0, size.height * 0.07, z);
-      camera.lookAt(0, -size.height * 0.01, 0);
+      camera.position.set(0, 0, z);
+      camera.near = z * 0.1;
+      camera.far = z * 3;
+      camera.lookAt(0, 0, 0);
       camera.updateProjectionMatrix();
     }
-    progress.current = damp(progress.current, target, 0.32, delta);
-    const p = progress.current;
     if (wrap.current) {
-      wrap.current.style.opacity = String(p > 0.82 ? Math.max(0, 1 - (p - 0.82) / 0.18) : 1);
-      wrap.current.style.pointerEvents = p > 0.9 ? 'none' : 'auto';
+      const wash = wrap.current.querySelector('.sk-intro-wash') as HTMLElement | null;
+      if (wash) wash.style.opacity = String(1 - THREE.MathUtils.smoothstep(p, 0.6, 0.74));
+      wrap.current.style.opacity = String(1 - THREE.MathUtils.smoothstep(p, 0.68, 0.86));
+      wrap.current.style.pointerEvents = p > 0.5 ? 'none' : 'auto';
     }
   });
 
@@ -541,6 +591,7 @@ export default function CoverScene({
         pointer.current.y = 0;
       }}
     >
+      <div className="sk-intro-wash" aria-hidden />
       <div className="sk-intro-canvas">
         <Canvas
           dpr={Math.min(2, typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1)}
