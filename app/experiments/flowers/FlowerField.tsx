@@ -246,7 +246,6 @@ function SpeciesHeads({
         fragmentShader={HEAD_FRAG}
         uniforms={headUniforms}
         side={THREE.DoubleSide}
-        silent
       />
     </instancedMesh>
   );
@@ -303,7 +302,6 @@ export function FlowerField() {
           fragmentShader={STEM_FRAG}
           uniforms={uniforms}
           side={THREE.DoubleSide}
-          silent
         />
       </instancedMesh>
       <instancedMesh
@@ -317,7 +315,6 @@ export function FlowerField() {
           fragmentShader={GRASS_FRAG}
           uniforms={uniforms}
           side={THREE.DoubleSide}
-          silent
         />
       </instancedMesh>
       <FlowerHeads flowers={flowers} uniforms={uniforms} />
