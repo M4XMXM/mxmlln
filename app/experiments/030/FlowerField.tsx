@@ -162,7 +162,7 @@ function FlowerHeads({
   flowers: FlowerPlacement[];
   uniforms: { uTime: { value: number }; uWind: { value: number } };
 }) {
-  const atlas = useTexture('/experiments/flowers/petals.webp');
+  const atlas = useTexture('/experiments/030/petals.webp');
   atlas.colorSpace = THREE.SRGBColorSpace;
   atlas.anisotropy = 8;
   atlas.needsUpdate = true;
