@@ -108,21 +108,21 @@ export default function Sketchbook({ experiments }: { experiments: Experiment[] 
       ro.disconnect();
       window.removeEventListener('resize', measure);
     };
-  }, [single, phase]);
+  }, [single, phase, spreadIndex, pageIndex]);
+
+  const neighborIdxs = useMemo(() => {
+    const base = single ? Math.floor(pageIndex / 2) : spreadIndex;
+    return [base - 1, base, base + 1, base + 2].filter((i) => i >= 0 && i < n);
+  }, [single, pageIndex, spreadIndex, n]);
 
   useEffect(() => {
-    if (phase !== 'open') return;
-    const ids = single
-      ? [pageIndex, pageIndex + 1, pageIndex - 1]
-          .map((i) => experiments[Math.floor(i / 2)]?.id)
-          .filter(Boolean)
-          .flatMap((id) => [`notes:${id}`, `notes-flat:${id}`])
-      : [spreadIndex, spreadIndex + 1, spreadIndex - 1]
-          .map((i) => experiments[i]?.id)
-          .filter(Boolean)
-          .flatMap((id) => [`notes:${id}`, `notes-flat:${id}`]);
+    if (phase !== 'open' && phase !== 'opening') return;
+    const ids = neighborIdxs.flatMap((i) => {
+      const id = experiments[i]?.id;
+      return id ? [`notes:${id}`, `notes-flat:${id}`] : [];
+    });
     precacheFaces(ids);
-  }, [phase, single, spreadIndex, pageIndex, experiments]);
+  }, [phase, neighborIdxs, experiments]);
 
   const visibleExpIndex = single ? Math.floor(pageIndex / 2) : spreadIndex;
   const paintedExpIndex =
@@ -135,11 +135,6 @@ export default function Sketchbook({ experiments }: { experiments: Experiment[] 
     session && painted && session.dir === 'back' && !single
       ? experiments[spreadIndex - 1]?.id
       : leftExp?.id;
-
-  const neighborIdxs = useMemo(() => {
-    const base = single ? Math.floor(pageIndex / 2) : spreadIndex;
-    return [base - 1, base, base + 1, base + 2].filter((i) => i >= 0 && i < n);
-  }, [single, pageIndex, spreadIndex, n]);
 
   const canFlip = useCallback(
     (dir: FlipDir) => {
