@@ -135,7 +135,7 @@ const fragmentShader = /* glsl */ `
   }
 `;
 
-const Planet = () => {
+export function Planet() {
   const materialRef = useRef<CustomShaderMaterialType<typeof THREE.MeshLambertMaterial>>(null);
 
   const uniforms = useMemo(
@@ -174,7 +174,7 @@ const Planet = () => {
       />
     </mesh>
   );
-};
+}
 
 export default function PlanetScene() {
   return (
