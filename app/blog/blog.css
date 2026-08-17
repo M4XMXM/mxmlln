@@ -378,6 +378,12 @@
   transform-origin: top left;
 }
 
+/* Deck slides size their own images; don't let the prose img cap squash them. */
+.blog-deck-figure img {
+  max-width: none;
+  border-radius: 0;
+}
+
 .blog-pair,
 .blog-evidence {
   display: grid;

@@ -42,7 +42,7 @@ export function DeckEmbed({
     if (!el) return;
     const io = new IntersectionObserver(
       ([entry]) => setInView(entry.isIntersecting),
-      { threshold: 0.3, rootMargin: '40px 0px' }
+      { threshold: 0.15, rootMargin: '80px 0px' }
     );
     io.observe(el);
     return () => io.disconnect();
@@ -71,7 +71,7 @@ export function DeckEmbed({
             }}
           >
             <section
-              className="deck-slide"
+              className="deck-slide deck-slide--embed"
               data-active={inView}
               style={{ background: '#f5f5f5', color: '#3B3B3B' }}
             >

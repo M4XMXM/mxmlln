@@ -70,11 +70,21 @@ const mdxComponents: MDXComponents = {
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   p: ({ children, ...rest }: any) => {
+    const EMBEDS = new Set([
+      HorsepowerEmbed,
+      GinEmbed,
+      DoomLoopEmbed,
+      SpendEmbed,
+      TokensEmbed,
+      VerificationEmbed,
+      ComputeEmbed,
+      MousepowerMeasureEmbed,
+      EntropyPaperEmbed,
+      EntropyMatrixEmbed,
+    ]);
     if (children && typeof children === 'object' && 'type' in children) {
       const t = children.type;
-      if (t === BlogImage || t === BlogVideo) return <>{children}</>;
-      const name = typeof t === 'function' ? t.name : '';
-      if (name.endsWith('Embed')) return <>{children}</>;
+      if (t === BlogImage || t === BlogVideo || EMBEDS.has(t)) return <>{children}</>;
     }
     return <p {...rest}>{children}</p>;
   },

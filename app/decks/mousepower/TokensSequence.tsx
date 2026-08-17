@@ -54,11 +54,19 @@ export function TokensSequence() {
   // Reset the build whenever the slide leaves.
   useEffect(() => {
     if (!active) {
-      setStep(0);
       setOrbitOn(false);
       setRingsOn(false);
     }
   }, [active]);
+
+  // Wrap-around (blog autoplay) must park the coin back on the wordmark.
+  useEffect(() => {
+    if (step === 0) {
+      seqRef.current
+        ?.querySelector<HTMLElement>('.tokens-wordmark')
+        ?.style.setProperty('--coin-shift', '0px');
+    }
+  }, [step]);
 
   // The orbit icons hold off until the coin has slid to centre (step 1), then pop.
   useEffect(() => {
