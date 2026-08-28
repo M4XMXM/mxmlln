@@ -286,14 +286,17 @@ function AgentWindow({
             Mounted with the grid (step ≥ 2) so it's playing before the cross-fade. */}
         <video
           className="gw-video"
-          src={`/decks/mousepower/${video}.webm`}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
           aria-hidden
-        />
+        >
+          {/* webm first (smaller, Chrome/Firefox); mp4 fallback for Safari. */}
+          <source src={`/decks/mousepower/${video}.webm`} type="video/webm" />
+          <source src={`/decks/mousepower/${video}.mp4`} type="video/mp4" />
+        </video>
       </div>
     </div>
   );
